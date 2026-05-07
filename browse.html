@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Browse — EntranceHearts 💕</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    body { background: #1a1a2e; }
+    .browse-page {
+      min-height: 100vh;
+      padding: 20px 16px 100px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .page-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .page-sub {
+      color: #a0a0b0;
+      font-size: 0.82rem;
+      margin-bottom: 24px;
+    }
+    .filter-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      background: #0f3460;
+      border: 1px solid rgba(255,107,157,0.2);
+      border-radius: 20px;
+      color: #a0a0b0;
+      font-size: 0.78rem;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .filter-btn.active {
+      background: rgba(255,107,157,0.15);
+      border-color: #ff6b9d;
+      color: #ff6b9d;
+    }
+    .swipe-card {
+      background: #0f3460;
+      border-radius: 24px;
+      padding: 28px 20px;
+      border: 1px solid rgba(255,107,157,0.2);
+      margin-bottom: 16px;
+      position: relative;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+    .swipe-card.hide-left {
+      transform: translateX(-120%) rotate(-15deg);
+      opacity: 0;
+    }
+    .swipe-card.hide-right {
+      transform: translateX(120%) rotate(15deg);
+      opacity: 0;
+    }
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .big-avatar {
+      font-size: 3.5rem;
+      background: rgba(230,57,70,0.1);
+      border-radius: 50%;
+      width: 75px;
+      height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid rgba(255,107,157,0.3);
+      flex-shrink: 0;
+    }
+    .card-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .card-meta {
+      color: #a0a0b0;
+      font-size: 0.8rem;
+      margin: 3px 0 8px;
+    }
+    .card-category {
+      display: inline-block;
+      background: rgba(230,57,70,0.15);
+      border: 1px solid #e63946;
+      color: #ff6b9d;
+      padding: 3px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .card-bio {
+      color: #c0c0d0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .card-interests {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+    .card-interests span {
+      background: rgba(255,107,157,0.1);
+      border: 1px solid rgba(255,107,157,0.2);
+      color: #ff6b9d;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+    }
+    .action-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .action-btn:hover { transform: scale(1.05); }
+    .btn-pass {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #a0a0b0;
+    }
+    .btn-like {
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      color: white;
+      box-shadow: 0 5px 20px rgba(230,57,70,0.3);
+    }
+    .btn-chat {
+      background: rgba(255,107,157,0.1);
+      border: 1px solid rgba(255,107,157,0.3);
+      color: #ff6b9d;
+    }
+    .match-popup {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      display: none;
+    }
+    .match-box {
+      background: #0f3460;
+      border-radius: 28px;
+      padding: 40px 28px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      border: 1px solid rgba(255,107,157,0.3);
+      animation: popIn 0.4s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .match-emoji { font-size: 4rem; margin-bottom: 10px; }
+    .match-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .match-sub { color: #a0a0b0; font-size: 0.85rem; margin-bottom: 24px; }
+    .match-actions { display: flex; flex-direction: column; gap: 10px; }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #0f3460;
+      border-top: 1px solid rgba(255,107,157,0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 16px;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #a0a0b0;
+      text-decoration: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-item.active { color: #ff6b9d; }
+    .nav-item span:first-child { font-size: 1.3rem; }
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      display: none;
+    }
+    .empty-state .big-emoji { font-size: 4rem; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; }
+    .empty-state p { color: #a0a0b0; font-size: 0.85rem; }
+    .ai-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,107,157,0.1);
+      border: 1px solid rgba(255,107,157,0.3);
+      color: #ff6b9d;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">💕 EntranceHearts</a>
+    <div class="nav-buttons">
+      <a href="profile.html" class="btn-outline" style="padding:8px 14px;font-size:0.8rem">My Profile</a>
+    </div>
+  </nav>
+
+  <div class="browse-page">
+    <div class="page-title">Discover 💕</div>
+    <div class="page-sub">Find your match among aspirants</div>
+
+    <div class="filter-row">
+      <button class="filter-btn active" onclick="filterCards('all', this)">All</button>
+      <button class="filter-btn" onclick="filterCards('cee', this)">CEE</button>
+      <button class="filter-btn" onclick="filterCards('ioe', this)">IOE</button>
+      <button class="filter-btn" onclick="filterCards('plus2', this)">+2</button>
+      <button class="filter-btn" onclick="filterCards('management', this)">Management</button>
+    </div>
+
+    <div id="cardsContainer"></div>
+
+    <div class="empty-state" id="emptyState">
+      <div class="big-emoji">💔</div>
+      <h3>No more profiles!</h3>
+      <p>You've seen everyone for now. Check back later for new aspirants!</p>
+    </div>
+  </div>
+
+  <!-- Match Popup -->
+  <div class="match-popup" id="matchPopup">
+    <div class="match-box">
+      <div class="match-emoji">💕</div>
+      <div class="match-title">It's a Match!</div>
+      <div class="match-sub" id="matchSubText">You and someone like each other!</div>
+      <div class="match-actions">
+        <a href="chat.html" class="btn-primary big" style="text-align:center">
+          💬 Send a Message
+        </a>
+        <button onclick="closeMatch()" class="back-btn" style="margin-top:0">
+          Keep Browsing
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a href="browse.html" class="nav-item active">
+      <span>🔥</span><span>Discover</span>
+    </a>
+    <a href="chat.html" class="nav-item">
+      <span>💬</span><span>Chats</span>
+    </a>
+    <a href="ai-match.html" class="nav-item">
+      <span>🤖</span><span>AI Match</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <span>👤</span><span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    // Redirect if not logged in
+    if (localStorage.getItem('ehLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    const profiles = [
+      { name: 'Priya Sharma', age: 18, gender: '👩', category: 'cee', location: 'Kathmandu', bio: 'Dreaming of MBBS. Love physics and late night studying. Looking for someone who motivates me!', interests: ['📚 Studying', '🎵 Music', '📷 Photography', '🍕 Foodie'] },
+      { name: 'Rohan Khatri', age: 19, gender: '👨', category: 'ioe', location: 'Pokhara', bio: 'Civil engineering is my goal. I love solving problems and hiking on weekends.', interests: ['💻 Coding', '⚽ Sports', '✈️ Travel', '📚 Studying'] },
+      { name: 'Sita Gurung', age: 18, gender: '👩', category: 'plus2', location: 'Butwal', bio: '+2 Science student. Passionate about math and art. Looking for genuine connection.', interests: ['🎨 Art', '📖 Reading', '🎵 Music', '🧘 Fitness'] },
+      { name: 'Aakash Thapa', age: 20, gender: '👨', category: 'management', location: 'Biratnagar', bio: 'BBA aspirant. Entrepreneur at heart. Love business, cricket and good conversations.', interests: ['⚽ Sports', '🍕 Foodie', '📖 Reading', '✈️ Travel'] },
+      { name: 'Nisha Rai', age: 18, gender: '👩', category: 'cee', location: 'Dharan', bio: 'CEE aspirant aiming for engineering. Quiet but passionate. Love music and coding.', interests: ['💻 Coding', '🎵 Music', '🎬 Movies', '📚 Studying'] },
+      { name: 'Bikash Limbu', age: 19, gender: '👨', category: 'ioe', location: 'Itahari', bio: 'IOE aspirant. Computer engineering is the dream. Love gaming and late night coding.', interests: ['🎮 Gaming', '💻 Coding', '🎬 Movies', '📚 Studying'] },
+    ];
+
+    let currentFilter = 'all';
+    let likedProfiles = JSON.parse(localStorage.getItem('ehLiked') || '[]');
+    let passedProfiles = JSON.parse(localStorage.getItem('ehPassed') || '[]');
+
+    function getFilteredProfiles() {
+      return profiles.filter(p => {
+        const notSeen = !likedProfiles.includes(p.name) && !passedProfiles.includes(p.name);
+        const matchFilter = currentFilter === 'all' || p.category === currentFilter;
+        return notSeen && matchFilter;
+      });
+    }
+
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      const filtered = getFilteredProfiles();
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        document.getElementById('emptyState').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('emptyState').style.display = 'none';
+      const profile = filtered[0];
+      const categoryLabels = { cee: 'CEE Aspirant', ioe: 'IOE Aspirant', plus2: '+2 Student', management: 'Management' };
+
+      container.innerHTML = `
+        <div class="swipe-card" id="currentCard">
+          <div class="ai-badge">🤖 AI Matched for you</div>
+          <div class="card-top">
+            <div class="big-avatar">${profile.gender}</div>
+            <div>
+              <div class="card-name">${profile.name}, ${profile.age}</div>
+              <div class="card-meta">📍 ${profile.location}</div>
+              <div class="card-category">${categoryLabels[profile.category]}</div>
+            </div>
+          </div>
+          <div class="card-bio">${profile.bio}</div>
+          <div class="card-interests">
+            ${profile.interests.map(i => `<span>${i}</span>`).join('')}
+          </div>
+          <div class="action-row">
+            <button class="action-btn btn-pass" onclick="passProfile('${profile.name}')">👎 Pass</button>
+            <button class="action-btn btn-like" onclick="likeProfile('${profile.name}')">❤️ Like</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function likeProfile(name) {
+      const card = document.getElementById('currentCard');
+      card.classList.add('hide-right');
+      likedProfiles.push(name);
+      localStorage.setItem('ehLiked', JSON.stringify(likedProfiles));
+      setTimeout(() => {
+        if (Math.random() > 0.4) showMatch(name);
+        else renderCards();
+      }, 400);
+    }
+
+    function passProfile(name) {
+      const card = document.getElementById('currentCard');
+      card.classList.add('hide-left');
+      passedProfiles.push(name);
+      localStorage.setItem('ehPassed', JSON.stringify(passedProfiles));
+      setTimeout(() => renderCards(), 400);
+    }
+
+    function showMatch(name) {
+      document.getElementById('matchSubText').textContent = `You and ${name} liked each other! 🎉`;
+      document.getElementById('matchPopup').style.display = 'flex';
+    }
+
+    function closeMatch() {
+      document.getElementById('matchPopup').style.display = 'none';
+      renderCards();
+    }
+
+    function filterCards(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      passedProfiles = [];
+      localStorage.setItem('ehPassed', JSON.stringify(passedProfiles));
+      renderCards();
+    }
+
+    renderCards();
+  </script>
+
+</body>
+</html>
