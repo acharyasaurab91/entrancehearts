@@ -343,19 +343,40 @@
 
     function goStep(n) {
       if (n === 2) {
-        const name = document.getElementById('name').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-        const age = document.getElementById('age').value;
-        if (!name || !email || !password || !age) {
-          showError('Please fill all fields!');
-          return;
-        }
-        if (password.length < 6) {
-          showError('Password must be at least 6 characters!');
-          return;
-        }
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  const age = document.getElementById('age').value;
+  if (!name || !email || !password || !age) {
+    showError('Please fill all fields!');
+    return;
+  }
+  if (password.length < 6) {
+    showError('Password must be at least 6 characters!');
+    return;
+  }
+  // Block fake/disposable emails
+  const blockedDomains = [
+    'mailinator.com','guerrillamail.com','tempmail.com',
+    'throwaway.email','fakeinbox.com','sharklasers.com',
+    'yopmail.com','trashmail.com','maildrop.cc','dispostable.com'
+  ];
+  const emailDomain = email.split('@')[1]?.toLowerCase();
+  if (!emailDomain || !emailDomain.includes('.')) {
+    showError('Please enter a valid email address!');
+    return;
+  }
+  if (blockedDomains.includes(emailDomain)) {
+    showError('Please use a real email address!');
+    return;
+  }
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showError('Please enter a valid email address!');
+    return;
+  }
       }
+      
       if (n === 3) {
         const category = document.getElementById('category').value;
         const location = document.getElementById('location').value;
