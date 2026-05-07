@@ -6,6 +6,8 @@
   <title>Chat — EntranceHearts 💕</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <style>
     body { background: #1a1a2e; }
     .chat-page {
@@ -74,7 +76,7 @@
       padding: 14px 0;
       border-bottom: 1px solid rgba(255,107,157,0.08);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
     .chat-item:hover {
       background: rgba(255,107,157,0.03);
@@ -118,8 +120,6 @@
       border-radius: 50%;
       flex-shrink: 0;
     }
-
-    /* CHAT WINDOW */
     .chat-window {
       display: none;
       flex-direction: column;
@@ -185,7 +185,10 @@
       color: #a0a0b0;
       margin-top: 3px;
     }
-    .msg-sent .msg-time { color: rgba(255,255,255,0.7); text-align: right; }
+    .msg-sent .msg-time {
+      color: rgba(255,255,255,0.7);
+      text-align: right;
+    }
     .chat-input-area {
       display: flex;
       gap: 10px;
@@ -258,16 +261,18 @@
   </nav>
 
   <div class="chat-page">
-    <!-- Matches Row -->
     <div class="matches-row">
-      <div class="matches-title">💕 New Matches</div>
-      <div class="matches-scroll" id="matchesScroll"></div>
+      <div class="matches-title">💕 Your Matches</div>
+      <div class="matches-scroll" id="matchesScroll">
+        <p style="color:#a0a0b0;font-size:0.8rem">Loading matches...</p>
+      </div>
     </div>
-
-    <!-- Chat List -->
     <div class="chat-list">
       <div class="chat-list-title">Messages</div>
-      <div id="chatListContainer"></div>
+      <div id="chatListContainer">
+        <p style="color:#a0a0b0;font-size:0.85rem;text-align:center;
+          padding:20px">Loading chats...</p>
+      </div>
     </div>
   </div>
 
@@ -275,7 +280,10 @@
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
       <span class="back-chat" onclick="closeChat()">←</span>
-      <div class="chat-avatar" id="chatHeaderAvatar" style="width:38px;height:38px;font-size:1.2rem;border-radius:50%;background:rgba(230,57,70,0.1);display:flex;align-items:center;justify-content:center;"></div>
+      <div id="chatHeaderAvatar"
+        style="width:38px;height:38px;font-size:1.2rem;border-radius:50%;
+        background:rgba(230,57,70,0.1);display:flex;align-items:center;
+        justify-content:center;"></div>
       <div>
         <div class="chat-header-name" id="chatHeaderName"></div>
         <div class="chat-header-status">● Online</div>
@@ -283,7 +291,7 @@
     </div>
     <div class="messages-area" id="messagesArea"></div>
     <div class="chat-input-area">
-      <input class="chat-input" id="chatInput" placeholder="Type a message..." />
+      <input class="chat-input" id="chatInput" placeholder="Type a message..."/>
       <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
   </div>
@@ -305,44 +313,90 @@
   </div>
 
   <script>
-    if (localStorage.getItem('ehLoggedIn') !== 'true') {
-      window.location.href = 'login.html';
+    const genderEmoji = { male: '👨', female: '👩', other: '🧑' };
+    let currentUserId = null;
+    let currentChatUserId = null;
+    let currentChatName = null;
+    let messageSubscription = null;
+    let matches = [];
+
+    async function init() {
+      const { data } = await supabaseClient.auth.getSession();
+      if (!data.session) {
+        window.location.href = 'login.html';
+        return;
+      }
+      currentUserId = data.session.user.id;
+      await loadMatches();
     }
 
-    const likedProfiles = JSON.parse(localStorage.getItem('ehLiked') || '[]');
-    const allProfiles = [
-      { name: 'Priya Sharma', gender: '👩', category: 'CEE Aspirant' },
-      { name: 'Rohan Khatri', gender: '👨', category: 'IOE Aspirant' },
-      { name: 'Sita Gurung', gender: '👩', category: '+2 Student' },
-      { name: 'Aakash Thapa', gender: '👨', category: 'Management' },
-      { name: 'Nisha Rai', gender: '👩', category: 'CEE Aspirant' },
-      { name: 'Bikash Limbu', gender: '👨', category: 'IOE Aspirant' },
-    ];
+    async function loadMatches() {
+      // Get people I liked
+      const { data: myLikes } = await supabaseClient
+        .from('likes')
+        .select('to_user')
+        .eq('from_user', currentUserId);
 
-    const matches = allProfiles.filter(p => likedProfiles.includes(p.name));
-    let currentChat = null;
-    let allMessages = JSON.parse(localStorage.getItem('ehMessages') || '{}');
+      if (!myLikes || myLikes.length === 0) {
+        renderEmptyState();
+        return;
+      }
 
-    const autoReplies = [
-      "Haha that's so true! 😄",
-      "Really? Tell me more!",
-      "Same here! Which subject do you find hardest?",
-      "Wow, we have so much in common 💕",
-      "Are you preparing from Kathmandu?",
-      "What's your target college?",
-      "I love that too! 🎉",
-      "Best of luck for your entrance! 🍀",
-    ];
+      const likedIds = myLikes.map(l => l.to_user);
+
+      // Get people who liked me back
+      const { data: mutualLikes } = await supabaseClient
+        .from('likes')
+        .select('from_user')
+        .eq('to_user', currentUserId)
+        .in('from_user', likedIds);
+
+      if (!mutualLikes || mutualLikes.length === 0) {
+        renderEmptyState();
+        return;
+      }
+
+      const matchIds = mutualLikes.map(l => l.from_user);
+
+      // Get profiles of matches
+      const { data: matchProfiles } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .in('id', matchIds);
+
+      matches = matchProfiles || [];
+      renderMatchesRow();
+      renderChatList();
+    }
+
+    function renderEmptyState() {
+      document.getElementById('matchesScroll').innerHTML =
+        '<p style="color:#a0a0b0;font-size:0.8rem;padding:8px 0">Like someone to get matches! 💕</p>';
+      document.getElementById('chatListContainer').innerHTML = `
+        <div class="empty-chats">
+          <div class="big-emoji">💬</div>
+          <h3>No matches yet!</h3>
+          <p>Go discover and like aspirants to start chatting.</p>
+          <a href="browse.html" class="btn-primary"
+            style="display:inline-block;margin-top:16px">
+            Start Discovering 🔥
+          </a>
+        </div>`;
+    }
 
     function renderMatchesRow() {
       const scroll = document.getElementById('matchesScroll');
       if (matches.length === 0) {
-        scroll.innerHTML = '<p style="color:#a0a0b0;font-size:0.8rem;padding:8px 0">Like someone to get matches! 💕</p>';
+        scroll.innerHTML =
+          '<p style="color:#a0a0b0;font-size:0.8rem">No matches yet 💕</p>';
         return;
       }
       scroll.innerHTML = matches.map(m => `
-        <div class="match-avatar" onclick="openChat('${m.name}', '${m.gender}')">
-          <div class="match-avatar-img">${m.gender}</div>
+        <div class="match-avatar"
+          onclick="openChat('${m.id}','${m.name}','${m.gender}')">
+          <div class="match-avatar-img">
+            ${genderEmoji[m.gender] || '🧑'}
+          </div>
           <span>${m.name.split(' ')[0]}</span>
         </div>
       `).join('');
@@ -351,101 +405,122 @@
     function renderChatList() {
       const container = document.getElementById('chatListContainer');
       if (matches.length === 0) {
-        container.innerHTML = `
-          <div class="empty-chats">
-            <div class="big-emoji">💬</div>
-            <h3>No chats yet!</h3>
-            <p>Go discover and match with aspirants to start chatting.</p>
-            <a href="browse.html" class="btn-primary" style="display:inline-block;margin-top:16px">Start Discovering 🔥</a>
-          </div>`;
+        renderEmptyState();
         return;
       }
-      container.innerHTML = matches.map(m => {
-        const msgs = allMessages[m.name] || [];
-        const last = msgs[msgs.length - 1];
-        return `
-          <div class="chat-item" onclick="openChat('${m.name}', '${m.gender}')">
-            <div class="chat-avatar">${m.gender}</div>
-            <div class="chat-info">
-              <div class="chat-name">${m.name}</div>
-              <div class="chat-preview">${last ? last.text : "You matched! Say hello 👋"}</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
-              <div class="chat-time">${last ? last.time : 'Now'}</div>
-              ${!last ? '<div class="unread-dot"></div>' : ''}
-            </div>
-          </div>`;
-      }).join('');
+      container.innerHTML = matches.map(m => `
+        <div class="chat-item"
+          onclick="openChat('${m.id}','${m.name}','${m.gender}')">
+          <div class="chat-avatar">${genderEmoji[m.gender] || '🧑'}</div>
+          <div class="chat-info">
+            <div class="chat-name">${m.name}</div>
+            <div class="chat-preview">You matched! Say hello 👋</div>
+          </div>
+          <div style="display:flex;flex-direction:column;
+            align-items:flex-end;gap:6px">
+            <div class="unread-dot"></div>
+          </div>
+        </div>
+      `).join('');
     }
 
-    function openChat(name, avatar) {
-      currentChat = name;
+    async function openChat(userId, name, gender) {
+      currentChatUserId = userId;
+      currentChatName = name;
       document.getElementById('chatHeaderName').textContent = name;
-      document.getElementById('chatHeaderAvatar').textContent = avatar;
+      document.getElementById('chatHeaderAvatar').textContent =
+        genderEmoji[gender] || '🧑';
       document.getElementById('chatWindow').classList.add('open');
-      renderMessages();
-      setTimeout(() => {
-        const area = document.getElementById('messagesArea');
-        area.scrollTop = area.scrollHeight;
-      }, 100);
+      await loadMessages();
+      subscribeToMessages();
     }
 
     function closeChat() {
       document.getElementById('chatWindow').classList.remove('open');
-      currentChat = null;
-      renderChatList();
+      if (messageSubscription) {
+        supabaseClient.removeChannel(messageSubscription);
+        messageSubscription = null;
+      }
+      currentChatUserId = null;
     }
 
-    function renderMessages() {
+    async function loadMessages() {
       const area = document.getElementById('messagesArea');
-      const msgs = allMessages[currentChat] || [];
+      area.innerHTML = '<p style="color:#a0a0b0;text-align:center;font-size:0.85rem">Loading...</p>';
+
+      const { data: msgs } = await supabaseClient
+        .from('messages')
+        .select('*')
+        .or(`and(from_user.eq.${currentUserId},to_user.eq.${currentChatUserId}),and(from_user.eq.${currentChatUserId},to_user.eq.${currentUserId})`)
+        .order('created_at', { ascending: true });
+
+      renderMessages(msgs || []);
+    }
+
+    function renderMessages(msgs) {
+      const area = document.getElementById('messagesArea');
       if (msgs.length === 0) {
         area.innerHTML = `
           <div style="text-align:center;padding:30px 20px">
             <div style="font-size:2.5rem;margin-bottom:10px">👋</div>
-            <p style="color:#a0a0b0;font-size:0.85rem">You matched! Break the ice and say hello.</p>
+            <p style="color:#a0a0b0;font-size:0.85rem">
+              You matched! Break the ice and say hello.
+            </p>
           </div>`;
         return;
       }
-      area.innerHTML = msgs.map(m => `
-        <div>
-          <div class="msg ${m.sent ? 'msg-sent' : 'msg-received'}">${m.text}</div>
-          <div class="msg-time">${m.time}</div>
-        </div>
-      `).join('');
+      area.innerHTML = msgs.map(m => {
+        const sent = m.from_user === currentUserId;
+        const time = new Date(m.created_at).toLocaleTimeString([], {
+          hour: '2-digit', minute: '2-digit'
+        });
+        return `
+          <div>
+            <div class="msg ${sent ? 'msg-sent' : 'msg-received'}">
+              ${m.text}
+            </div>
+            <div class="msg-time">${time}</div>
+          </div>`;
+      }).join('');
       area.scrollTop = area.scrollHeight;
     }
 
-    function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text || !currentChat) return;
-
-      if (!allMessages[currentChat]) allMessages[currentChat] = [];
-
-      const now = new Date();
-      const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
-
-      allMessages[currentChat].push({ text, sent: true, time });
-      localStorage.setItem('ehMessages', JSON.stringify(allMessages));
-      input.value = '';
-      renderMessages();
-
-      // Auto reply after 1 second
-      setTimeout(() => {
-        const reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
-        allMessages[currentChat].push({ text: reply, sent: false, time });
-        localStorage.setItem('ehMessages', JSON.stringify(allMessages));
-        renderMessages();
-      }, 1000);
+    function subscribeToMessages() {
+      if (messageSubscription) {
+        supabaseClient.removeChannel(messageSubscription);
+      }
+      messageSubscription = supabaseClient
+        .channel('messages-channel')
+        .on('postgres_changes', {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages'
+        }, async () => {
+          await loadMessages();
+        })
+        .subscribe();
     }
 
-    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+    async function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !currentChatUserId) return;
+      input.value = '';
+
+      await supabaseClient.from('messages').insert({
+        from_user: currentUserId,
+        to_user: currentChatUserId,
+        text
+      });
+
+      await loadMessages();
+    }
+
+    document.getElementById('chatInput').addEventListener('keypress', e => {
       if (e.key === 'Enter') sendMessage();
     });
 
-    renderMatchesRow();
-    renderChatList();
+    init();
   </script>
 
 </body>
