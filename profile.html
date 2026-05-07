@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Profile — EntranceHearts 💕</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    body { background: #1a1a2e; }
+    .profile-page {
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 24px 16px 100px;
+    }
+    .profile-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .profile-big-avatar {
+      font-size: 5rem;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.1);
+      border: 3px solid #ff6b9d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .profile-name {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    .profile-category {
+      display: inline-block;
+      background: rgba(230,57,70,0.15);
+      border: 1px solid #e63946;
+      color: #ff6b9d;
+      padding: 4px 16px;
+      border-radius: 14px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .profile-location {
+      color: #a0a0b0;
+      font-size: 0.85rem;
+    }
+    .stats-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: #0f3460;
+      border-radius: 14px;
+      padding: 16px 10px;
+      text-align: center;
+      border: 1px solid rgba(255,107,157,0.15);
+    }
+    .stat-card strong {
+      display: block;
+      font-size: 1.4rem;
+      color: #ff6b9d;
+      font-weight: 700;
+    }
+    .stat-card span {
+      font-size: 0.72rem;
+      color: #a0a0b0;
+    }
+    .section-box {
+      background: #0f3460;
+      border-radius: 18px;
+      padding: 20px;
+      border: 1px solid rgba(255,107,157,0.15);
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #ff6b9d;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .info-row:last-child { border-bottom: none; }
+    .info-label {
+      font-size: 0.82rem;
+      color: #a0a0b0;
+    }
+    .info-value {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #eaeaea;
+      text-align: right;
+      max-width: 60%;
+    }
+    .interests-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .interest-tag {
+      background: rgba(255,107,157,0.1);
+      border: 1px solid rgba(255,107,157,0.2);
+      color: #ff6b9d;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+    }
+    .logout-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid rgba(230,57,70,0.4);
+      border-radius: 14px;
+      color: #e63946;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .logout-btn:hover {
+      background: rgba(230,57,70,0.1);
+    }
+    .edit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border: none;
+      border-radius: 14px;
+      color: white;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+      margin-bottom: 10px;
+    }
+    .edit-btn:hover { transform: translateY(-2px); }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #0f3460;
+      border-top: 1px solid rgba(255,107,157,0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 16px;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #a0a0b0;
+      text-decoration: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .nav-item.active { color: #ff6b9d; }
+    .nav-item span:first-child { font-size: 1.3rem; }
+    .no-profile {
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .completion-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .completion-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    .completion-text {
+      font-size: 0.75rem;
+      color: #a0a0b0;
+      margin-top: 5px;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">💕 EntranceHearts</a>
+  </nav>
+
+  <div class="profile-page" id="profilePage">
+    <!-- Filled by JS -->
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a href="browse.html" class="nav-item">
+      <span>🔥</span><span>Discover</span>
+    </a>
+    <a href="chat.html" class="nav-item">
+      <span>💬</span><span>Chats</span>
+    </a>
+    <a href="ai-match.html" class="nav-item">
+      <span>🤖</span><span>AI Match</span>
+    </a>
+    <a href="profile.html" class="nav-item active">
+      <span>👤</span><span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    if (localStorage.getItem('ehLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    const user = JSON.parse(localStorage.getItem('ehUser') || '{}');
+    const liked = JSON.parse(localStorage.getItem('ehLiked') || '[]');
+    const messages = JSON.parse(localStorage.getItem('ehMessages') || '{}');
+    const categoryLabels = {
+      cee: 'CEE Aspirant',
+      ioe: 'IOE Aspirant',
+      plus2: '+2 Student',
+      management: 'Management Student'
+    };
+    const genderEmoji = {
+      male: '👨',
+      female: '👩',
+      other: '🧑'
+    };
+
+    function getCompletionScore() {
+      let score = 0;
+      if (user.name) score += 20;
+      if (user.email) score += 20;
+      if (user.category) score += 20;
+      if (user.location) score += 20;
+      if (user.interests && user.interests.length >= 3) score += 20;
+      return score;
+    }
+
+    const completion = getCompletionScore();
+    const chatCount = Object.keys(messages).length;
+
+    document.getElementById('profilePage').innerHTML = `
+      <div class="profile-header">
+        <div class="profile-big-avatar">
+          ${genderEmoji[user.gender] || '👤'}
+        </div>
+        <div class="profile-name">${user.name || 'Your Name'}</div>
+        <div class="profile-category">
+          ${categoryLabels[user.category] || 'Aspirant'}
+        </div>
+        <div class="profile-location">
+          📍 ${user.location || 'Nepal'}
+          ${user.age ? '• ' + user.age + ' years' : ''}
+        </div>
+        <div class="completion-bar">
+          <div class="completion-fill" style="width:${completion}%"></div>
+        </div>
+        <div class="completion-text">Profile ${completion}% complete</div>
+      </div>
+
+      <div class="stats-cards">
+        <div class="stat-card">
+          <strong>${liked.length}</strong>
+          <span>Likes Given</span>
+        </div>
+        <div class="stat-card">
+          <strong>${liked.length}</strong>
+          <span>Matches</span>
+        </div>
+        <div class="stat-card">
+          <strong>${chatCount}</strong>
+          <span>Chats</span>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-title">👤 Personal Info</div>
+        <div class="info-row">
+          <span class="info-label">Full Name</span>
+          <span class="info-value">${user.name || '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Email</span>
+          <span class="info-value">${user.email || '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Age</span>
+          <span class="info-value">${user.age || '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Gender</span>
+          <span class="info-value">${user.gender ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1) : '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Location</span>
+          <span class="info-value">${user.location || '—'}</span>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-title">🎓 Study Info</div>
+        <div class="info-row">
+          <span class="info-label">Category</span>
+          <span class="info-value">${categoryLabels[user.category] || '—'}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Looking For</span>
+          <span class="info-value">${user.lookingFor ? user.lookingFor.charAt(0).toUpperCase() + user.lookingFor.slice(1) : '—'}</span>
+        </div>
+      </div>
+
+      <div class="section-box">
+        <div class="section-title">❤️ My Interests</div>
+        <div class="interests-wrap">
+          ${(user.interests || []).map(i => `<span class="interest-tag">${i}</span>`).join('') || '<span style="color:#a0a0b0;font-size:0.85rem">No interests added yet</span>'}
+        </div>
+      </div>
+
+      <button class="edit-btn" onclick="alert('Profile editing coming soon! 🚀')">
+        ✏️ Edit Profile
+      </button>
+      <button class="logout-btn" onclick="logout()">
+        🚪 Logout
+      </button>
+    `;
+
+    function logout() {
+      if (confirm('Are you sure you want to logout?')) {
+        localStorage.removeItem('ehLoggedIn');
+        window.location.href = 'index.html';
+      }
+    }
+  </script>
+
+</body>
+</html>
