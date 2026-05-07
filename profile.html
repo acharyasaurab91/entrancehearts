@@ -6,6 +6,8 @@
   <title>Profile — EntranceHearts 💕</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
   <style>
     body { background: #1a1a2e; }
     .profile-page {
@@ -97,10 +99,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.05);
     }
     .info-row:last-child { border-bottom: none; }
-    .info-label {
-      font-size: 0.82rem;
-      color: #a0a0b0;
-    }
+    .info-label { font-size: 0.82rem; color: #a0a0b0; }
     .info-value {
       font-size: 0.85rem;
       font-weight: 600;
@@ -135,9 +134,7 @@
       transition: all 0.2s;
       margin-top: 8px;
     }
-    .logout-btn:hover {
-      background: rgba(230,57,70,0.1);
-    }
+    .logout-btn:hover { background: rgba(230,57,70,0.1); }
     .edit-btn {
       width: 100%;
       padding: 14px;
@@ -153,6 +150,25 @@
       margin-bottom: 10px;
     }
     .edit-btn:hover { transform: translateY(-2px); }
+    .completion-bar {
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+    .completion-fill {
+      height: 100%;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+    .completion-text {
+      font-size: 0.75rem;
+      color: #a0a0b0;
+      margin-top: 5px;
+      text-align: right;
+    }
     .bottom-nav {
       position: fixed;
       bottom: 0; left: 0; right: 0;
@@ -175,28 +191,9 @@
     }
     .nav-item.active { color: #ff6b9d; }
     .nav-item span:first-child { font-size: 1.3rem; }
-    .no-profile {
+    .loading-state {
       text-align: center;
       padding: 60px 20px;
-    }
-    .completion-bar {
-      height: 6px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 3px;
-      margin-top: 12px;
-      overflow: hidden;
-    }
-    .completion-fill {
-      height: 100%;
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-      border-radius: 3px;
-      transition: width 1s ease;
-    }
-    .completion-text {
-      font-size: 0.75rem;
-      color: #a0a0b0;
-      margin-top: 5px;
-      text-align: right;
     }
   </style>
 </head>
@@ -207,10 +204,12 @@
   </nav>
 
   <div class="profile-page" id="profilePage">
-    <!-- Filled by JS -->
+    <div class="loading-state">
+      <div style="font-size:3rem;margin-bottom:14px">💕</div>
+      <p style="color:#a0a0b0">Loading your profile...</p>
+    </div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
     <a href="browse.html" class="nav-item">
       <span>🔥</span><span>Discover</span>
@@ -227,129 +226,176 @@
   </div>
 
   <script>
-    if (localStorage.getItem('ehLoggedIn') !== 'true') {
-      window.location.href = 'login.html';
-    }
-
-    const user = JSON.parse(localStorage.getItem('ehUser') || '{}');
-    const liked = JSON.parse(localStorage.getItem('ehLiked') || '[]');
-    const messages = JSON.parse(localStorage.getItem('ehMessages') || '{}');
     const categoryLabels = {
       cee: 'CEE Aspirant',
       ioe: 'IOE Aspirant',
       plus2: '+2 Student',
       management: 'Management Student'
     };
-    const genderEmoji = {
-      male: '👨',
-      female: '👩',
-      other: '🧑'
-    };
+    const genderEmoji = { male: '👨', female: '👩', other: '🧑' };
 
-    function getCompletionScore() {
-      let score = 0;
-      if (user.name) score += 20;
-      if (user.email) score += 20;
-      if (user.category) score += 20;
-      if (user.location) score += 20;
-      if (user.interests && user.interests.length >= 3) score += 20;
-      return score;
+    async function init() {
+      const { data } = await supabaseClient.auth.getSession();
+      if (!data.session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userId = data.session.user.id;
+
+      // Load profile
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (!profile) {
+        window.location.href = 'signup.html';
+        return;
+      }
+
+      // Load stats
+      const { data: likes } = await supabaseClient
+        .from('likes')
+        .select('*')
+        .eq('from_user', userId);
+
+      const { data: myLikes } = await supabaseClient
+        .from('likes')
+        .select('to_user')
+        .eq('from_user', userId);
+
+      let matchCount = 0;
+      if (myLikes && myLikes.length > 0) {
+        const likedIds = myLikes.map(l => l.to_user);
+        const { data: mutual } = await supabaseClient
+          .from('likes')
+          .select('*')
+          .eq('to_user', userId)
+          .in('from_user', likedIds);
+        matchCount = mutual ? mutual.length : 0;
+      }
+
+      const { data: msgs } = await supabaseClient
+        .from('messages')
+        .select('*')
+        .eq('from_user', userId);
+
+      const completion = [
+        profile.name, profile.age, profile.gender,
+        profile.category, profile.location,
+        profile.interests && profile.interests.length >= 3
+      ].filter(Boolean).length * 17;
+
+      renderProfile(profile, likes?.length || 0, matchCount, msgs?.length || 0, completion);
     }
 
-    const completion = getCompletionScore();
-    const chatCount = Object.keys(messages).length;
+    function renderProfile(profile, likesCount, matchCount, msgCount, completion) {
+      document.getElementById('profilePage').innerHTML = `
+        <div class="profile-header">
+          <div class="profile-big-avatar">
+            ${genderEmoji[profile.gender] || '👤'}
+          </div>
+          <div class="profile-name">${profile.name || 'Your Name'}</div>
+          <div class="profile-category">
+            ${categoryLabels[profile.category] || 'Aspirant'}
+          </div>
+          <div class="profile-location">
+            📍 ${profile.location || 'Nepal'}
+            ${profile.age ? '• ' + profile.age + ' years' : ''}
+          </div>
+          <div class="completion-bar">
+            <div class="completion-fill" style="width:${completion}%"></div>
+          </div>
+          <div class="completion-text">Profile ${completion}% complete</div>
+        </div>
 
-    document.getElementById('profilePage').innerHTML = `
-      <div class="profile-header">
-        <div class="profile-big-avatar">
-          ${genderEmoji[user.gender] || '👤'}
+        <div class="stats-cards">
+          <div class="stat-card">
+            <strong>${likesCount}</strong>
+            <span>Likes Given</span>
+          </div>
+          <div class="stat-card">
+            <strong>${matchCount}</strong>
+            <span>Matches</span>
+          </div>
+          <div class="stat-card">
+            <strong>${msgCount}</strong>
+            <span>Messages</span>
+          </div>
         </div>
-        <div class="profile-name">${user.name || 'Your Name'}</div>
-        <div class="profile-category">
-          ${categoryLabels[user.category] || 'Aspirant'}
-        </div>
-        <div class="profile-location">
-          📍 ${user.location || 'Nepal'}
-          ${user.age ? '• ' + user.age + ' years' : ''}
-        </div>
-        <div class="completion-bar">
-          <div class="completion-fill" style="width:${completion}%"></div>
-        </div>
-        <div class="completion-text">Profile ${completion}% complete</div>
-      </div>
 
-      <div class="stats-cards">
-        <div class="stat-card">
-          <strong>${liked.length}</strong>
-          <span>Likes Given</span>
+        <div class="section-box">
+          <div class="section-title">👤 Personal Info</div>
+          <div class="info-row">
+            <span class="info-label">Full Name</span>
+            <span class="info-value">${profile.name || '—'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Age</span>
+            <span class="info-value">${profile.age || '—'}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Gender</span>
+            <span class="info-value">
+              ${profile.gender
+                ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)
+                : '—'}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Location</span>
+            <span class="info-value">${profile.location || '—'}</span>
+          </div>
         </div>
-        <div class="stat-card">
-          <strong>${liked.length}</strong>
-          <span>Matches</span>
-        </div>
-        <div class="stat-card">
-          <strong>${chatCount}</strong>
-          <span>Chats</span>
-        </div>
-      </div>
 
-      <div class="section-box">
-        <div class="section-title">👤 Personal Info</div>
-        <div class="info-row">
-          <span class="info-label">Full Name</span>
-          <span class="info-value">${user.name || '—'}</span>
+        <div class="section-box">
+          <div class="section-title">🎓 Study Info</div>
+          <div class="info-row">
+            <span class="info-label">Category</span>
+            <span class="info-value">
+              ${categoryLabels[profile.category] || '—'}
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Looking For</span>
+            <span class="info-value">
+              ${profile.looking_for
+                ? profile.looking_for.charAt(0).toUpperCase() + profile.looking_for.slice(1)
+                : '—'}
+            </span>
+          </div>
         </div>
-        <div class="info-row">
-          <span class="info-label">Email</span>
-          <span class="info-value">${user.email || '—'}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Age</span>
-          <span class="info-value">${user.age || '—'}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Gender</span>
-          <span class="info-value">${user.gender ? user.gender.charAt(0).toUpperCase() + user.gender.slice(1) : '—'}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Location</span>
-          <span class="info-value">${user.location || '—'}</span>
-        </div>
-      </div>
 
-      <div class="section-box">
-        <div class="section-title">🎓 Study Info</div>
-        <div class="info-row">
-          <span class="info-label">Category</span>
-          <span class="info-value">${categoryLabels[user.category] || '—'}</span>
+        <div class="section-box">
+          <div class="section-title">❤️ My Interests</div>
+          <div class="interests-wrap">
+            ${(profile.interests || []).map(i =>
+              `<span class="interest-tag">${i}</span>`).join('')
+              || '<span style="color:#a0a0b0;font-size:0.85rem">No interests added</span>'}
+          </div>
         </div>
-        <div class="info-row">
-          <span class="info-label">Looking For</span>
-          <span class="info-value">${user.lookingFor ? user.lookingFor.charAt(0).toUpperCase() + user.lookingFor.slice(1) : '—'}</span>
-        </div>
-      </div>
 
-      <div class="section-box">
-        <div class="section-title">❤️ My Interests</div>
-        <div class="interests-wrap">
-          ${(user.interests || []).map(i => `<span class="interest-tag">${i}</span>`).join('') || '<span style="color:#a0a0b0;font-size:0.85rem">No interests added yet</span>'}
-        </div>
-      </div>
+        <button class="edit-btn"
+          onclick="alert('Profile editing coming soon! 🚀')">
+          ✏️ Edit Profile
+        </button>
+        <button class="logout-btn" onclick="logout()">
+          🚪 Logout
+        </button>
+      `;
+    }
 
-      <button class="edit-btn" onclick="alert('Profile editing coming soon! 🚀')">
-        ✏️ Edit Profile
-      </button>
-      <button class="logout-btn" onclick="logout()">
-        🚪 Logout
-      </button>
-    `;
-
-    function logout() {
+    async function logout() {
       if (confirm('Are you sure you want to logout?')) {
-        localStorage.removeItem('ehLoggedIn');
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
         window.location.href = 'index.html';
       }
     }
+
+    init();
   </script>
 
 </body>
