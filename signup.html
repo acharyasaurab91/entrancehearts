@@ -95,17 +95,9 @@
       font-family: 'Poppins', sans-serif;
       cursor: pointer;
       margin-top: 8px;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s;
     }
-    .submit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(230,57,70,0.4);
-    }
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     .auth-switch {
       text-align: center;
       margin-top: 20px;
@@ -160,9 +152,7 @@
       font-family: 'Poppins', sans-serif;
       cursor: pointer;
       margin-top: 10px;
-      transition: all 0.2s;
     }
-    .back-btn:hover { background: rgba(255,107,157,0.1); }
     .interest-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -213,11 +203,6 @@
       cursor: pointer;
       transition: all 0.2s;
       margin-bottom: 16px;
-      position: relative;
-    }
-    .photo-upload-area:hover {
-      border-color: #ff6b9d;
-      background: rgba(255,107,157,0.05);
     }
     .photo-upload-area.has-photo {
       border-color: #4caf50;
@@ -232,33 +217,16 @@
       display: none;
       border: 3px solid #ff6b9d;
     }
-    .upload-icon { font-size: 2.5rem; margin-bottom: 8px; }
-    .upload-text {
-      font-size: 0.85rem;
-      color: #a0a0b0;
-      margin-bottom: 4px;
+    .password-strength {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 6px;
+      background: #333;
+      transition: all 0.3s;
     }
-    .upload-hint {
+    .strength-text {
       font-size: 0.75rem;
-      color: #606080;
-    }
-    .otp-input {
-      letter-spacing: 8px;
-      font-size: 1.5rem;
-      text-align: center;
-      font-weight: 700;
-    }
-    .resend-otp {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 0.82rem;
-      color: #a0a0b0;
-    }
-    .resend-otp a {
-      color: #ff6b9d;
-      text-decoration: none;
-      font-weight: 600;
-      cursor: pointer;
+      margin-top: 4px;
     }
   </style>
 </head>
@@ -281,16 +249,15 @@
         <div class="step-dot" id="dot2"></div>
         <div class="step-dot" id="dot3"></div>
         <div class="step-dot" id="dot4"></div>
-        <div class="step-dot" id="dot5"></div>
       </div>
 
       <div class="error-msg" id="errorMsg"></div>
       <div class="success-msg" id="successMsg"></div>
 
-      <!-- STEP 1 — Basic Info -->
+      <!-- STEP 1 -->
       <div class="form-step active" id="step1">
         <div class="step-title">Create Account</div>
-        <div class="step-desc">Step 1 of 5 — Basic info</div>
+        <div class="step-desc">Step 1 of 4 — Basic info</div>
         <div class="form-group">
           <label>Full Name</label>
           <input type="text" id="name" placeholder="Your full name"/>
@@ -301,59 +268,52 @@
         </div>
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="password" placeholder="Min 6 characters"/>
+          <input type="password" id="password"
+            placeholder="Min 8 characters"
+            oninput="checkPasswordStrength(this.value)"/>
+          <div class="password-strength" id="strengthBar"></div>
+          <div class="strength-text" id="strengthText"></div>
         </div>
         <div class="form-group">
           <label>Age</label>
           <input type="number" id="age" placeholder="Your age" min="15" max="30"/>
         </div>
-        <button class="submit-btn" onclick="goStep2()">Continue →</button>
+        <button class="submit-btn" onclick="goStep1()">Continue →</button>
       </div>
 
-      <!-- STEP 2 — Email OTP -->
+      <!-- STEP 2 — Photo -->
       <div class="form-step" id="step2">
-        <div class="step-title">✉️ Verify Email</div>
-        <div class="step-desc">Step 2 of 5 — Enter OTP sent to your email</div>
-        <div class="form-group">
-          <label>OTP Code</label>
-          <input type="text" id="otpInput" class="otp-input"
-            placeholder="000000" maxlength="6"/>
-        </div>
-        <div class="resend-otp">
-          Didn't receive? <a onclick="resendOTP()">Resend OTP</a>
-        </div>
-        <button class="submit-btn" onclick="verifyOTP()" style="margin-top:16px">
-          Verify Email ✅
-        </button>
-        <button class="back-btn" onclick="goStep(1)">← Back</button>
-      </div>
-
-      <!-- STEP 3 — Photo Upload -->
-      <div class="form-step" id="step3">
         <div class="step-title">📸 Your Photo</div>
-        <div class="step-desc">Step 3 of 5 — Upload a real face photo</div>
-        <div class="photo-upload-area" id="uploadArea" onclick="document.getElementById('photoInput').click()">
+        <div class="step-desc">Step 2 of 4 — Upload a real face photo</div>
+        <div class="photo-upload-area" id="uploadArea"
+          onclick="document.getElementById('photoInput').click()">
           <img id="uploadPreview" class="upload-preview"/>
-          <div class="upload-icon" id="uploadIcon">📸</div>
-          <div class="upload-text" id="uploadText">Tap to upload your photo</div>
-          <div class="upload-hint">Must be a clear face photo • Max 5MB</div>
+          <div id="uploadIcon" style="font-size:2.5rem;margin-bottom:8px">📸</div>
+          <div id="uploadText"
+            style="font-size:0.85rem;color:#a0a0b0;margin-bottom:4px">
+            Tap to upload your photo
+          </div>
+          <div style="font-size:0.75rem;color:#606080">
+            Clear face photo only • Max 5MB
+          </div>
         </div>
         <input type="file" id="photoInput" accept="image/*"
           style="display:none" onchange="previewPhoto(this)"/>
-        <div style="background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.2);
-          border-radius:12px;padding:12px;margin-bottom:16px;font-size:0.8rem;color:#a0a0b0">
-          ⚠️ Please upload a real photo of your face. Fake photos, objects, or AI images will result in account removal.
+        <div style="background:rgba(255,107,157,0.08);
+          border:1px solid rgba(255,107,157,0.2);
+          border-radius:12px;padding:12px;margin-bottom:16px;
+          font-size:0.78rem;color:#a0a0b0;line-height:1.5">
+          ⚠️ Upload a real photo of your face. Fake or AI images will get your account removed.
         </div>
-        <button class="submit-btn" onclick="goStep(4)" id="photoNextBtn" disabled>
-          Continue →
-        </button>
+        <button class="submit-btn" onclick="goStep(3)"
+          id="photoNextBtn" disabled>Continue →</button>
         <button class="back-btn" onclick="goStep(1)">← Back</button>
       </div>
 
-      <!-- STEP 4 — Study Info -->
-      <div class="form-step" id="step4">
-        <div class="step-title">Your Study Info</div>
-        <div class="step-desc">Step 4 of 5 — Academic details</div>
+      <!-- STEP 3 — Study Info -->
+      <div class="form-step" id="step3">
+        <div class="step-title">Study Info</div>
+        <div class="step-desc">Step 3 of 4 — Academic details</div>
         <div class="form-group">
           <label>I am a</label>
           <select id="category">
@@ -371,14 +331,18 @@
         <div class="form-group">
           <label>Gender</label>
           <div class="gender-row">
-            <button class="gender-btn" onclick="selectGender(this,'male')">👨 Male</button>
-            <button class="gender-btn" onclick="selectGender(this,'female')">👩 Female</button>
-            <button class="gender-btn" onclick="selectGender(this,'other')">🧑 Other</button>
+            <button class="gender-btn"
+              onclick="selectGender(this,'male')">👨 Male</button>
+            <button class="gender-btn"
+              onclick="selectGender(this,'female')">👩 Female</button>
+            <button class="gender-btn"
+              onclick="selectGender(this,'other')">🧑 Other</button>
           </div>
         </div>
         <div class="form-group">
           <label>Bio</label>
-          <input type="text" id="bio" placeholder="Tell something about yourself..."/>
+          <input type="text" id="bio"
+            placeholder="Tell something about yourself..."/>
         </div>
         <div class="form-group">
           <label>Looking for</label>
@@ -389,33 +353,45 @@
             <option value="both">Both</option>
           </select>
         </div>
-        <button class="submit-btn" onclick="goStep(5)">Continue →</button>
-        <button class="back-btn" onclick="goStep(3)">← Back</button>
+        <button class="submit-btn" onclick="goStep3()">Continue →</button>
+        <button class="back-btn" onclick="goStep(2)">← Back</button>
       </div>
 
-      <!-- STEP 5 — Interests -->
-      <div class="form-step" id="step5">
+      <!-- STEP 4 — Interests -->
+      <div class="form-step" id="step4">
         <div class="step-title">Your Interests</div>
-        <div class="step-desc">Step 5 of 5 — Pick at least 3</div>
+        <div class="step-desc">Step 4 of 4 — Pick at least 3</div>
         <div class="interest-grid">
-          <button class="interest-btn" onclick="toggleInterest(this)">📚 Studying</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🎵 Music</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🎮 Gaming</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">📷 Photography</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">⚽ Sports</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🎨 Art</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🍕 Foodie</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">✈️ Travel</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">📖 Reading</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🎬 Movies</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">💻 Coding</button>
-          <button class="interest-btn" onclick="toggleInterest(this)">🧘 Fitness</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">📚 Studying</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🎵 Music</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🎮 Gaming</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">📷 Photography</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">⚽ Sports</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🎨 Art</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🍕 Foodie</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">✈️ Travel</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">📖 Reading</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🎬 Movies</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">💻 Coding</button>
+          <button class="interest-btn"
+            onclick="toggleInterest(this)">🧘 Fitness</button>
         </div>
         <button class="submit-btn" onclick="submitSignup()"
           id="submitBtn" style="margin-top:18px">
           Create My Profile 💕
         </button>
-        <button class="back-btn" onclick="goStep(4)">← Back</button>
+        <button class="back-btn" onclick="goStep(3)">← Back</button>
       </div>
 
     </div>
@@ -428,7 +404,7 @@
     let selectedGender = '';
     let selectedInterests = [];
     let uploadedFile = null;
-    let signupUserId = null;
+    let passwordOk = false;
 
     const blockedDomains = [
       'mailinator.com','guerrillamail.com','tempmail.com',
@@ -459,105 +435,60 @@
       document.getElementById('dot' + n).classList.add('active');
     }
 
-    async function goStep2() {
+    function checkPasswordStrength(val) {
+      const bar = document.getElementById('strengthBar');
+      const text = document.getElementById('strengthText');
+      let score = 0;
+      if (val.length >= 8) score++;
+      if (/[0-9]/.test(val)) score++;
+      if (/[A-Z]/.test(val)) score++;
+      if (/[^a-zA-Z0-9]/.test(val)) score++;
+      const colors = ['#e63946','#ff9800','#4caf50','#4caf50'];
+      const labels = ['Weak','Fair','Good','Strong'];
+      const widths = ['25%','50%','75%','100%'];
+      if (val.length === 0) {
+        bar.style.width = '0';
+        text.textContent = '';
+        passwordOk = false;
+        return;
+      }
+      const i = Math.max(0, Math.min(score - 1, 3));
+      bar.style.background = colors[i];
+      bar.style.width = widths[i];
+      text.textContent = labels[i];
+      text.style.color = colors[i];
+      passwordOk = score >= 2;
+    }
+
+    function goStep1() {
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
       const age = document.getElementById('age').value;
-
       if (!name || !email || !password || !age) {
-        showError('Please fill all fields!');
-        return;
+        showError('Please fill all fields!'); return;
       }
-      if (password.length < 6) {
-        showError('Password must be at least 6 characters!');
-        return;
+      if (password.length < 8) {
+        showError('Password must be at least 8 characters!'); return;
+      }
+      if (!passwordOk) {
+        showError('Password too weak! Add numbers or capital letters.'); return;
       }
       const emailDomain = email.split('@')[1]?.toLowerCase();
       if (!emailDomain || blockedDomains.includes(emailDomain)) {
-        showError('Please use a real email address!');
-        return;
-      }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        showError('Please enter a valid email!');
-        return;
+        showError('Please use a real email address!'); return;
       }
       if (parseInt(age) < 15 || parseInt(age) > 30) {
-        showError('Age must be between 15 and 30!');
-        return;
+        showError('Age must be between 15 and 30!'); return;
       }
-
-      const btn = document.querySelector('#step1 .submit-btn');
-      btn.disabled = true;
-      btn.textContent = 'Sending OTP...';
-
-      try {
-        const { error } = await supabaseClient.auth.signInWithOtp({
-          email,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo: null
-          }
-        });
-        if (error) throw error;
-        showSuccess('OTP sent to ' + email);
-        goStep(2);
-      } catch(err) {
-        showError(err.message || 'Failed to send OTP!');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Continue →';
-      }
-    }
-
-    async function verifyOTP() {
-      const email = document.getElementById('email').value.trim();
-      const otp = document.getElementById('otpInput').value.trim();
-
-      if (otp.length !== 6) {
-        showError('Please enter the 6 digit OTP!');
-        return;
-      }
-
-      const btn = document.querySelector('#step2 .submit-btn');
-      btn.disabled = true;
-      btn.textContent = 'Verifying...';
-
-      try {
-        const { data, error } = await supabaseClient.auth.verifyOtp({
-          email,
-          token: otp,
-          type: 'email'
-        });
-        if (error) throw error;
-        signupUserId = data.user.id;
-        showSuccess('Email verified! ✅');
-        goStep(3);
-      } catch(err) {
-        showError('Invalid OTP! Please try again.');
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Verify Email ✅';
-      }
-    }
-
-    async function resendOTP() {
-      const email = document.getElementById('email').value.trim();
-      try {
-        await supabaseClient.auth.signInWithOtp({ email });
-        showSuccess('OTP resent to ' + email);
-      } catch(err) {
-        showError('Failed to resend OTP!');
-      }
+      goStep(2);
     }
 
     function previewPhoto(input) {
       const file = input.files[0];
       if (!file) return;
       if (file.size > 5 * 1024 * 1024) {
-        showError('Photo too large! Max 5MB.');
-        return;
+        showError('Photo too large! Max 5MB.'); return;
       }
       uploadedFile = file;
       const reader = new FileReader();
@@ -571,6 +502,15 @@
         document.getElementById('photoNextBtn').disabled = false;
       };
       reader.readAsDataURL(file);
+    }
+
+    function goStep3() {
+      const category = document.getElementById('category').value;
+      const location = document.getElementById('location').value;
+      if (!category || !location || !selectedGender) {
+        showError('Please fill all fields and select gender!'); return;
+      }
+      goStep(4);
     }
 
     function selectGender(btn, val) {
@@ -592,26 +532,30 @@
 
     async function submitSignup() {
       if (selectedInterests.length < 3) {
-        showError('Please select at least 3 interests!');
-        return;
+        showError('Please select at least 3 interests!'); return;
       }
-      const category = document.getElementById('category').value;
-      const location = document.getElementById('location').value;
-      if (!category || !location || !selectedGender) {
-        showError('Please complete all study info!');
-        return;
-      }
-
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
-      btn.textContent = 'Creating profile...';
+      btn.textContent = 'Creating account...';
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const age = document.getElementById('age').value;
+      const category = document.getElementById('category').value;
+      const location = document.getElementById('location').value;
+      const bio = document.getElementById('bio').value;
+      const lookingFor = document.getElementById('lookingFor').value;
 
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const userId = session?.user?.id || signupUserId;
+        const { data, error } = await supabaseClient.auth.signUp({
+          email, password
+        });
+        if (error) throw error;
 
-         // Upload photo
+        const userId = data.user.id;
         let avatarUrl = null;
+
         if (uploadedFile) {
           const fileExt = uploadedFile.name.split('.').pop();
           const fileName = userId + '.' + fileExt;
@@ -626,25 +570,23 @@
           }
         }
 
-        // Save profile
         const { error: profileError } = await supabaseClient
           .from('profiles')
-          .upsert({
+          .insert({
             id: userId,
-            name: document.getElementById('name').value,
-            age: parseInt(document.getElementById('age').value),
+            name, age: parseInt(age),
             gender: selectedGender,
-            category,
-            location,
-            bio: document.getElementById('bio').value,
-            looking_for: document.getElementById('lookingFor').value,
+            category, location, bio,
+            looking_for: lookingFor,
             interests: selectedInterests,
             avatar_url: avatarUrl
           });
 
         if (profileError) throw profileError;
 
-        showSuccess('Profile created! Welcome to EntranceHearts 💕');
+        localStorage.setItem('ehLoggedIn', 'true');
+        localStorage.setItem('ehUserId', userId);
+        showSuccess('Welcome to EntranceHearts! 💕');
         setTimeout(() => window.location.href = 'browse.html', 1500);
 
       } catch(err) {
