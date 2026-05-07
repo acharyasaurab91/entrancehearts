@@ -178,12 +178,21 @@
   <script>
     // If already logged in redirect
     async function checkSession() {
-      const { data } = await supabaseClient.auth.getSession();
-      if (data.session) {
-        window.location.href = 'browse.html';
-      }
+  const { data } = await supabaseClient.auth.getSession();
+  if (data.session) {
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('id', data.session.user.id)
+      .single();
+    if (profile) {
+      window.location.href = 'browse.html';
+    } else {
+      window.location.href = 'signup.html';
     }
-    checkSession();
+  }
+}
+checkSession();
 
     function showError(msg) {
       const el = document.getElementById('errorMsg');
@@ -218,10 +227,20 @@
 
         if (error) throw error;
 
-        showSuccess('Login successful! Redirecting...');
-        localStorage.setItem('ehLoggedIn', 'true');
-        localStorage.setItem('ehUserId', data.user.id);
-        setTimeout(() => window.location.href = 'browse.html', 1000);
+        const { data: profile } = await supabaseClient
+  .from('profiles')
+  .select('id')
+  .eq('id', data.user.id)
+  .single();
+
+showSuccess('Login successful! Redirecting...');
+setTimeout(() => {
+  if (profile) {
+    window.location.href = 'browse.html';
+  } else {
+    window.location.href = 'signup.html';
+  }
+}, 1000);
 
       } catch (err) {
         showError(err.message || 'Invalid email or password!');
