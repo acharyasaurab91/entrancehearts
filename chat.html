@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat — EntranceHearts 💕</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    body { background: #1a1a2e; }
+    .chat-page {
+      min-height: 100vh;
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+    .matches-row {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,107,157,0.1);
+    }
+    .matches-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #a0a0b0;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .matches-scroll {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .match-avatar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .match-avatar-img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.1);
+      border: 2px solid #ff6b9d;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      transition: transform 0.2s;
+    }
+    .match-avatar-img:hover { transform: scale(1.1); }
+    .match-avatar span {
+      font-size: 0.7rem;
+      color: #a0a0b0;
+      white-space: nowrap;
+    }
+    .chat-list {
+      flex: 1;
+      padding: 8px 16px 100px;
+    }
+    .chat-list-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 16px 0 12px;
+    }
+    .chat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,107,157,0.08);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .chat-item:hover {
+      background: rgba(255,107,157,0.03);
+      border-radius: 12px;
+      padding-left: 8px;
+    }
+    .chat-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(230,57,70,0.1);
+      border: 1px solid rgba(255,107,157,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+    .chat-info { flex: 1; min-width: 0; }
+    .chat-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .chat-preview {
+      font-size: 0.8rem;
+      color: #a0a0b0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chat-time {
+      font-size: 0.72rem;
+      color: #a0a0b0;
+      flex-shrink: 0;
+    }
+    .unread-dot {
+      width: 8px;
+      height: 8px;
+      background: #ff6b9d;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* CHAT WINDOW */
+    .chat-window {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #1a1a2e;
+      z-index: 200;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .chat-window.open { display: flex; }
+    .chat-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #0f3460;
+      border-bottom: 1px solid rgba(255,107,157,0.15);
+    }
+    .back-chat {
+      font-size: 1.4rem;
+      cursor: pointer;
+      color: #ff6b9d;
+    }
+    .chat-header-name {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .chat-header-status {
+      font-size: 0.75rem;
+      color: #4caf50;
+    }
+    .messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .msg {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: 0.87rem;
+      line-height: 1.5;
+    }
+    .msg-received {
+      background: #0f3460;
+      border: 1px solid rgba(255,107,157,0.15);
+      align-self: flex-start;
+      border-bottom-left-radius: 4px;
+    }
+    .msg-sent {
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 4px;
+    }
+    .msg-time {
+      font-size: 0.68rem;
+      color: #a0a0b0;
+      margin-top: 3px;
+    }
+    .msg-sent .msg-time { color: rgba(255,255,255,0.7); text-align: right; }
+    .chat-input-area {
+      display: flex;
+      gap: 10px;
+      padding: 12px 16px;
+      background: #0f3460;
+      border-top: 1px solid rgba(255,107,157,0.15);
+    }
+    .chat-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: #1a1a2e;
+      border: 1px solid rgba(255,107,157,0.2);
+      border-radius: 24px;
+      color: #eaeaea;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+    }
+    .chat-input:focus { border-color: #ff6b9d; }
+    .send-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .send-btn:hover { transform: scale(1.1); }
+    .bottom-nav {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: #0f3460;
+      border-top: 1px solid rgba(255,107,157,0.15);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 16px;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #a0a0b0;
+      text-decoration: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .nav-item.active { color: #ff6b9d; }
+    .nav-item span:first-child { font-size: 1.3rem; }
+    .empty-chats {
+      text-align: center;
+      padding: 50px 20px;
+    }
+    .empty-chats .big-emoji { font-size: 3.5rem; margin-bottom: 14px; }
+    .empty-chats h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .empty-chats p { color: #a0a0b0; font-size: 0.82rem; }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">💕 EntranceHearts</a>
+  </nav>
+
+  <div class="chat-page">
+    <!-- Matches Row -->
+    <div class="matches-row">
+      <div class="matches-title">💕 New Matches</div>
+      <div class="matches-scroll" id="matchesScroll"></div>
+    </div>
+
+    <!-- Chat List -->
+    <div class="chat-list">
+      <div class="chat-list-title">Messages</div>
+      <div id="chatListContainer"></div>
+    </div>
+  </div>
+
+  <!-- Chat Window -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <span class="back-chat" onclick="closeChat()">←</span>
+      <div class="chat-avatar" id="chatHeaderAvatar" style="width:38px;height:38px;font-size:1.2rem;border-radius:50%;background:rgba(230,57,70,0.1);display:flex;align-items:center;justify-content:center;"></div>
+      <div>
+        <div class="chat-header-name" id="chatHeaderName"></div>
+        <div class="chat-header-status">● Online</div>
+      </div>
+    </div>
+    <div class="messages-area" id="messagesArea"></div>
+    <div class="chat-input-area">
+      <input class="chat-input" id="chatInput" placeholder="Type a message..." />
+      <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <a href="browse.html" class="nav-item">
+      <span>🔥</span><span>Discover</span>
+    </a>
+    <a href="chat.html" class="nav-item active">
+      <span>💬</span><span>Chats</span>
+    </a>
+    <a href="ai-match.html" class="nav-item">
+      <span>🤖</span><span>AI Match</span>
+    </a>
+    <a href="profile.html" class="nav-item">
+      <span>👤</span><span>Profile</span>
+    </a>
+  </div>
+
+  <script>
+    if (localStorage.getItem('ehLoggedIn') !== 'true') {
+      window.location.href = 'login.html';
+    }
+
+    const likedProfiles = JSON.parse(localStorage.getItem('ehLiked') || '[]');
+    const allProfiles = [
+      { name: 'Priya Sharma', gender: '👩', category: 'CEE Aspirant' },
+      { name: 'Rohan Khatri', gender: '👨', category: 'IOE Aspirant' },
+      { name: 'Sita Gurung', gender: '👩', category: '+2 Student' },
+      { name: 'Aakash Thapa', gender: '👨', category: 'Management' },
+      { name: 'Nisha Rai', gender: '👩', category: 'CEE Aspirant' },
+      { name: 'Bikash Limbu', gender: '👨', category: 'IOE Aspirant' },
+    ];
+
+    const matches = allProfiles.filter(p => likedProfiles.includes(p.name));
+    let currentChat = null;
+    let allMessages = JSON.parse(localStorage.getItem('ehMessages') || '{}');
+
+    const autoReplies = [
+      "Haha that's so true! 😄",
+      "Really? Tell me more!",
+      "Same here! Which subject do you find hardest?",
+      "Wow, we have so much in common 💕",
+      "Are you preparing from Kathmandu?",
+      "What's your target college?",
+      "I love that too! 🎉",
+      "Best of luck for your entrance! 🍀",
+    ];
+
+    function renderMatchesRow() {
+      const scroll = document.getElementById('matchesScroll');
+      if (matches.length === 0) {
+        scroll.innerHTML = '<p style="color:#a0a0b0;font-size:0.8rem;padding:8px 0">Like someone to get matches! 💕</p>';
+        return;
+      }
+      scroll.innerHTML = matches.map(m => `
+        <div class="match-avatar" onclick="openChat('${m.name}', '${m.gender}')">
+          <div class="match-avatar-img">${m.gender}</div>
+          <span>${m.name.split(' ')[0]}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderChatList() {
+      const container = document.getElementById('chatListContainer');
+      if (matches.length === 0) {
+        container.innerHTML = `
+          <div class="empty-chats">
+            <div class="big-emoji">💬</div>
+            <h3>No chats yet!</h3>
+            <p>Go discover and match with aspirants to start chatting.</p>
+            <a href="browse.html" class="btn-primary" style="display:inline-block;margin-top:16px">Start Discovering 🔥</a>
+          </div>`;
+        return;
+      }
+      container.innerHTML = matches.map(m => {
+        const msgs = allMessages[m.name] || [];
+        const last = msgs[msgs.length - 1];
+        return `
+          <div class="chat-item" onclick="openChat('${m.name}', '${m.gender}')">
+            <div class="chat-avatar">${m.gender}</div>
+            <div class="chat-info">
+              <div class="chat-name">${m.name}</div>
+              <div class="chat-preview">${last ? last.text : "You matched! Say hello 👋"}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+              <div class="chat-time">${last ? last.time : 'Now'}</div>
+              ${!last ? '<div class="unread-dot"></div>' : ''}
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function openChat(name, avatar) {
+      currentChat = name;
+      document.getElementById('chatHeaderName').textContent = name;
+      document.getElementById('chatHeaderAvatar').textContent = avatar;
+      document.getElementById('chatWindow').classList.add('open');
+      renderMessages();
+      setTimeout(() => {
+        const area = document.getElementById('messagesArea');
+        area.scrollTop = area.scrollHeight;
+      }, 100);
+    }
+
+    function closeChat() {
+      document.getElementById('chatWindow').classList.remove('open');
+      currentChat = null;
+      renderChatList();
+    }
+
+    function renderMessages() {
+      const area = document.getElementById('messagesArea');
+      const msgs = allMessages[currentChat] || [];
+      if (msgs.length === 0) {
+        area.innerHTML = `
+          <div style="text-align:center;padding:30px 20px">
+            <div style="font-size:2.5rem;margin-bottom:10px">👋</div>
+            <p style="color:#a0a0b0;font-size:0.85rem">You matched! Break the ice and say hello.</p>
+          </div>`;
+        return;
+      }
+      area.innerHTML = msgs.map(m => `
+        <div>
+          <div class="msg ${m.sent ? 'msg-sent' : 'msg-received'}">${m.text}</div>
+          <div class="msg-time">${m.time}</div>
+        </div>
+      `).join('');
+      area.scrollTop = area.scrollHeight;
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !currentChat) return;
+
+      if (!allMessages[currentChat]) allMessages[currentChat] = [];
+
+      const now = new Date();
+      const time = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0');
+
+      allMessages[currentChat].push({ text, sent: true, time });
+      localStorage.setItem('ehMessages', JSON.stringify(allMessages));
+      input.value = '';
+      renderMessages();
+
+      // Auto reply after 1 second
+      setTimeout(() => {
+        const reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+        allMessages[currentChat].push({ text: reply, sent: false, time });
+        localStorage.setItem('ehMessages', JSON.stringify(allMessages));
+        renderMessages();
+      }, 1000);
+    }
+
+    document.getElementById('chatInput').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') sendMessage();
+    });
+
+    renderMatchesRow();
+    renderChatList();
+  </script>
+
+</body>
+</html>
