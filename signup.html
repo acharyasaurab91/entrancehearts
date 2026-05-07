@@ -384,7 +384,7 @@
       } else {
         selectedInterests = selectedInterests.filter(i => i !== text);
       }
-    }
+    } 
 
     async function submitSignup() {
       if (selectedInterests.length < 3) {
@@ -407,8 +407,12 @@
       try {
         // Create auth account
         const { data, error } = await supabaseClient.auth.signUp({
-          email, password
-        });
+  email, password,
+  options: {
+    emailRedirectTo: null,
+    data: { name }
+  }
+});
 
         if (error) throw error;
 
