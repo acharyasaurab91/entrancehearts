@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — EntranceHearts 💕</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 100%);
+    }
+    .auth-box {
+      background: #0f3460;
+      border-radius: 24px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 420px;
+      border: 1px solid rgba(255,107,157,0.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .auth-logo {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ff6b9d;
+      margin-bottom: 6px;
+    }
+    .auth-subtitle {
+      text-align: center;
+      color: #a0a0b0;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 7px;
+      color: #eaeaea;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 13px 16px;
+      background: #1a1a2e;
+      border: 1px solid rgba(255,107,157,0.2);
+      border-radius: 12px;
+      color: #eaeaea;
+      font-size: 0.9rem;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      transition: border 0.2s;
+    }
+    .form-group input:focus {
+      border-color: #ff6b9d;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(230,57,70,0.4);
+    }
+    .auth-switch {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #a0a0b0;
+    }
+    .auth-switch a {
+      color: #ff6b9d;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .welcome-back {
+      font-size: 1.3rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .forgot {
+      text-align: right;
+      margin-top: -10px;
+      margin-bottom: 18px;
+    }
+    .forgot a {
+      color: #ff6b9d;
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+    .error-msg {
+      background: rgba(230,57,70,0.1);
+      border: 1px solid rgba(230,57,70,0.3);
+      color: #e63946;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="logo">💕 EntranceHearts</a>
+    <div class="nav-buttons">
+      <a href="signup.html" class="btn-primary">Sign Up</a>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">💕</div>
+      <div class="welcome-back">Welcome Back!</div>
+      <div class="auth-subtitle">Login to find your match 💕</div>
+
+      <div class="error-msg" id="errorMsg">
+        ❌ Invalid email or password. Please try again.
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="your@email.com"/>
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Your password"/>
+      </div>
+
+      <div class="forgot">
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button class="submit-btn" onclick="handleLogin()">
+        Login to EntranceHearts 💕
+      </button>
+
+    </div>
+    <div class="auth-switch">
+      New here? <a href="signup.html">Create free account</a>
+    </div>
+  </div>
+
+  <script>
+    // If already logged in, redirect to browse
+    if (localStorage.getItem('ehLoggedIn') === 'true') {
+      window.location.href = 'browse.html';
+    }
+
+    function handleLogin() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (!email || !password) {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('errorMsg').textContent = '⚠️ Please fill in all fields!';
+        return;
+      }
+
+      const savedUser = JSON.parse(localStorage.getItem('ehUser') || '{}');
+
+      if (savedUser.email === email) {
+        localStorage.setItem('ehLoggedIn', 'true');
+        window.location.href = 'browse.html';
+      } else {
+        document.getElementById('errorMsg').style.display = 'block';
+        document.getElementById('errorMsg').textContent = '❌ Invalid email or password. Please try again.';
+      }
+    }
+
+    // Allow Enter key to login
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') handleLogin();
+    });
+  </script>
+
+</body>
+</html>
