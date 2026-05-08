@@ -584,10 +584,37 @@
 
         if (profileError) throw profileError;
 
-        localStorage.setItem('ehLoggedIn', 'true');
-        localStorage.setItem('ehUserId', userId);
-        showSuccess('Welcome to EntranceHearts! 💕');
-        setTimeout(() => window.location.href = 'browse.html', 1500);
+        localStorage.setItem('ehTempUser', JSON.stringify({
+  name, age: parseInt(age),
+  gender: selectedGender,
+  category, location, bio,
+  looking_for: lookingFor,
+  interests: selectedInterests,
+  avatar_url: avatarUrl
+}));
+
+showSuccess('✅ Check your email to confirm your account!');
+document.getElementById('submitBtn').textContent = 'Email sent! Check inbox 📧';
+
+// Show confirmation pending screen
+document.querySelector('.auth-box').innerHTML = `
+  <div style="text-align:center;padding:20px">
+    <div style="font-size:4rem;margin-bottom:16px">📧</div>
+    <h2 style="color:#ff6b9d;margin-bottom:10px">Check Your Email!</h2>
+    <p style="color:#a0a0b0;font-size:0.85rem;line-height:1.7;margin-bottom:20px">
+      We sent a confirmation link to<br>
+      <strong style="color:#eaeaea">${email}</strong><br><br>
+      Click the link in your email to activate your account.
+    </p>
+    <div style="background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.2);
+      border-radius:12px;padding:14px;font-size:0.8rem;color:#a0a0b0;margin-bottom:20px">
+      ⚠️ Check spam/junk folder if you don't see it within 2 minutes
+    </div>
+    <a href="login.html" class="btn-primary" style="display:block;text-align:center">
+      Go to Login
+    </a>
+  </div>
+`;
 
       } catch(err) {
         showError(err.message || 'Something went wrong!');
