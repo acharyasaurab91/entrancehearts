@@ -3,501 +3,373 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat — EntranceHearts 💕</title>
+  <title>Chats — EntranceHearts 💕</title>
   <link rel="stylesheet" href="style.css"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <style>
-    body { background: #1a1a2e; }
-    .chat-page {
-      min-height: 100vh;
-      max-width: 480px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a0f; color:#fff; font-family:'Poppins',sans-serif; }
+    .navbar {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 20px;
+      background:rgba(10,10,15,0.95);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.05);
     }
-    .matches-row {
-      padding: 16px;
-      border-bottom: 1px solid rgba(255,107,157,0.1);
+    .logo {
+      font-size:1.1rem; font-weight:800;
+      background:linear-gradient(135deg,#ff6b9d,#e63946);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .matches-title {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #a0a0b0;
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    .page { max-width:480px; margin:0 auto; padding:70px 0 90px; }
+    .matches-section {
+      padding:16px 16px 0;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      margin-bottom:4px;
+    }
+    .section-label {
+      font-size:0.72rem; font-weight:700;
+      color:rgba(255,255,255,0.3);
+      text-transform:uppercase; letter-spacing:1.5px;
+      margin-bottom:12px;
     }
     .matches-scroll {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      padding-bottom: 4px;
+      display:flex; gap:16px; overflow-x:auto;
+      padding-bottom:16px;
     }
-    .match-avatar {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
-      cursor: pointer;
+    .matches-scroll::-webkit-scrollbar { display:none; }
+    .match-bubble {
+      display:flex; flex-direction:column;
+      align-items:center; gap:5px; cursor:pointer;
     }
-    .match-avatar-img {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: rgba(230,57,70,0.1);
-      border: 2px solid #ff6b9d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      transition: transform 0.2s;
+    .match-ring {
+      width:58px; height:58px; border-radius:50%;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      padding:2px; flex-shrink:0;
     }
-    .match-avatar-img:hover { transform: scale(1.1); }
-    .match-avatar span {
-      font-size: 0.7rem;
-      color: #a0a0b0;
-      white-space: nowrap;
+    .match-ring-inner {
+      width:100%; height:100%; border-radius:50%;
+      background:#0a0a0f;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.7rem;
+      overflow:hidden;
     }
-    .chat-list {
-      flex: 1;
-      padding: 8px 16px 100px;
+    .match-ring-inner img {
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
     }
-    .chat-list-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin: 16px 0 12px;
+    .match-bubble span {
+      font-size:0.68rem; color:rgba(255,255,255,0.5);
+      white-space:nowrap; max-width:60px;
+      overflow:hidden; text-overflow:ellipsis;
     }
+    .chats-list { padding:8px 0; }
     .chat-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid rgba(255,107,157,0.08);
-      cursor: pointer;
-      transition: all 0.2s;
+      display:flex; align-items:center; gap:14px;
+      padding:14px 16px; cursor:pointer; transition:background 0.2s;
     }
-    .chat-item:hover {
-      background: rgba(255,107,157,0.03);
-      border-radius: 12px;
-      padding-left: 8px;
-    }
+    .chat-item:hover { background:rgba(255,255,255,0.03); }
     .chat-avatar {
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: rgba(230,57,70,0.1);
-      border: 1px solid rgba(255,107,157,0.2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      flex-shrink: 0;
+      width:52px; height:52px; border-radius:50%;
+      background:rgba(255,255,255,0.06);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; flex-shrink:0; overflow:hidden;
     }
-    .chat-info { flex: 1; min-width: 0; }
-    .chat-name {
-      font-size: 0.95rem;
-      font-weight: 600;
-      margin-bottom: 3px;
+    .chat-avatar img {
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
     }
+    .chat-info { flex:1; min-width:0; }
+    .chat-name { font-size:0.95rem; font-weight:600; margin-bottom:3px; }
     .chat-preview {
-      font-size: 0.8rem;
-      color: #a0a0b0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size:0.78rem; color:rgba(255,255,255,0.35);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
     }
-    .chat-time {
-      font-size: 0.72rem;
-      color: #a0a0b0;
-      flex-shrink: 0;
+    .chat-meta {
+      display:flex; flex-direction:column;
+      align-items:flex-end; gap:5px;
     }
+    .chat-time { font-size:0.68rem; color:rgba(255,255,255,0.3); }
     .unread-dot {
-      width: 8px;
-      height: 8px;
-      background: #ff6b9d;
-      border-radius: 50%;
-      flex-shrink: 0;
+      width:8px; height:8px; border-radius:50%;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
     }
+    .empty-chats {
+      text-align:center; padding:60px 20px;
+    }
+    .empty-chats .e-emoji { font-size:3.5rem; margin-bottom:14px; }
+    .empty-chats h3 { font-size:1.1rem; margin-bottom:8px; }
+    .empty-chats p { color:rgba(255,255,255,0.35); font-size:0.82rem; }
+    .cta-btn {
+      display:inline-block; margin-top:16px; padding:12px 24px;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      border-radius:50px; color:white; text-decoration:none;
+      font-weight:600; font-size:0.88rem;
+    }
+
+    /* CHAT WINDOW */
     .chat-window {
-      display: none;
-      flex-direction: column;
-      height: 100vh;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: #1a1a2e;
-      z-index: 200;
-      max-width: 480px;
-      margin: 0 auto;
+      display:none; flex-direction:column;
+      position:fixed; top:0; left:0; right:0; bottom:0;
+      background:#0a0a0f; z-index:200;
+      max-width:480px; margin:0 auto;
     }
-    .chat-window.open { display: flex; }
+    .chat-window.open { display:flex; }
     .chat-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 16px;
-      background: #0f3460;
-      border-bottom: 1px solid rgba(255,107,157,0.15);
+      display:flex; align-items:center; gap:12px;
+      padding:14px 16px;
+      background:rgba(10,10,15,0.98);
+      border-bottom:1px solid rgba(255,255,255,0.05);
     }
-    .back-chat {
-      font-size: 1.4rem;
-      cursor: pointer;
-      color: #ff6b9d;
+    .back-btn-chat {
+      font-size:1.3rem; cursor:pointer;
+      color:rgba(255,255,255,0.6); padding:4px;
     }
-    .chat-header-name {
-      font-size: 1rem;
-      font-weight: 700;
+    .chat-header-avatar {
+      width:40px; height:40px; border-radius:50%;
+      background:rgba(255,255,255,0.06);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; overflow:hidden; flex-shrink:0;
     }
-    .chat-header-status {
-      font-size: 0.75rem;
-      color: #4caf50;
+    .chat-header-avatar img {
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
     }
+    .chat-header-name { font-size:0.95rem; font-weight:700; }
+    .chat-header-status { font-size:0.72rem; color:#4caf50; }
     .messages-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex:1; overflow-y:auto; padding:16px;
+      display:flex; flex-direction:column; gap:8px;
     }
+    .msg-wrap { display:flex; flex-direction:column; }
+    .msg-wrap.sent { align-items:flex-end; }
+    .msg-wrap.received { align-items:flex-start; }
     .msg {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 0.87rem;
-      line-height: 1.5;
+      max-width:75%; padding:10px 14px;
+      border-radius:18px; font-size:0.87rem; line-height:1.5;
     }
-    .msg-received {
-      background: #0f3460;
-      border: 1px solid rgba(255,107,157,0.15);
-      align-self: flex-start;
-      border-bottom-left-radius: 4px;
+    .msg.sent {
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      color:white; border-bottom-right-radius:4px;
     }
-    .msg-sent {
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-      color: white;
-      align-self: flex-end;
-      border-bottom-right-radius: 4px;
+    .msg.received {
+      background:rgba(255,255,255,0.07);
+      color:rgba(255,255,255,0.85);
+      border-bottom-left-radius:4px;
     }
     .msg-time {
-      font-size: 0.68rem;
-      color: #a0a0b0;
-      margin-top: 3px;
+      font-size:0.65rem; color:rgba(255,255,255,0.25);
+      margin-top:3px; padding:0 4px;
     }
-    .msg-sent .msg-time {
-      color: rgba(255,255,255,0.7);
-      text-align: right;
-    }
-    .chat-input-area {
-      display: flex;
-      gap: 10px;
-      padding: 12px 16px;
-      background: #0f3460;
-      border-top: 1px solid rgba(255,107,157,0.15);
+    .chat-input-row {
+      display:flex; gap:10px; padding:12px 16px;
+      background:rgba(10,10,15,0.98);
+      border-top:1px solid rgba(255,255,255,0.05);
     }
     .chat-input {
-      flex: 1;
-      padding: 12px 16px;
-      background: #1a1a2e;
-      border: 1px solid rgba(255,107,157,0.2);
-      border-radius: 24px;
-      color: #eaeaea;
-      font-size: 0.9rem;
-      font-family: 'Poppins', sans-serif;
-      outline: none;
+      flex:1; padding:12px 16px;
+      background:rgba(255,255,255,0.06);
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:50px; color:#fff;
+      font-size:0.88rem; font-family:'Poppins',sans-serif; outline:none;
     }
-    .chat-input:focus { border-color: #ff6b9d; }
+    .chat-input:focus { border-color:rgba(255,107,157,0.4); }
     .send-btn {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-      border: none;
-      color: white;
-      font-size: 1.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: transform 0.2s;
+      width:46px; height:46px; border-radius:50%;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      border:none; color:white; font-size:1rem;
+      cursor:pointer; display:flex; align-items:center;
+      justify-content:center; flex-shrink:0;
     }
-    .send-btn:hover { transform: scale(1.1); }
     .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #0f3460;
-      border-top: 1px solid rgba(255,107,157,0.15);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0 16px;
-      z-index: 100;
+      position:fixed; bottom:0; left:0; right:0;
+      background:rgba(10,10,15,0.98);
+      border-top:1px solid rgba(255,255,255,0.05);
+      display:flex; justify-content:space-around;
+      padding:10px 0 16px; z-index:100;
+      backdrop-filter:blur(20px);
     }
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #a0a0b0;
-      text-decoration: none;
-      font-size: 0.65rem;
-      font-weight: 600;
+      display:flex; flex-direction:column; align-items:center;
+      gap:3px; color:rgba(255,255,255,0.3);
+      text-decoration:none; font-size:0.62rem; font-weight:600;
     }
-    .nav-item.active { color: #ff6b9d; }
-    .nav-item span:first-child { font-size: 1.3rem; }
-    .empty-chats {
-      text-align: center;
-      padding: 50px 20px;
-    }
-    .empty-chats .big-emoji { font-size: 3.5rem; margin-bottom: 14px; }
-    .empty-chats h3 { font-size: 1.1rem; margin-bottom: 8px; }
-    .empty-chats p { color: #a0a0b0; font-size: 0.82rem; }
+    .nav-item.active { color:#ff6b9d; }
+    .nav-item span:first-child { font-size:1.3rem; }
   </style>
 </head>
 <body>
-
   <nav class="navbar">
-    <a href="index.html" class="logo">💕 EntranceHearts</a>
+    <div class="logo">💕 EntranceHearts</div>
   </nav>
 
-  <div class="chat-page">
-    <div class="matches-row">
-      <div class="matches-title">💕 Your Matches</div>
+  <div class="page">
+    <div class="matches-section">
+      <div class="section-label">💕 New Matches</div>
       <div class="matches-scroll" id="matchesScroll">
-        <p style="color:#a0a0b0;font-size:0.8rem">Loading matches...</p>
+        <p style="color:rgba(255,255,255,0.3);font-size:0.8rem;padding:8px 0">
+          Loading...
+        </p>
       </div>
     </div>
-    <div class="chat-list">
-      <div class="chat-list-title">Messages</div>
-      <div id="chatListContainer">
-        <p style="color:#a0a0b0;font-size:0.85rem;text-align:center;
-          padding:20px">Loading chats...</p>
-      </div>
+    <div class="chats-list" id="chatsList">
+      <p style="color:rgba(255,255,255,0.3);font-size:0.85rem;
+        text-align:center;padding:20px">Loading chats...</p>
     </div>
   </div>
 
-  <!-- Chat Window -->
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-      <span class="back-chat" onclick="closeChat()">←</span>
-      <div id="chatHeaderAvatar"
-        style="width:38px;height:38px;font-size:1.2rem;border-radius:50%;
-        background:rgba(230,57,70,0.1);display:flex;align-items:center;
-        justify-content:center;"></div>
+      <span class="back-btn-chat" onclick="closeChat()">←</span>
+      <div class="chat-header-avatar" id="chatHeaderAvatar"></div>
       <div>
         <div class="chat-header-name" id="chatHeaderName"></div>
         <div class="chat-header-status">● Online</div>
       </div>
     </div>
     <div class="messages-area" id="messagesArea"></div>
-    <div class="chat-input-area">
+    <div class="chat-input-row">
       <input class="chat-input" id="chatInput" placeholder="Type a message..."/>
       <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
   </div>
 
-  <!-- Bottom Nav -->
   <div class="bottom-nav">
-    <a href="browse.html" class="nav-item">
-      <span>🔥</span><span>Discover</span>
-    </a>
-    <a href="chat.html" class="nav-item active">
-      <span>💬</span><span>Chats</span>
-    </a>
-    <a href="ai-match.html" class="nav-item">
-      <span>🤖</span><span>AI Match</span>
-    </a>
-    <a href="profile.html" class="nav-item">
-      <span>👤</span><span>Profile</span>
-    </a>
+    <a href="browse.html" class="nav-item"><span>🔥</span><span>Discover</span></a>
+    <a href="chat.html" class="nav-item active"><span>💬</span><span>Chats</span></a>
+    <a href="ai-match.html" class="nav-item"><span>🤖</span><span>AI Match</span></a>
+    <a href="profile.html" class="nav-item"><span>👤</span><span>Profile</span></a>
   </div>
 
   <script>
-    const genderEmoji = { male: '👨', female: '👩', other: '🧑' };
+    const genderEmoji = { male:'👨', female:'👩', other:'🧑' };
     let currentUserId = null;
     let currentChatUserId = null;
-    let currentChatName = null;
-    let messageSubscription = null;
     let matches = [];
+    let msgSubscription = null;
 
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
-      if (!data.session) {
-        window.location.href = 'login.html';
-        return;
-      }
+      if (!data.session) { window.location.href = 'login.html'; return; }
       currentUserId = data.session.user.id;
       await loadMatches();
     }
 
     async function loadMatches() {
-      // Get people I liked
       const { data: myLikes } = await supabaseClient
-        .from('likes')
-        .select('to_user')
-        .eq('from_user', currentUserId);
-
-      if (!myLikes || myLikes.length === 0) {
-        renderEmptyState();
-        return;
-      }
-
+        .from('likes').select('to_user').eq('from_user', currentUserId);
+      if (!myLikes || myLikes.length === 0) { renderEmpty(); return; }
       const likedIds = myLikes.map(l => l.to_user);
-
-      // Get people who liked me back
-      const { data: mutualLikes } = await supabaseClient
-        .from('likes')
-        .select('from_user')
-        .eq('to_user', currentUserId)
-        .in('from_user', likedIds);
-
-      if (!mutualLikes || mutualLikes.length === 0) {
-        renderEmptyState();
-        return;
-      }
-
-      const matchIds = mutualLikes.map(l => l.from_user);
-
-      // Get profiles of matches
-      const { data: matchProfiles } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .in('id', matchIds);
-
-      matches = matchProfiles || [];
-      renderMatchesRow();
+      const { data: mutual } = await supabaseClient
+        .from('likes').select('from_user')
+        .eq('to_user', currentUserId).in('from_user', likedIds);
+      if (!mutual || mutual.length === 0) { renderEmpty(); return; }
+      const matchIds = mutual.map(l => l.from_user);
+      const { data: profiles } = await supabaseClient
+        .from('profiles').select('*').in('id', matchIds);
+      matches = profiles || [];
+      renderMatchBubbles();
       renderChatList();
     }
 
-    function renderEmptyState() {
+    function renderEmpty() {
       document.getElementById('matchesScroll').innerHTML =
-        '<p style="color:#a0a0b0;font-size:0.8rem;padding:8px 0">Like someone to get matches! 💕</p>';
-      document.getElementById('chatListContainer').innerHTML = `
+        '<p style="color:rgba(255,255,255,0.3);font-size:0.8rem;padding:8px 0">No matches yet 💕</p>';
+      document.getElementById('chatsList').innerHTML = `
         <div class="empty-chats">
-          <div class="big-emoji">💬</div>
+          <div class="e-emoji">💬</div>
           <h3>No matches yet!</h3>
-          <p>Go discover and like aspirants to start chatting.</p>
-          <a href="browse.html" class="btn-primary"
-            style="display:inline-block;margin-top:16px">
-            Start Discovering 🔥
-          </a>
+          <p>Like someone to start chatting.</p>
+          <a href="browse.html" class="cta-btn">Discover People 🔥</a>
         </div>`;
     }
 
-    function renderMatchesRow() {
-      const scroll = document.getElementById('matchesScroll');
-      if (matches.length === 0) {
-        scroll.innerHTML =
-          '<p style="color:#a0a0b0;font-size:0.8rem">No matches yet 💕</p>';
-        return;
-      }
-      scroll.innerHTML = matches.map(m => `
-        <div class="match-avatar"
-          onclick="openChat('${m.id}','${m.name}','${m.gender}')">
-          <div class="match-avatar-img">
-            ${genderEmoji[m.gender] || '🧑'}
-          </div>
-          <span>${m.name.split(' ')[0]}</span>
-        </div>
-      `).join('');
+    function getAvatar(m) {
+      if (m.avatar_url) return `<img src="${m.avatar_url}" alt="${m.name}"/>`;
+      return genderEmoji[m.gender] || '🧑';
+    }
+
+    function renderMatchBubbles() {
+      document.getElementById('matchesScroll').innerHTML =
+        matches.map(m => `
+          <div class="match-bubble" onclick="openChat('${m.id}','${m.name}','${m.gender}','${m.avatar_url||''}')">
+            <div class="match-ring">
+              <div class="match-ring-inner">${getAvatar(m)}</div>
+            </div>
+            <span>${m.name.split(' ')[0]}</span>
+          </div>`).join('');
     }
 
     function renderChatList() {
-      const container = document.getElementById('chatListContainer');
-      if (matches.length === 0) {
-        renderEmptyState();
-        return;
-      }
-      container.innerHTML = matches.map(m => `
-        <div class="chat-item"
-          onclick="openChat('${m.id}','${m.name}','${m.gender}')">
-          <div class="chat-avatar">${genderEmoji[m.gender] || '🧑'}</div>
-          <div class="chat-info">
-            <div class="chat-name">${m.name}</div>
-            <div class="chat-preview">You matched! Say hello 👋</div>
-          </div>
-          <div style="display:flex;flex-direction:column;
-            align-items:flex-end;gap:6px">
-            <div class="unread-dot"></div>
-          </div>
-        </div>
-      `).join('');
+      document.getElementById('chatsList').innerHTML =
+        matches.map(m => `
+          <div class="chat-item" onclick="openChat('${m.id}','${m.name}','${m.gender}','${m.avatar_url||''}')">
+            <div class="chat-avatar">${getAvatar(m)}</div>
+            <div class="chat-info">
+              <div class="chat-name">${m.name}</div>
+              <div class="chat-preview">You matched! Say hello 👋</div>
+            </div>
+            <div class="chat-meta">
+              <div class="unread-dot"></div>
+            </div>
+          </div>`).join('');
     }
 
-    async function openChat(userId, name, gender) {
+    async function openChat(userId, name, gender, avatarUrl) {
       currentChatUserId = userId;
-      currentChatName = name;
       document.getElementById('chatHeaderName').textContent = name;
-      document.getElementById('chatHeaderAvatar').textContent =
-        genderEmoji[gender] || '🧑';
+      const avatarEl = document.getElementById('chatHeaderAvatar');
+      avatarEl.innerHTML = avatarUrl
+        ? `<img src="${avatarUrl}" alt="${name}"/>`
+        : genderEmoji[gender] || '🧑';
       document.getElementById('chatWindow').classList.add('open');
       await loadMessages();
-      subscribeToMessages();
+      subscribeMessages();
     }
 
     function closeChat() {
       document.getElementById('chatWindow').classList.remove('open');
-      if (messageSubscription) {
-        supabaseClient.removeChannel(messageSubscription);
-        messageSubscription = null;
+      if (msgSubscription) {
+        supabaseClient.removeChannel(msgSubscription);
+        msgSubscription = null;
       }
-      currentChatUserId = null;
     }
 
     async function loadMessages() {
       const area = document.getElementById('messagesArea');
-      area.innerHTML = '<p style="color:#a0a0b0;text-align:center;font-size:0.85rem">Loading...</p>';
-
       const { data: msgs } = await supabaseClient
-        .from('messages')
-        .select('*')
+        .from('messages').select('*')
         .or(`and(from_user.eq.${currentUserId},to_user.eq.${currentChatUserId}),and(from_user.eq.${currentChatUserId},to_user.eq.${currentUserId})`)
-        .order('created_at', { ascending: true });
-
-      renderMessages(msgs || []);
-    }
-
-    function renderMessages(msgs) {
-      const area = document.getElementById('messagesArea');
-      if (msgs.length === 0) {
+        .order('created_at', { ascending:true });
+      if (!msgs || msgs.length === 0) {
         area.innerHTML = `
-          <div style="text-align:center;padding:30px 20px">
+          <div style="text-align:center;padding:40px 20px">
             <div style="font-size:2.5rem;margin-bottom:10px">👋</div>
-            <p style="color:#a0a0b0;font-size:0.85rem">
-              You matched! Break the ice and say hello.
+            <p style="color:rgba(255,255,255,0.35);font-size:0.85rem">
+              Say hello and break the ice!
             </p>
           </div>`;
         return;
       }
       area.innerHTML = msgs.map(m => {
         const sent = m.from_user === currentUserId;
-        const time = new Date(m.created_at).toLocaleTimeString([], {
-          hour: '2-digit', minute: '2-digit'
-        });
+        const time = new Date(m.created_at).toLocaleTimeString([],
+          { hour:'2-digit', minute:'2-digit' });
         return `
-          <div>
-            <div class="msg ${sent ? 'msg-sent' : 'msg-received'}">
-              ${m.text}
-            </div>
+          <div class="msg-wrap ${sent ? 'sent' : 'received'}">
+            <div class="msg ${sent ? 'sent' : 'received'}">${m.text}</div>
             <div class="msg-time">${time}</div>
           </div>`;
       }).join('');
       area.scrollTop = area.scrollHeight;
     }
 
-    function subscribeToMessages() {
-      if (messageSubscription) {
-        supabaseClient.removeChannel(messageSubscription);
-      }
-      messageSubscription = supabaseClient
-        .channel('messages-channel')
+    function subscribeMessages() {
+      if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
+      msgSubscription = supabaseClient.channel('msgs')
         .on('postgres_changes', {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages'
-        }, async () => {
-          await loadMessages();
-        })
+          event:'INSERT', schema:'public', table:'messages'
+        }, () => loadMessages())
         .subscribe();
     }
 
@@ -506,13 +378,9 @@
       const text = input.value.trim();
       if (!text || !currentChatUserId) return;
       input.value = '';
-
       await supabaseClient.from('messages').insert({
-        from_user: currentUserId,
-        to_user: currentChatUserId,
-        text
+        from_user: currentUserId, to_user: currentChatUserId, text
       });
-
       await loadMessages();
     }
 
@@ -522,6 +390,5 @@
 
     init();
   </script>
-
 </body>
 </html>
