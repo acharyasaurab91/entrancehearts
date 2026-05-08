@@ -9,382 +9,281 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   <style>
-    body { background: #1a1a2e; }
-    .profile-page {
-      min-height: 100vh;
-      max-width: 480px;
-      margin: 0 auto;
-      padding: 24px 16px 100px;
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a0f; color:#fff; font-family:'Poppins',sans-serif; }
+    .navbar {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      display:flex; justify-content:space-between; align-items:center;
+      padding:14px 20px;
+      background:rgba(10,10,15,0.95);
+      backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,0.05);
     }
-    .profile-header {
-      text-align: center;
-      margin-bottom: 28px;
+    .logo {
+      font-size:1.1rem; font-weight:800;
+      background:linear-gradient(135deg,#ff6b9d,#e63946);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .profile-big-avatar {
-      font-size: 5rem;
-      width: 110px;
-      height: 110px;
-      border-radius: 50%;
-      background: rgba(230,57,70,0.1);
-      border: 3px solid #ff6b9d;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
+    .page { max-width:480px; margin:0 auto; padding:70px 16px 100px; }
+    .profile-hero {
+      text-align:center; margin-bottom:28px; padding-top:10px;
     }
-    .profile-name {
-      font-size: 1.5rem;
-      font-weight: 800;
-      margin-bottom: 4px;
+    .profile-avatar-wrap {
+      width:110px; height:110px; border-radius:50%;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      padding:3px; margin:0 auto 16px;
     }
-    .profile-category {
-      display: inline-block;
-      background: rgba(230,57,70,0.15);
-      border: 1px solid #e63946;
-      color: #ff6b9d;
-      padding: 4px 16px;
-      border-radius: 14px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 8px;
+    .profile-avatar-inner {
+      width:100%; height:100%; border-radius:50%;
+      background:#0a0a0f;
+      display:flex; align-items:center; justify-content:center;
+      font-size:3.5rem; overflow:hidden;
     }
-    .profile-location {
-      color: #a0a0b0;
-      font-size: 0.85rem;
+    .profile-avatar-inner img {
+      width:100%; height:100%; object-fit:cover; border-radius:50%;
     }
-    .stats-cards {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 20px;
+    .profile-name { font-size:1.5rem; font-weight:800; margin-bottom:6px; }
+    .profile-tag {
+      display:inline-block;
+      background:rgba(255,107,157,0.1);
+      border:1px solid rgba(255,107,157,0.3);
+      color:#ff6b9d; padding:4px 16px;
+      border-radius:50px; font-size:0.78rem; font-weight:600;
+      margin-bottom:8px;
     }
-    .stat-card {
-      background: #0f3460;
-      border-radius: 14px;
-      padding: 16px 10px;
-      text-align: center;
-      border: 1px solid rgba(255,107,157,0.15);
+    .profile-location { color:rgba(255,255,255,0.35); font-size:0.82rem; }
+    .progress-bar {
+      height:4px; background:rgba(255,255,255,0.06);
+      border-radius:2px; margin-top:14px; overflow:hidden;
     }
-    .stat-card strong {
-      display: block;
-      font-size: 1.4rem;
-      color: #ff6b9d;
-      font-weight: 700;
+    .progress-fill {
+      height:100%;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      border-radius:2px; transition:width 1s ease;
     }
-    .stat-card span {
-      font-size: 0.72rem;
-      color: #a0a0b0;
+    .progress-text {
+      font-size:0.7rem; color:rgba(255,255,255,0.3);
+      text-align:right; margin-top:4px;
     }
-    .section-box {
-      background: #0f3460;
-      border-radius: 18px;
-      padding: 20px;
-      border: 1px solid rgba(255,107,157,0.15);
-      margin-bottom: 14px;
+    .stats-row {
+      display:grid; grid-template-columns:1fr 1fr 1fr;
+      gap:10px; margin-bottom:20px;
     }
-    .section-title {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #ff6b9d;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
+    .stat-box {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:16px; padding:16px 10px; text-align:center;
+    }
+    .stat-box strong {
+      display:block; font-size:1.5rem; font-weight:800;
+      background:linear-gradient(135deg,#ff6b9d,#e63946);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    }
+    .stat-box span { font-size:0.68rem; color:rgba(255,255,255,0.3); }
+    .info-card {
+      background:rgba(255,255,255,0.04);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:20px; padding:20px; margin-bottom:12px;
+    }
+    .info-card-title {
+      font-size:0.78rem; font-weight:700; color:#ff6b9d;
+      text-transform:uppercase; letter-spacing:1px;
+      margin-bottom:14px;
     }
     .info-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display:flex; justify-content:space-between; align-items:center;
+      padding:10px 0;
+      border-bottom:1px solid rgba(255,255,255,0.04);
     }
-    .info-row:last-child { border-bottom: none; }
-    .info-label { font-size: 0.82rem; color: #a0a0b0; }
-    .info-value {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #eaeaea;
-      text-align: right;
-      max-width: 60%;
+    .info-row:last-child { border-bottom:none; padding-bottom:0; }
+    .info-label { font-size:0.8rem; color:rgba(255,255,255,0.35); }
+    .info-val {
+      font-size:0.82rem; font-weight:600;
+      text-align:right; max-width:60%;
     }
-    .interests-wrap {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+    .tags-wrap { display:flex; flex-wrap:wrap; gap:7px; }
+    .tag {
+      background:rgba(255,255,255,0.05);
+      border:1px solid rgba(255,255,255,0.08);
+      color:rgba(255,255,255,0.6);
+      padding:5px 14px; border-radius:50px; font-size:0.75rem;
     }
-    .interest-tag {
-      background: rgba(255,107,157,0.1);
-      border: 1px solid rgba(255,107,157,0.2);
-      color: #ff6b9d;
-      padding: 6px 14px;
-      border-radius: 12px;
-      font-size: 0.8rem;
+    .action-btns { display:flex; flex-direction:column; gap:10px; margin-top:6px; }
+    .edit-btn {
+      width:100%; padding:14px;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      border:none; border-radius:14px; color:white;
+      font-size:0.95rem; font-weight:700;
+      font-family:'Poppins',sans-serif; cursor:pointer;
     }
     .logout-btn {
-      width: 100%;
-      padding: 14px;
-      background: transparent;
-      border: 1px solid rgba(230,57,70,0.4);
-      border-radius: 14px;
-      color: #e63946;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      margin-top: 8px;
-    }
-    .logout-btn:hover { background: rgba(230,57,70,0.1); }
-    .edit-btn {
-      width: 100%;
-      padding: 14px;
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-      border: none;
-      border-radius: 14px;
-      color: white;
-      font-size: 0.95rem;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s;
-      margin-bottom: 10px;
-    }
-    .edit-btn:hover { transform: translateY(-2px); }
-    .completion-bar {
-      height: 6px;
-      background: rgba(255,255,255,0.1);
-      border-radius: 3px;
-      margin-top: 12px;
-      overflow: hidden;
-    }
-    .completion-fill {
-      height: 100%;
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-      border-radius: 3px;
-      transition: width 1s ease;
-    }
-    .completion-text {
-      font-size: 0.75rem;
-      color: #a0a0b0;
-      margin-top: 5px;
-      text-align: right;
+      width:100%; padding:14px; background:transparent;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:14px; color:rgba(255,255,255,0.4);
+      font-size:0.95rem; font-family:'Poppins',sans-serif; cursor:pointer;
     }
     .bottom-nav {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      background: #0f3460;
-      border-top: 1px solid rgba(255,107,157,0.15);
-      display: flex;
-      justify-content: space-around;
-      padding: 12px 0 16px;
-      z-index: 100;
+      position:fixed; bottom:0; left:0; right:0;
+      background:rgba(10,10,15,0.98);
+      border-top:1px solid rgba(255,255,255,0.05);
+      display:flex; justify-content:space-around;
+      padding:10px 0 16px; z-index:100;
+      backdrop-filter:blur(20px);
     }
     .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      color: #a0a0b0;
-      text-decoration: none;
-      font-size: 0.65rem;
-      font-weight: 600;
+      display:flex; flex-direction:column; align-items:center;
+      gap:3px; color:rgba(255,255,255,0.3);
+      text-decoration:none; font-size:0.62rem; font-weight:600;
     }
-    .nav-item.active { color: #ff6b9d; }
-    .nav-item span:first-child { font-size: 1.3rem; }
-    .loading-state {
-      text-align: center;
-      padding: 60px 20px;
-    }
+    .nav-item.active { color:#ff6b9d; }
+    .nav-item span:first-child { font-size:1.3rem; }
+    .loading-state { text-align:center; padding:60px 20px; }
   </style>
 </head>
 <body>
-
   <nav class="navbar">
-    <a href="index.html" class="logo">💕 EntranceHearts</a>
+    <div class="logo">💕 EntranceHearts</div>
   </nav>
 
-  <div class="profile-page" id="profilePage">
+  <div class="page" id="profilePage">
     <div class="loading-state">
       <div style="font-size:3rem;margin-bottom:14px">💕</div>
-      <p style="color:#a0a0b0">Loading your profile...</p>
+      <p style="color:rgba(255,255,255,0.3)">Loading profile...</p>
     </div>
   </div>
 
   <div class="bottom-nav">
-    <a href="browse.html" class="nav-item">
-      <span>🔥</span><span>Discover</span>
-    </a>
-    <a href="chat.html" class="nav-item">
-      <span>💬</span><span>Chats</span>
-    </a>
-    <a href="ai-match.html" class="nav-item">
-      <span>🤖</span><span>AI Match</span>
-    </a>
-    <a href="profile.html" class="nav-item active">
-      <span>👤</span><span>Profile</span>
-    </a>
+    <a href="browse.html" class="nav-item"><span>🔥</span><span>Discover</span></a>
+    <a href="chat.html" class="nav-item"><span>💬</span><span>Chats</span></a>
+    <a href="ai-match.html" class="nav-item"><span>🤖</span><span>AI Match</span></a>
+    <a href="profile.html" class="nav-item active"><span>👤</span><span>Profile</span></a>
   </div>
 
   <script>
     const categoryLabels = {
-      cee: 'CEE Aspirant',
-      ioe: 'IOE Aspirant',
-      plus2: '+2 Student',
-      management: 'Management Student'
+      cee:'CEE Aspirant', ioe:'IOE Aspirant',
+      plus2:'+2 Student', management:'Management Student'
     };
-    const genderEmoji = { male: '👨', female: '👩', other: '🧑' };
+    const genderEmoji = { male:'👨', female:'👩', other:'🧑' };
 
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
-      if (!data.session) {
-        window.location.href = 'login.html';
-        return;
-      }
-
+      if (!data.session) { window.location.href = 'login.html'; return; }
       const userId = data.session.user.id;
-
-      // Load profile
       const { data: profile } = await supabaseClient
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
-
-      if (!profile) {
-  window.location.href = 'browse.html';
-  return;
-      }
-
-      // Load stats
+        .from('profiles').select('*').eq('id', userId).single();
+      if (!profile) { window.location.href = 'signup.html'; return; }
       const { data: likes } = await supabaseClient
-        .from('likes')
-        .select('*')
-        .eq('from_user', userId);
-
+        .from('likes').select('*').eq('from_user', userId);
       const { data: myLikes } = await supabaseClient
-        .from('likes')
-        .select('to_user')
-        .eq('from_user', userId);
-
+        .from('likes').select('to_user').eq('from_user', userId);
       let matchCount = 0;
       if (myLikes && myLikes.length > 0) {
         const likedIds = myLikes.map(l => l.to_user);
         const { data: mutual } = await supabaseClient
-          .from('likes')
-          .select('*')
-          .eq('to_user', userId)
-          .in('from_user', likedIds);
+          .from('likes').select('*')
+          .eq('to_user', userId).in('from_user', likedIds);
         matchCount = mutual ? mutual.length : 0;
       }
-
       const { data: msgs } = await supabaseClient
-        .from('messages')
-        .select('*')
-        .eq('from_user', userId);
-
-      const completion = [
-        profile.name, profile.age, profile.gender,
+        .from('messages').select('*').eq('from_user', userId);
+      const fields = [profile.name, profile.age, profile.gender,
         profile.category, profile.location,
-        profile.interests && profile.interests.length >= 3
-      ].filter(Boolean).length * 17;
-
-      renderProfile(profile, likes?.length || 0, matchCount, msgs?.length || 0, completion);
+        profile.interests && profile.interests.length >= 3];
+      const completion = Math.round(fields.filter(Boolean).length / fields.length * 100);
+      render(profile, likes?.length || 0, matchCount, msgs?.length || 0, completion);
     }
 
-    function renderProfile(profile, likesCount, matchCount, msgCount, completion) {
+    function render(p, likes, matches, msgs, completion) {
+      const avatarContent = p.avatar_url
+        ? `<img src="${p.avatar_url}" alt="${p.name}"/>`
+        : genderEmoji[p.gender] || '👤';
       document.getElementById('profilePage').innerHTML = `
-        <div class="profile-header">
-          <div class="profile-big-avatar">
-            ${genderEmoji[profile.gender] || '👤'}
+        <div class="profile-hero">
+          <div class="profile-avatar-wrap">
+            <div class="profile-avatar-inner">${avatarContent}</div>
           </div>
-          <div class="profile-name">${profile.name || 'Your Name'}</div>
-          <div class="profile-category">
-            ${categoryLabels[profile.category] || 'Aspirant'}
-          </div>
+          <div class="profile-name">${p.name || 'Your Name'}</div>
+          <div class="profile-tag">${categoryLabels[p.category] || 'Aspirant'}</div>
           <div class="profile-location">
-            📍 ${profile.location || 'Nepal'}
-            ${profile.age ? '• ' + profile.age + ' years' : ''}
+            📍 ${p.location || 'Nepal'}
+            ${p.age ? '• ' + p.age + ' yrs' : ''}
           </div>
-          <div class="completion-bar">
-            <div class="completion-fill" style="width:${completion}%"></div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${completion}%"></div>
           </div>
-          <div class="completion-text">Profile ${completion}% complete</div>
+          <div class="progress-text">Profile ${completion}% complete</div>
         </div>
 
-        <div class="stats-cards">
-          <div class="stat-card">
-            <strong>${likesCount}</strong>
-            <span>Likes Given</span>
+        <div class="stats-row">
+          <div class="stat-box">
+            <strong>${likes}</strong><span>Likes</span>
           </div>
-          <div class="stat-card">
-            <strong>${matchCount}</strong>
-            <span>Matches</span>
+          <div class="stat-box">
+            <strong>${matches}</strong><span>Matches</span>
           </div>
-          <div class="stat-card">
-            <strong>${msgCount}</strong>
-            <span>Messages</span>
+          <div class="stat-box">
+            <strong>${msgs}</strong><span>Messages</span>
           </div>
         </div>
 
-        <div class="section-box">
-          <div class="section-title">👤 Personal Info</div>
+        <div class="info-card">
+          <div class="info-card-title">👤 Personal Info</div>
           <div class="info-row">
-            <span class="info-label">Full Name</span>
-            <span class="info-value">${profile.name || '—'}</span>
+            <span class="info-label">Name</span>
+            <span class="info-val">${p.name || '—'}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Age</span>
-            <span class="info-value">${profile.age || '—'}</span>
+            <span class="info-val">${p.age || '—'}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Gender</span>
-            <span class="info-value">
-              ${profile.gender
-                ? profile.gender.charAt(0).toUpperCase() + profile.gender.slice(1)
-                : '—'}
-            </span>
+            <span class="info-val">${p.gender
+              ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1) : '—'}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Location</span>
-            <span class="info-value">${profile.location || '—'}</span>
+            <span class="info-val">${p.location || '—'}</span>
           </div>
+          ${p.bio ? `
+          <div class="info-row">
+            <span class="info-label">Bio</span>
+            <span class="info-val">${p.bio}</span>
+          </div>` : ''}
         </div>
 
-        <div class="section-box">
-          <div class="section-title">🎓 Study Info</div>
+        <div class="info-card">
+          <div class="info-card-title">🎓 Study Info</div>
           <div class="info-row">
             <span class="info-label">Category</span>
-            <span class="info-value">
-              ${categoryLabels[profile.category] || '—'}
-            </span>
+            <span class="info-val">${categoryLabels[p.category] || '—'}</span>
           </div>
           <div class="info-row">
             <span class="info-label">Looking For</span>
-            <span class="info-value">
-              ${profile.looking_for
-                ? profile.looking_for.charAt(0).toUpperCase() + profile.looking_for.slice(1)
-                : '—'}
-            </span>
+            <span class="info-val">${p.looking_for
+              ? p.looking_for.charAt(0).toUpperCase() + p.looking_for.slice(1) : '—'}</span>
           </div>
         </div>
 
-        <div class="section-box">
-          <div class="section-title">❤️ My Interests</div>
-          <div class="interests-wrap">
-            ${(profile.interests || []).map(i =>
-              `<span class="interest-tag">${i}</span>`).join('')
-              || '<span style="color:#a0a0b0;font-size:0.85rem">No interests added</span>'}
+        <div class="info-card">
+          <div class="info-card-title">❤️ Interests</div>
+          <div class="tags-wrap">
+            ${(p.interests || []).map(i =>
+              `<span class="tag">${i}</span>`).join('')
+              || '<span style="color:rgba(255,255,255,0.3);font-size:0.82rem">No interests added</span>'}
           </div>
         </div>
 
-        <button class="edit-btn"
-          onclick="alert('Profile editing coming soon! 🚀')">
-          ✏️ Edit Profile
-        </button>
-        <button class="logout-btn" onclick="logout()">
-          🚪 Logout
-        </button>
-      `;
+        <div class="action-btns">
+          <button class="edit-btn"
+            onclick="alert('Profile editing coming soon! 🚀')">
+            ✏️ Edit Profile
+          </button>
+          <button class="logout-btn" onclick="logout()">
+            🚪 Logout
+          </button>
+        </div>`;
     }
 
     async function logout() {
@@ -397,6 +296,5 @@
 
     init();
   </script>
-
 </body>
 </html>
