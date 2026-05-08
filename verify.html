@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Verifying — EntranceHearts 💕</title>
+  <link rel="stylesheet" href="style.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase.js"></script>
+  <style>
+    .verify-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 100%);
+      padding: 20px;
+    }
+    .verify-box {
+      background: #0f3460;
+      border-radius: 24px;
+      padding: 40px 28px;
+      text-align: center;
+      max-width: 380px;
+      width: 100%;
+      border: 1px solid rgba(255,107,157,0.2);
+    }
+    .verify-emoji { font-size: 4rem; margin-bottom: 16px; }
+    .verify-title {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .verify-sub {
+      color: #a0a0b0;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+    .spinner {
+      font-size: 2rem;
+      animation: spin 1s linear infinite;
+      display: block;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <a href="index.html" class="logo">💕 EntranceHearts</a>
+  </nav>
+  <div class="verify-page">
+    <div class="verify-box" id="verifyBox">
+      <span class="spinner">💕</span>
+      <div class="verify-title">Verifying your account...</div>
+      <div class="verify-sub">Please wait while we confirm your email.</div>
+    </div>
+  </div>
+  <script>
+    async function handleVerification() {
+      try {
+        const { data, error } = await supabaseClient.auth.getSession();
+
+        if (error) throw error;
+
+        if (data.session) {
+          const userId = data.session.user.id;
+
+          // Check if profile exists
+          const { data: profile } = await supabaseClient
+            .from('profiles')
+            .select('id')
+            .eq('id', userId)
+            .single();
+
+          if (!profile) {
+            // Save pending profile from localStorage
+            const tempUser = localStorage.getItem('ehTempUser');
+            if (tempUser) {
+              const userData = JSON.parse(tempUser);
+              await supabaseClient.from('profiles').insert({
+                id: userId,
+                ...userData
+              });
+              localStorage.removeItem('ehTempUser');
+            }
+          }
+
+          localStorage.setItem('ehLoggedIn', 'true');
+          localStorage.setItem('ehUserId', userId);
+
+          document.getElementById('verifyBox').innerHTML = `
+            <div class="verify-emoji">🎉</div>
+            <div class="verify-title" style="color:#ff6b9d">
+              Email Verified!
+            </div>
+            <div class="verify-sub">
+              Welcome to EntranceHearts! Redirecting you now...
+            </div>
+          `;
+          setTimeout(() => window.location.href = 'browse.html', 2000);
+        } else {
+          throw new Error('Session not found');
+        }
+      } catch(err) {
+        document.getElementById('verifyBox').innerHTML = `
+          <div class="verify-emoji">❌</div>
+          <div class="verify-title">Verification Failed</div>
+          <div class="verify-sub">
+            The link may have expired. Please try signing up again.
+          </div>
+          <a href="signup.html" class="btn-primary"
+            style="display:block;text-align:center;margin-top:16px">
+            Try Again
+          </a>
+        `;
+      }
+    }
+    handleVerification();
+  </script>
+</body>
+</html>
