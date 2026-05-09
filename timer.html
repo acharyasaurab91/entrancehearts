@@ -532,6 +532,24 @@
   <div id="toast" class="toast"></div>
 
   <script>
+
+
+    // Add this function or find existing init
+async function checkSession() {
+  const { data } = await supabaseClient.auth.getSession();
+  if (!data.session) { 
+    window.location.href = 'login.html'; 
+    return; 
+  }
+  currentUserId = data.session.user.id;
+  
+  // ✅ ADD THIS LINE - Fix back button
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'browse.html';
+  
+  loadData();
+}
+    
     // ========== STUDY TIMER ==========
     let timerInterval = null;
     let seconds = 0;
