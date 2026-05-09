@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confession Wall 💌 - EntranceHearts</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0a0a0f;
+      color: white;
+    }
+
+    /* Navigation */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ff6b9d, #e63946);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .back-btn {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 80px 20px 100px;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .hero h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #ff6b9d, #e63946);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .hero p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    /* Post Form */
+    .post-form {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 30px;
+    }
+
+    .post-form textarea {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.9rem;
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .post-form textarea:focus {
+      outline: none;
+      border-color: #ff6b9d;
+    }
+
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .char-count {
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.7rem;
+    }
+
+    .post-btn {
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border: none;
+      padding: 10px 24px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .post-btn:hover {
+      transform: scale(1.02);
+    }
+
+    /* Filter Tabs */
+    .filter-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 18px;
+      border-radius: 50px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active {
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border-color: transparent;
+      color: white;
+    }
+
+    /* Confession Cards */
+    .confessions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .confession-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 18px;
+      transition: all 0.2s;
+    }
+
+    .confession-card:hover {
+      border-color: rgba(255, 107, 157, 0.3);
+      background: rgba(255, 107, 157, 0.03);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .anonymous-badge {
+      background: rgba(255, 107, 157, 0.15);
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      color: #ff6b9d;
+    }
+
+    .timestamp {
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .confession-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 12px;
+      word-break: break-word;
+    }
+
+    .exam-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-right: 8px;
+    }
+
+    .like-section {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .like-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+
+    .like-btn:hover {
+      color: #ff6b9d;
+    }
+
+    .like-btn.liked {
+      color: #ff6b9d;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    /* Toast Message */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a2e;
+      border: 1px solid #ff6b9d;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      z-index: 200;
+      display: none;
+    }
+
+    .toast.show {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 70px 16px 100px;
+      }
+      .hero h1 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="index.html" class="back-btn">← Back</a>
+    <div class="logo">💌 Confession Wall</div>
+    <div style="width: 50px;"></div>
+  </nav>
+
+  <div class="container">
+    <div class="hero">
+      <h1>Anonymous Confessions 💕</h1>
+      <p>Share your feelings without revealing your identity. No matching required.</p>
+    </div>
+
+    <!-- Post Form -->
+    <div class="post-form">
+      <textarea id="confessionInput" placeholder="Share your confession, feelings, or thoughts... (Everyone can see this anonymously)"></textarea>
+      <div class="form-footer">
+        <span class="char-count" id="charCount">0/500</span>
+        <button class="post-btn" onclick="postConfession()">Post Confession 💌</button>
+      </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <div class="filter-tabs">
+      <button class="filter-btn active" data-filter="all">All Confessions</button>
+      <button class="filter-btn" data-filter="CEE">🎓 CEE</button>
+      <button class="filter-btn" data-filter="IOE">⚙️ IOE</button>
+      <button class="filter-btn" data-filter="+2">📚 +2</button>
+      <button class="filter-btn" data-filter="Management">💼 Management</button>
+    </div>
+
+    <!-- Confessions List -->
+    <div id="confessionsList" class="confessions-list">
+      <div class="empty-state">
+        <i>💭</i>
+        <p>No confessions yet. Be the first to share your feelings!</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    // Sample initial confessions (will be replaced by localStorage data)
+    let confessions = [];
+
+    // Load from localStorage
+    function loadConfessions() {
+      const saved = localStorage.getItem('entrancehearts_confessions');
+      if (saved) {
+        confessions = JSON.parse(saved);
+      } else {
+        // Sample data for demo
+        confessions = [
+          {
+            id: 1,
+            text: "I have a huge crush on someone in my CEE coaching class but too shy to say it. If you're from Himalayan Academy and reading this... hi 👀",
+            exam: "CEE",
+            timestamp: new Date(Date.now() - 86400000).toISOString(),
+            likes: 12
+          },
+          {
+            id: 2,
+            text: "Being an IOE aspirant is lonely. Sometimes I just want someone to study with at 2 AM. Anyone else feel the same?",
+            exam: "IOE",
+            timestamp: new Date(Date.now() - 172800000).toISOString(),
+            likes: 34
+          },
+          {
+            id: 3,
+            text: "To the girl who sits in the front row at Pulchowk library, I think you're beautiful. Hope this confession reaches you somehow ❤️",
+            exam: "IOE",
+            timestamp: new Date(Date.now() - 259200000).toISOString(),
+            likes: 28
+          },
+          {
+            id: 4,
+            text: "I pretended to be sick today just to avoid mock test. Now I feel guilty. Anyone else did this? 😭",
+            exam: "+2",
+            timestamp: new Date(Date.now() - 345600000).toISOString(),
+            likes: 56
+          }
+        ];
+        saveConfessions();
+      }
+      renderConfessions();
+    }
+
+    function saveConfessions() {
+      localStorage.setItem('entrancehearts_confessions', JSON.stringify(confessions));
+    }
+
+    function postConfession() {
+      const input = document.getElementById('confessionInput');
+      const text = input.value.trim();
+      
+      if (!text) {
+        showToast("Please write something before posting 💭");
+        return;
+      }
+      
+      if (text.length < 10) {
+        showToast("Write at least 10 characters 🙏");
+        return;
+      }
+
+      // Detect exam category from keywords (simple AI)
+      let exam = "All";
+      const lowerText = text.toLowerCase();
+      if (lowerText.includes("cee") || lowerText.includes("mbbs") || lowerText.includes("medical")) exam = "CEE";
+      else if (lowerText.includes("ioe") || lowerText.includes("engineering") || lowerText.includes("pulchowk")) exam = "IOE";
+      else if (lowerText.includes("+2") || lowerText.includes("plus two") || lowerText.includes("higher secondary")) exam = "+2";
+      else if (lowerText.includes("management") || lowerText.includes("bbs") || lowerText.includes("bba")) exam = "Management";
+
+      const newConfession = {
+        id: Date.now(),
+        text: text,
+        exam: exam,
+        timestamp: new Date().toISOString(),
+        likes: 0
+      };
+
+      confessions.unshift(newConfession);
+      saveConfessions();
+      
+      input.value = "";
+      document.getElementById('charCount').innerText = "0/500";
+      showToast("💌 Your confession has been posted anonymously!");
+      renderConfessions();
+    }
+
+    function likeConfession(id) {
+      const confession = confessions.find(c => c.id === id);
+      if (confession) {
+        confession.likes++;
+        saveConfessions();
+        renderConfessions();
+        showToast("❤️ You liked this confession!");
+      }
+    }
+
+    let currentFilter = "all";
+
+    function renderConfessions() {
+      const container = document.getElementById('confessionsList');
+      let filtered = confessions;
+      
+      if (currentFilter !== "all") {
+        filtered = confessions.filter(c => c.exam === currentFilter);
+      }
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i>💭</i>
+            <p>No confessions yet. Be the first to share your feelings!</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(confession => `
+        <div class="confession-card">
+          <div class="card-header">
+            <span class="anonymous-badge">🕊️ Anonymous</span>
+            <span class="timestamp">${formatTime(confession.timestamp)}</span>
+          </div>
+          <div class="confession-text">${escapeHtml(confession.text)}</div>
+          <div>
+            <span class="exam-tag">${confession.exam !== "All" ? confession.exam : "General"}</span>
+          </div>
+          <div class="like-section">
+            <button class="like-btn" onclick="likeConfession(${confession.id})">
+              ❤️ ${confession.likes}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatTime(timestamp) {
+      const date = new Date(timestamp);
+      const now = new Date();
+      const diff = Math.floor((now - date) / 1000);
+      
+      if (diff < 60) return "just now";
+      if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
+      return `${Math.floor(diff / 86400)} days ago`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Character counter
+    document.getElementById('confessionInput').addEventListener('input', function() {
+      const count = this.value.length;
+      document.getElementById('charCount').innerText = `${count}/500`;
+      if (count > 500) {
+        this.value = this.value.slice(0, 500);
+        document.getElementById('charCount').innerText = "500/500";
+      }
+    });
+
+    // Filter buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        renderConfessions();
+      });
+    });
+
+    // Initialize
+    loadConfessions();
+  </script>
+</body>
+</html>
