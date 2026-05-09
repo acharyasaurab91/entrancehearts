@@ -26,6 +26,12 @@
       align-items: center;
       z-index: 100;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      padding: 10px 20px;
+      background: rgba(10, 10, 15, 0.98);
     }
 
     .logo {
@@ -51,10 +57,35 @@
       color: #ff6b9d;
     }
 
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 10px 24px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+      display: inline-block;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .btn-ghost:hover {
+      border-color: #ff6b9d;
+      color: #ff6b9d;
+    }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
       padding: 80px 20px 100px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .hero {
@@ -107,6 +138,8 @@
       justify-content: space-between;
       align-items: center;
       margin-top: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .char-count {
@@ -249,6 +282,20 @@
       color: #ff6b9d;
     }
 
+    .reactions-row {
+      display: flex;
+      gap: 12px;
+      margin: 8px 0;
+      flex-wrap: wrap;
+    }
+
+    .reaction-display {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 8px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+    }
+
     .comments-section {
       margin-top: 12px;
       padding-top: 12px;
@@ -326,15 +373,6 @@
       color: #e63946;
     }
 
-    .show-comments-btn {
-      background: none;
-      border: none;
-      color: rgba(255, 107, 157, 0.7);
-      font-size: 0.7rem;
-      cursor: pointer;
-      margin-top: 8px;
-    }
-
     .empty-state {
       text-align: center;
       padding: 60px 20px;
@@ -376,6 +414,33 @@
       color: #ff6b9d;
       margin-left: 5px;
     }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1a1a2e;
+      border: 1px solid rgba(255, 107, 157, 0.3);
+      border-radius: 24px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+    }
   </style>
 </head>
 <body>
@@ -401,8 +466,8 @@
       <div class="form-footer">
         <span class="char-count" id="charCount">0/500</span>
         <div style="display: flex; gap: 8px;">
-  <button class="post-btn" onclick="postConfession()">Post Confession 💌</button>
-  <button type="button" class="btn-ghost" onclick="openGifPicker(addGifToInput)" style="padding: 10px 16px;">🎬 GIF</button>
+          <button class="post-btn" onclick="postConfession()">Post Confession 💌</button>
+          <button type="button" class="btn-ghost" onclick="openGifPicker(addGifToInput)" style="padding: 10px 16px;">🎬 GIF</button>
         </div>
       </div>
     </div>
@@ -420,12 +485,21 @@
 
   <div id="toast" class="toast"></div>
 
+  <!-- GIF Modal -->
+  <div id="gifModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 style="margin-bottom: 16px;">🎬 Choose a GIF</h3>
+      <input type="text" id="gifSearch" placeholder="Search GIFs..." style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; margin-bottom: 16px;">
+      <div id="gifResults" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-height: 400px; overflow-y: auto;"></div>
+      <button onclick="closeGifPicker()" style="margin-top: 16px; width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; cursor: pointer;">Cancel</button>
+    </div>
+  </div>
+
   <script>
     let confessions = [];
     let isAdmin = false;
     const ADMIN_CODE = "drsaurab@2022";
     
-    // Get or create a unique user ID for this browser
     let currentUserId = localStorage.getItem('eh_user_id');
     if (!currentUserId) {
       currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -438,7 +512,7 @@
         if (code === ADMIN_CODE) {
           isAdmin = true;
           document.getElementById('adminIndicator').style.display = 'inline-block';
-          showToast("👑 Admin mode activated! You can delete any confession or comment.");
+          showToast("👑 Admin mode activated!");
           renderConfessions();
         } else {
           showToast("❌ Wrong admin code!");
@@ -464,6 +538,7 @@
             timestamp: new Date(Date.now() - 86400000).toISOString(),
             likes: 12,
             userId: 'user_demo_1',
+            reactions: { '❤️': 5, '😂': 2 },
             comments: [
               { id: 101, text: "Same here! Good luck 🤞", timestamp: Date.now() - 70000000, userId: 'user_demo_2' },
               { id: 102, text: "Just go for it!", timestamp: Date.now() - 60000000, userId: 'user_demo_3' }
@@ -476,6 +551,7 @@
             timestamp: new Date(Date.now() - 172800000).toISOString(),
             likes: 34,
             userId: 'user_demo_2',
+            reactions: { '😢': 3, '❤️': 8 },
             comments: []
           },
           {
@@ -485,6 +561,7 @@
             timestamp: new Date(Date.now() - 259200000).toISOString(),
             likes: 28,
             userId: 'user_demo_3',
+            reactions: { '❤️': 12, '😮': 4 },
             comments: []
           }
         ];
@@ -525,6 +602,7 @@
         timestamp: new Date().toISOString(),
         likes: 0,
         userId: currentUserId,
+        reactions: {},
         comments: []
       };
 
@@ -533,16 +611,14 @@
       
       input.value = "";
       document.getElementById('charCount').innerText = "0/500";
-      showToast("💌 Your confession has been posted anonymously! Only YOU can delete it.");
+      showToast("💌 Your confession has been posted anonymously!");
       renderConfessions();
     }
 
-    // CHECK if user can delete confession (admin OR the one who posted)
     function canDeleteConfession(confession) {
       return isAdmin || confession.userId === currentUserId;
     }
 
-    // CHECK if user can delete comment (admin OR the one who posted the comment)
     function canDeleteComment(comment) {
       return isAdmin || comment.userId === currentUserId;
     }
@@ -567,6 +643,16 @@
       const confession = confessions.find(c => c.id === id);
       if (confession) {
         confession.likes++;
+        saveConfessions();
+        renderConfessions();
+      }
+    }
+
+    function addReaction(confessionId, emoji) {
+      const confession = confessions.find(c => c.id === confessionId);
+      if (confession) {
+        if (!confession.reactions) confession.reactions = {};
+        confession.reactions[emoji] = (confession.reactions[emoji] || 0) + 1;
         saveConfessions();
         renderConfessions();
       }
@@ -634,20 +720,21 @@
       }
 
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="empty-state">
-            <i>💭</i>
-            <p>No confessions yet. Be the first to share your feelings!</p>
-          </div>
-        `;
+        container.innerHTML = `<div class="empty-state"><i>💭</i><p>No confessions yet. Be the first to share your feelings!</p></div>`;
         return;
       }
 
-      container.innerHTML = filtered.map(confession => {
+            container.innerHTML = filtered.map(confession => {
         const commentCount = confession.comments.length;
         const isExpanded = expandedComments[confession.id];
         const userOwnsConfession = confession.userId === currentUserId;
         const showDelete = canDeleteConfession(confession);
+        
+        // Build reactions HTML
+        let reactionsHtml = '';
+        if (confession.reactions && Object.keys(confession.reactions).length > 0) {
+          reactionsHtml = `<div class="reactions-row">${Object.entries(confession.reactions).map(([emoji, count]) => `<span class="reaction-display">${emoji} ${count}</span>`).join('')}</div>`;
+        }
         
         return `
           <div class="confession-card">
@@ -661,36 +748,23 @@
               </div>
             </div>
             <div class="confession-text">${escapeHtml(confession.text)}</div>
-            <div>
-              <span class="exam-tag">${confession.exam !== "All" ? confession.exam : "General"}</span>
-            </div>
+            <div><span class="exam-tag">${confession.exam !== "All" ? confession.exam : "General"}</span></div>
+            
             <div class="like-section">
-              <button class="like-btn" onclick="likeConfession(${confession.id})">
-                ❤️ ${confession.likes}
-              </button>
-              <button class="like-btn" onclick="toggleComments(${confession.id})">
-                💬 ${commentCount} ${commentCount === 1 ? 'Comment' : 'Comments'}
-              </button>
+              <button class="like-btn" onclick="likeConfession(${confession.id})">❤️ ${confession.likes}</button>
+              <button class="like-btn" onclick="toggleComments(${confession.id})">💬 ${commentCount} ${commentCount === 1 ? 'Comment' : 'Comments'}</button>
             </div>
             
-            <div class="reaction-buttons" style="display: flex; gap: 8px; margin-top: 8px;">
-  <button class="like-btn" onclick="addReaction(${confession.id}, '❤️')">❤️ <span id="react-heart-${confession.id}">0</span></button>
-  <button class="like-btn" onclick="addReaction(${confession.id}, '😂')">😂 <span id="react-laugh-${confession.id}">0</span></button>
-  <button class="like-btn" onclick="addReaction(${confession.id}, '😮')">😮 <span id="react-wow-${confession.id}">0</span></button>
-  <button class="like-btn" onclick="addReaction(${confession.id}, '😢')">😢 <span id="react-sad-${confession.id}">0</span></button>
-  <button class="like-btn" onclick="addReaction(${confession.id}, '😡')">😡 <span id="react-angry-${confession.id}">0</span></button>
-</div>
-
-
-// Add after the like-section div, before comments-section
-${confession.reactions ? `
-  <div style="display: flex; gap: 8px; margin: 8px 0;">
-    ${Object.entries(confession.reactions).map(([emoji, count]) => `
-      <span style="background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 50px; font-size: 0.7rem;">${emoji} ${count}</span>
-    `).join('')}
-  </div>
-` : ''}
-
+            <div class="reactions-row">
+              <button class="like-btn" onclick="addReaction(${confession.id}, '❤️')">❤️</button>
+              <button class="like-btn" onclick="addReaction(${confession.id}, '😂')">😂</button>
+              <button class="like-btn" onclick="addReaction(${confession.id}, '😮')">😮</button>
+              <button class="like-btn" onclick="addReaction(${confession.id}, '😢')">😢</button>
+              <button class="like-btn" onclick="addReaction(${confession.id}, '😡')">😡</button>
+            </div>
+            
+            ${reactionsHtml}
+            
             ${isExpanded ? `
               <div class="comments-section">
                 <div class="comment-form">
@@ -724,7 +798,6 @@ ${confession.reactions ? `
       const date = new Date(timestamp);
       const now = new Date();
       const diff = Math.floor((now - date) / 1000);
-      
       if (diff < 60) return "just now";
       if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`;
       if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`;
@@ -743,6 +816,61 @@ ${confession.reactions ? `
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
+
+    // GIF Functions
+    let currentGifCallback = null;
+
+    function openGifPicker(callback) {
+      currentGifCallback = callback;
+      document.getElementById('gifModal').classList.add('active');
+      document.getElementById('gifSearch').value = '';
+      searchGifs('');
+    }
+
+    function closeGifPicker() {
+      document.getElementById('gifModal').classList.remove('active');
+    }
+
+    async function searchGifs(query) {
+      const url = query ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12` : `https://tenor.googleapis.com/v2/trending?key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12`;
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const results = document.getElementById('gifResults');
+        if (data.results && data.results.length > 0) {
+          results.innerHTML = data.results.map(gif => `
+            <div style="cursor: pointer; border-radius: 12px; overflow: hidden; background: rgba(255,255,255,0.05);" onclick="selectGif('${gif.media_formats.gif.url}')">
+              <img src="${gif.media_formats.tinygif.url}" style="width: 100%; height: auto;">
+            </div>
+          `).join('');
+        } else {
+          results.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">No GIFs found</p>';
+        }
+      } catch(e) {
+        document.getElementById('gifResults').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">Failed to load GIFs</p>';
+      }
+    }
+
+    function selectGif(gifUrl) {
+      if (currentGifCallback) {
+        currentGifCallback(gifUrl);
+      }
+      closeGifPicker();
+    }
+
+    function addGifToInput(gifUrl) {
+      const input = document.getElementById('confessionInput');
+      const currentText = input.value;
+      input.value = currentText + (currentText ? '\n' : '') + `[GIF: ${gifUrl}]`;
+      showToast('🎬 GIF added!');
+    }
+
+    let searchTimeout;
+    document.getElementById('gifSearch')?.addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => searchGifs(e.target.value), 300);
+    });
 
     document.getElementById('confessionInput').addEventListener('input', function() {
       const count = this.value.length;
@@ -764,105 +892,20 @@ ${confession.reactions ? `
 
     loadConfessions();
 
-    // Reaction functions
-function addReaction(confessionId, emoji) {
-  const confession = confessions.find(c => c.id === confessionId);
-  if (confession) {
-    if (!confession.reactions) confession.reactions = {};
-    confession.reactions[emoji] = (confession.reactions[emoji] || 0) + 1;
-    saveConfessions();
-    renderConfessions();
-  }
-}
-
-// GIF Functions
-let currentGifCallback = null;
-
-function openGifPicker(callback) {
-  currentGifCallback = callback;
-  document.getElementById('gifModal').style.display = 'flex';
-  document.getElementById('gifSearch').value = '';
-  searchGifs('');
-}
-
-function closeGifPicker() {
-  document.getElementById('gifModal').style.display = 'none';
-}
-
-async function searchGifs(query) {
-  const url = query ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12` : `https://tenor.googleapis.com/v2/trending?key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12`;
-  
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    const results = document.getElementById('gifResults');
-    if (data.results && data.results.length > 0) {
-      results.innerHTML = data.results.map(gif => `
-        <div style="cursor: pointer; border-radius: 12px; overflow: hidden; transition: transform 0.2s; background: rgba(255,255,255,0.05);" onclick="selectGif('${gif.media_formats.gif.url}')">
-          <img src="${gif.media_formats.tinygif.url}" style="width: 100%; height: auto;">
-        </div>
-      `).join('');
-    } else {
-      results.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">No GIFs found</p>';
-    }
-  } catch(e) {
-    console.error('GIF search failed', e);
-    document.getElementById('gifResults').innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.4);padding:20px;">Failed to load GIFs</p>';
-  }
-}
-
-function selectGif(gifUrl) {
-  if (currentGifCallback) {
-    currentGifCallback(gifUrl);
-  }
-  closeGifPicker();
-}
-
-function addGifToInput(gifUrl) {
-  const input = document.getElementById('confessionInput');
-  const currentText = input.value;
-  input.value = currentText + (currentText ? '\n' : '') + `🎬 GIF: ${gifUrl}`;
-  showToast('🎬 GIF added!');
-}
-
-// Debounce for GIF search
-let searchTimeout;
-document.getElementById('gifSearch')?.addEventListener('input', function(e) {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => searchGifs(e.target.value), 300);
-});
-  </script>
-
-  
-
-  <!-- GIF Picker Modal -->
-<div id="gifModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
-  <div style="background: #1a1a2e; border-radius: 24px; padding: 24px; max-width: 400px; width: 90%;">
-    <h3 style="margin-bottom: 16px;">🎬 Choose a GIF</h3>
-    <input type="text" id="gifSearch" placeholder="Search GIFs..." style="width: 100%; padding: 12px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; margin-bottom: 16px;">
-    <div id="gifResults" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; max-height: 400px; overflow-y: auto;"></div>
-    <button onclick="closeGifPicker()" style="margin-top: 16px; width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: white; cursor: pointer;">Cancel</button>
-  </div>
-</div>
-
-  
-  <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
+    // Page transition effect
+    document.body.classList.add('fade-in');
+    
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
       }
-    }
-  });
+    });
   </script>
 
-  
 </body>
 </html>
