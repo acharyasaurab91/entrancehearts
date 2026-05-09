@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Confession Wall 💌 - EntranceHearts</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -20,9 +17,7 @@
 
     .navbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(20px);
       padding: 16px 20px;
@@ -254,7 +249,6 @@
       color: #ff6b9d;
     }
 
-    /* Comments Section */
     .comments-section {
       margin-top: 12px;
       padding-top: 12px;
@@ -376,6 +370,12 @@
         transform: translateX(-50%) translateY(0);
       }
     }
+
+    .owner-badge {
+      font-size: 0.6rem;
+      color: #ff6b9d;
+      margin-left: 5px;
+    }
   </style>
 </head>
 <body>
@@ -393,6 +393,7 @@
     <div class="hero">
       <h1>Anonymous Confessions 💕</h1>
       <p>Share your feelings, comment anonymously, and connect with aspirants</p>
+      <p style="font-size:0.7rem;margin-top:5px;">⚠️ Only YOU and Admin can delete your confession</p>
     </div>
 
     <div class="post-form">
@@ -419,7 +420,14 @@
   <script>
     let confessions = [];
     let isAdmin = false;
-    const ADMIN_CODE = "drsaurab@2022"; // Change this to your secret admin code
+    const ADMIN_CODE = "entrancehearts2024";
+    
+    // Get or create a unique user ID for this browser
+    let currentUserId = localStorage.getItem('eh_user_id');
+    if (!currentUserId) {
+      currentUserId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+      localStorage.setItem('eh_user_id', currentUserId);
+    }
 
     function toggleAdminMode() {
       if (!isAdmin) {
@@ -441,7 +449,7 @@
     }
 
     function loadConfessions() {
-      const saved = localStorage.getItem('entrancehearts_confessions_v2');
+      const saved = localStorage.getItem('entrancehearts_confessions_v3');
       if (saved) {
         confessions = JSON.parse(saved);
       } else {
@@ -452,9 +460,10 @@
             exam: "CEE",
             timestamp: new Date(Date.now() - 86400000).toISOString(),
             likes: 12,
+            userId: 'user_demo_1',
             comments: [
-              { id: 101, text: "Same here! Good luck 🤞", timestamp: Date.now() - 70000000 },
-              { id: 102, text: "Just go for it!", timestamp: Date.now() - 60000000 }
+              { id: 101, text: "Same here! Good luck 🤞", timestamp: Date.now() - 70000000, userId: 'user_demo_2' },
+              { id: 102, text: "Just go for it!", timestamp: Date.now() - 60000000, userId: 'user_demo_3' }
             ]
           },
           {
@@ -463,6 +472,7 @@
             exam: "IOE",
             timestamp: new Date(Date.now() - 172800000).toISOString(),
             likes: 34,
+            userId: 'user_demo_2',
             comments: []
           },
           {
@@ -471,6 +481,7 @@
             exam: "IOE",
             timestamp: new Date(Date.now() - 259200000).toISOString(),
             likes: 28,
+            userId: 'user_demo_3',
             comments: []
           }
         ];
@@ -480,7 +491,7 @@
     }
 
     function saveConfessions() {
-      localStorage.setItem('entrancehearts_confessions_v2', JSON.stringify(confessions));
+      localStorage.setItem('entrancehearts_confessions_v3', JSON.stringify(confessions));
     }
 
     function postConfession() {
@@ -510,6 +521,7 @@
         exam: exam,
         timestamp: new Date().toISOString(),
         likes: 0,
+        userId: currentUserId,
         comments: []
       };
 
@@ -518,20 +530,33 @@
       
       input.value = "";
       document.getElementById('charCount').innerText = "0/500";
-      showToast("💌 Your confession has been posted anonymously!");
+      showToast("💌 Your confession has been posted anonymously! Only YOU can delete it.");
       renderConfessions();
+    }
+
+    // CHECK if user can delete confession (admin OR the one who posted)
+    function canDeleteConfession(confession) {
+      return isAdmin || confession.userId === currentUserId;
+    }
+
+    // CHECK if user can delete comment (admin OR the one who posted the comment)
+    function canDeleteComment(comment) {
+      return isAdmin || comment.userId === currentUserId;
     }
 
     function deleteConfession(id) {
       const confession = confessions.find(c => c.id === id);
       if (!confession) return;
       
-      // Check if user can delete (admin OR confirmation)
-      if (isAdmin || confirm("Delete your confession? This cannot be undone.")) {
-        confessions = confessions.filter(c => c.id !== id);
-        saveConfessions();
-        renderConfessions();
-        showToast("🗑️ Confession deleted");
+      if (canDeleteConfession(confession)) {
+        if (confirm("Delete this confession? This cannot be undone.")) {
+          confessions = confessions.filter(c => c.id !== id);
+          saveConfessions();
+          renderConfessions();
+          showToast("🗑️ Confession deleted");
+        }
+      } else {
+        showToast("❌ You can only delete your own confessions!");
       }
     }
 
@@ -563,7 +588,8 @@
         const newComment = {
           id: Date.now(),
           text: text,
-          timestamp: Date.now()
+          timestamp: Date.now(),
+          userId: currentUserId
         };
         confession.comments.push(newComment);
         saveConfessions();
@@ -576,11 +602,14 @@
     function deleteComment(confessionId, commentId) {
       const confession = confessions.find(c => c.id === confessionId);
       if (confession) {
-        if (isAdmin || confirm("Delete this comment?")) {
+        const comment = confession.comments.find(c => c.id === commentId);
+        if (comment && canDeleteComment(comment)) {
           confession.comments = confession.comments.filter(c => c.id !== commentId);
           saveConfessions();
           renderConfessions();
           showToast("Comment deleted");
+        } else {
+          showToast("❌ You can only delete your own comments!");
         }
       }
     }
@@ -614,14 +643,18 @@
       container.innerHTML = filtered.map(confession => {
         const commentCount = confession.comments.length;
         const isExpanded = expandedComments[confession.id];
+        const userOwnsConfession = confession.userId === currentUserId;
+        const showDelete = canDeleteConfession(confession);
         
         return `
           <div class="confession-card">
             <div class="card-header">
-              <span class="anonymous-badge">🕊️ Anonymous ${isAdmin ? `(ID: ${confession.id})` : ''}</span>
+              <div>
+                <span class="anonymous-badge">🕊️ Anonymous ${userOwnsConfession ? '<span class="owner-badge">(Your confession)</span>' : ''}</span>
+              </div>
               <div>
                 <span class="timestamp">${formatTime(confession.timestamp)}</span>
-                <button class="delete-btn" onclick="deleteConfession(${confession.id})">🗑️ Delete</button>
+                ${showDelete ? `<button class="delete-btn" onclick="deleteConfession(${confession.id})">🗑️ Delete</button>` : ''}
               </div>
             </div>
             <div class="confession-text">${escapeHtml(confession.text)}</div>
@@ -645,15 +678,19 @@
                 </div>
                 <div class="comments-list">
                   ${confession.comments.length === 0 ? '<div style="color:rgba(255,255,255,0.3);font-size:0.7rem;padding:8px;">No comments yet. Be the first to comment 💬</div>' : ''}
-                  ${confession.comments.map(comment => `
-                    <div class="comment-item">
-                      <div style="display:flex;align-items:center;gap:6px;flex:1;">
-                        <span class="comment-anonymous">🕊️ Anonymous</span>
-                        <span class="comment-text">${escapeHtml(comment.text)}</span>
+                  ${confession.comments.map(comment => {
+                    const userOwnsComment = comment.userId === currentUserId;
+                    const showCommentDelete = canDeleteComment(comment);
+                    return `
+                      <div class="comment-item">
+                        <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                          <span class="comment-anonymous">🕊️ Anonymous ${userOwnsComment ? '(You)' : ''}</span>
+                          <span class="comment-text">${escapeHtml(comment.text)}</span>
+                        </div>
+                        ${showCommentDelete ? `<button class="comment-delete" onclick="deleteComment(${confession.id}, ${comment.id})">🗑️</button>` : ''}
                       </div>
-                      <button class="comment-delete" onclick="deleteComment(${confession.id}, ${comment.id})">🗑️</button>
-                    </div>
-                  `).join('')}
+                    `;
+                  }).join('')}
                 </div>
               </div>
             ` : ''}
