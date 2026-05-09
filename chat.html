@@ -698,34 +698,69 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    function subscribeMessages() {
-      if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
-      msgSubscription = supabaseClient.channel('messages')
-        .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages' }, async (payload) => {
-          if ((payload.new.from_user === currentChatUserId && payload.new.to_user === currentUserId) ||
-              (payload.new.from_user === currentUserId && payload.new.to_user === currentChatUserId)) {
-            await loadMessages();
-            await markSeen();
-            renderChatList();
-          }
-        })
-        .subscribe();
-    }
+    // REPLACE THIS ENTIRE FUNCTION
+function subscribeMessages() {
+  if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
+  
+  // Create a channel for real-time messages
+  msgSubscription = supabaseClient
+    .channel('messages-channel')
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `to_user=eq.${currentUserId},from_user=eq.${currentChatUserId}`
+      },
+      async (payload) => {
+        console.log('New message received:', payload);
+        await loadMessages();
+        await markSeen();
+        renderChatList();
+      }
+    )
+    .on(
+      'postgres_changes',
+      {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages',
+        filter: `from_user=eq.${currentUserId},to_user=eq.${currentChatUserId}`
+      },
+      async (payload) => {
+        console.log('Message sent:', payload);
+        await loadMessages();
+        renderChatList();
+      }
+    )
+    .subscribe((status) => {
+      console.log('Subscription status:', status);
+    });
+}
 
     async function sendMessage() {
-      const input = document.getElementById('chatInput');
-      const text = input.value.trim();
-      if (!text || !currentChatUserId) return;
-      input.value = '';
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text || !currentChatUserId) return;
+  input.value = '';
 
-      await supabaseClient.from('messages').insert({
-        from_user: currentUserId,
-        to_user: currentChatUserId,
-        text: text,
-        seen: false
-      });
-      await loadMessages();
-      renderChatList();
+  const { error } = await supabaseClient.from('messages').insert({
+    from_user: currentUserId,
+    to_user: currentChatUserId,
+    text: text,
+    seen: false
+  });
+  
+  if (error) {
+    console.error('Send error:', error);
+    showToast('Failed to send message');
+    return;
+  }
+  
+  // Message will appear via real-time subscription
+  await loadMessages();
+  renderChatList();
     }
 
     function formatTime(isoStr) {
