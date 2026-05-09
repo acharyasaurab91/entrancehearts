@@ -18,7 +18,6 @@
       color: #ffffff;
     }
 
-    /* Premium Navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -62,7 +61,6 @@
       color: #FF6B9D;
     }
 
-    /* Hero Banner */
     .hero-banner {
       background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 107, 157, 0.05));
       border-bottom: 1px solid rgba(255, 20, 147, 0.15);
@@ -92,14 +90,12 @@
       font-size: 0.85rem;
     }
 
-    /* Main Container */
     .container {
       max-width: 1400px;
       margin: 0 auto;
       padding: 40px 24px 100px;
     }
     
-    /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -134,7 +130,6 @@
       -webkit-text-fill-color: transparent;
     }
     
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 12px;
@@ -170,7 +165,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
-    /* Tables */
     .table-container {
       overflow-x: auto;
       background: #141423;
@@ -242,14 +236,6 @@
       outline: none;
       border-color: #FF1493;
     }
-    .search-box select {
-      padding: 12px 20px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,20,147,0.2);
-      border-radius: 100px;
-      color: white;
-      font-size: 0.85rem;
-    }
     .badge {
       display: inline-block;
       padding: 4px 12px;
@@ -289,7 +275,6 @@
 </head>
 <body>
 
-  <!-- Premium Navbar -->
   <nav class="navbar" id="navbar">
     <div style="max-width: 1400px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
       <a href="index.html" class="logo">👑 Admin Panel</a>
@@ -297,7 +282,6 @@
     </div>
   </nav>
 
-  <!-- Hero Banner -->
   <div class="hero-banner">
     <div class="hero-icon">👑</div>
     <h1>Admin Dashboard</h1>
@@ -305,7 +289,6 @@
   </div>
 
   <div class="container">
-    <!-- Stats -->
     <div class="stats-grid" id="statsGrid">
       <div class="stat-card"><h3><i class="fas fa-users"></i> Total Users</h3><div class="number" id="totalUsers">0</div></div>
       <div class="stat-card"><h3><i class="fas fa-check-circle"></i> Verified</h3><div class="number" id="verifiedUsers">0</div></div>
@@ -313,7 +296,6 @@
       <div class="stat-card"><h3><i class="fas fa-book"></i> Materials</h3><div class="number" id="totalMaterials">0</div></div>
     </div>
 
-    <!-- Tabs -->
     <div class="tabs">
       <button class="tab-btn active" onclick="showTab('users')"><i class="fas fa-users"></i> Users</button>
       <button class="tab-btn" onclick="showTab('confessions')"><i class="fas fa-comment-dots"></i> Confessions</button>
@@ -321,7 +303,6 @@
       <button class="tab-btn" onclick="showTab('likes')"><i class="fas fa-heart"></i> Likes</button>
     </div>
 
-    <!-- Users Tab -->
     <div id="usersTab" class="tab-content active">
       <div class="search-box">
         <input type="text" id="userSearch" placeholder="🔍 Search by name or location..." onkeyup="searchUsers()">
@@ -329,54 +310,43 @@
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>Name</th><th>Email</th><th>Category</th><th>Location</th><th>Status</th><th>Actions</th></tr>
-          </thead>
+          <thead><tr><th>Name</th><th>Email</th><th>Category</th><th>Location</th><th>Status</th><th>Actions</th></tr></thead>
           <tbody id="usersList"><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Confessions Tab -->
     <div id="confessionsTab" class="tab-content">
       <div class="search-box">
         <button class="refresh-btn" onclick="loadConfessions()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>ID</th><th>Confession</th><th>Exam</th><th>Date</th><th>Likes</th><th>Actions</th></tr>
-          </thead>
+          <thead><tr><th>ID</th><th>Confession</th><th>Exam</th><th>Date</th><th>Likes</th><th>Actions</th></tr></thead>
           <tbody id="confessionsList"><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Materials Tab -->
     <div id="materialsTab" class="tab-content">
       <div class="search-box">
         <button class="refresh-btn" onclick="loadMaterials()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>Title</th><th>Category</th><th>File</th><th>Downloads</th><th>Date</th><th>Actions</th></tr>
-          </thead>
+          <thead><tr><th>Title</th><th>Category</th><th>File</th><th>Downloads</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="materialsList"><tr><td colspan="6" style="text-align:center">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- Likes Tab -->
     <div id="likesTab" class="tab-content">
       <div class="search-box">
         <button class="refresh-btn" onclick="loadLikes()"><i class="fas fa-sync-alt"></i> Refresh</button>
       </div>
       <div class="table-container">
         <table>
-          <thead>
-            <tr><th>From</th><th>To</th><th>Date</th><th>Actions</th></tr>
-          </thead>
+          <thead><tr><th>From</th><th>To</th><th>Date</th><th>Actions</th></tr></thead>
           <tbody id="likesList"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody>
         </table>
       </div>
@@ -419,16 +389,11 @@
     }
 
     async function loadUsers() {
-      const { data } = await supabaseClient
-        .from('profiles')
-        .select('*');
-      
-      // Get emails separately
+      const { data } = await supabaseClient.from('profiles').select('*');
       for (let user of (data || [])) {
         const { data: authData } = await supabaseClient.auth.admin.getUserById(user.id);
         user.email = authData?.user?.email || '—';
       }
-      
       allUsers = data || [];
       renderUsers();
     }
@@ -438,7 +403,6 @@
         .from('confessions')
         .select('*')
         .order('created_at', { ascending: false });
-      
       if (!error) allConfessions = data || [];
       renderConfessions();
     }
@@ -448,7 +412,6 @@
         .from('study_materials')
         .select('*')
         .order('created_at', { ascending: false });
-      
       if (!error) allMaterials = data || [];
       renderMaterials();
     }
@@ -458,7 +421,6 @@
         .from('likes')
         .select('*, profiles!from_user(name), profiles!to_user(name)')
         .order('created_at', { ascending: false });
-      
       allLikes = data || [];
       renderLikes();
     }
@@ -494,9 +456,7 @@
           <td><span class="badge ${user.is_verified ? 'verified' : 'unverified'}">${user.is_verified ? '✓ Verified' : '○ Unverified'}</span></td>
           <td class="action-cell">
             ${!user.is_verified ? `<button class="verify-btn" onclick="verifyUser('${user.id}')"><i class="fas fa-check"></i> Verify</button>` : ''}
-            <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.name}')">
-  <i class="fas fa-trash"></i> Delete
-</button>
+            <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.name}')"><i class="fas fa-trash"></i> Delete</button>
           </td>
         </tr>
       `).join('');
@@ -562,75 +522,52 @@
     }
 
     async function deleteUser(userId, userName) {
-  if (!confirm(`⚠️ Delete user "${userName}"? This will delete ALL their data including messages, likes, confessions, and study materials. This cannot be undone!`)) {
-    return;
-  }
-  
-  if (!confirm('Type "DELETE" to confirm:')) {
-    const confirmation = prompt('Type DELETE to confirm:');
-    if (confirmation !== 'DELETE') {
-      showToast('Deletion cancelled');
-      return;
-    }
-  }
-  
-  try {
-    // Delete user's likes
-    await supabaseClient.from('likes').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
-    
-    // Delete user's messages
-    await supabaseClient.from('messages').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
-    
-    // Delete user's confessions
-    await supabaseClient.from('confessions').delete().eq('user_id', userId);
-    
-    // Delete user's comments
-    await supabaseClient.from('confession_comments').delete().eq('user_id', userId);
-    
-    // Delete user's study materials
-    await supabaseClient.from('study_materials').delete().eq('uploaded_by', userId);
-    
-    // Delete user's avatar from storage
-    const { data: files } = await supabaseClient.storage.from('avatars').list(userId);
-    if (files && files.length > 0) {
-      for (const file of files) {
-        await supabaseClient.storage.from('avatars').remove([`${userId}/${file.name}`]);
+      if (!confirm(`⚠️ Delete user "${userName}"? This will delete ALL their data. This cannot be undone!`)) return;
+      
+      const confirmation = prompt('Type "DELETE" to confirm:');
+      if (confirmation !== 'DELETE') { showToast('Deletion cancelled'); return; }
+      
+      try {
+        await supabaseClient.from('likes').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
+        await supabaseClient.from('messages').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
+        await supabaseClient.from('confessions').delete().eq('user_id', userId);
+        await supabaseClient.from('confession_comments').delete().eq('user_id', userId);
+        await supabaseClient.from('study_materials').delete().eq('uploaded_by', userId);
+        
+        const { data: files } = await supabaseClient.storage.from('avatars').list(userId);
+        if (files && files.length > 0) {
+          for (const file of files) {
+            await supabaseClient.storage.from('avatars').remove([`${userId}/${file.name}`]);
+          }
+        }
+        
+        const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(userId);
+        if (voiceFiles && voiceFiles.length > 0) {
+          for (const file of voiceFiles) {
+            await supabaseClient.storage.from('chat_voice').remove([`${userId}/${file.name}`]);
+          }
+        }
+        
+        await supabaseClient.from('profiles').delete().eq('id', userId);
+        
+        try {
+          await supabaseClient.auth.admin.deleteUser(userId);
+        } catch(e) { console.log('Auth delete error:', e); }
+        
+        showToast(`✅ User "${userName}" deleted successfully`);
+        await loadUsers();
+        await loadStats();
+      } catch (err) {
+        console.error('Delete error:', err);
+        showToast('❌ Failed to delete user: ' + err.message);
       }
-    }
-    
-    // Delete user's voice messages
-    const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(userId);
-    if (voiceFiles && voiceFiles.length > 0) {
-      for (const file of voiceFiles) {
-        await supabaseClient.storage.from('chat_voice').remove([`${userId}/${file.name}`]);
-      }
-    }
-    
-    // Delete user profile
-    await supabaseClient.from('profiles').delete().eq('id', userId);
-    
-    // Delete user from auth (requires admin)
-    try {
-      await supabaseClient.auth.admin.deleteUser(userId);
-    } catch(e) {
-      console.log('Auth delete error (may need admin rights):', e);
-    }
-    
-    showToast(`✅ User "${userName}" deleted successfully`);
-    await loadUsers();
-    await loadStats();
-    
-  } catch (err) {
-    console.error('Delete error:', err);
-    showToast('❌ Failed to delete user: ' + err.message);
-  }
     }
 
     async function deleteConfession(id) {
       if (!confirm('Delete this confession?')) return;
       const { error } = await supabaseClient.from('confessions').delete().eq('id', id);
       if (error) showToast('Failed to delete', 'error');
-      else { showToast('🗑️ Confession deleted'); await loadConfessions(); await loadStats(); }
+         else { showToast('🗑️ Confession deleted'); await loadConfessions(); await loadStats(); }
     }
 
     async function deleteMaterial(id) {
@@ -674,7 +611,6 @@
       setTimeout(() => toast.remove(), 2500);
     }
 
-    // Navbar scroll effect
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
       if (navbar && window.scrollY > 50) navbar.classList.add('scrolled');
