@@ -892,9 +892,12 @@
         </div>
 
         <div class="action-btns">
-          <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
-          <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        </div>`;
+  <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
+  <button class="delete-account-btn" onclick="deleteMyAccount()">
+    <i class="fas fa-trash-alt"></i> Delete My Account
+  </button>
+  <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</div>`;
     }
 
     function buildInterestsGrid(selected) {
@@ -966,6 +969,77 @@
       setTimeout(() => { progressEl.style.display = 'none'; }, 1500);
     });
 
+
+    async function deleteMyAccount() {
+  if (!confirm('⚠️ WARNING: This will permanently delete your account, all your messages, likes, confessions, and study materials. This action CANNOT be undone.\n\nAre you sure you want to delete your account?')) {
+    return;
+  }
+  
+  if (!confirm('Type "DELETE" to confirm account deletion:')) {
+    const confirmation = prompt('Type DELETE to confirm:');
+    if (confirmation !== 'DELETE') {
+      showToast('Account deletion cancelled');
+      return;
+    }
+  }
+  
+  const btn = event.target;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+  
+  try {
+    // Delete user's likes
+    await supabaseClient.from('likes').delete().eq('from_user', currentUserId);
+    await supabaseClient.from('likes').delete().eq('to_user', currentUserId);
+    
+    // Delete user's messages
+    await supabaseClient.from('messages').delete().or(`from_user.eq.${currentUserId},to_user.eq.${currentUserId}`);
+    
+    // Delete user's confessions
+    await supabaseClient.from('confessions').delete().eq('user_id', currentUserId);
+    
+    // Delete user's comments
+    await supabaseClient.from('confession_comments').delete().eq('user_id', currentUserId);
+    
+    // Delete user's study materials
+    await supabaseClient.from('study_materials').delete().eq('uploaded_by', currentUserId);
+    
+    // Delete user's avatar from storage
+    const { data: files } = await supabaseClient.storage.from('avatars').list(currentUserId);
+    if (files && files.length > 0) {
+      for (const file of files) {
+        await supabaseClient.storage.from('avatars').remove([`${currentUserId}/${file.name}`]);
+      }
+    }
+    
+    // Delete user's voice messages
+    const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(currentUserId);
+    if (voiceFiles && voiceFiles.length > 0) {
+      for (const file of voiceFiles) {
+        await supabaseClient.storage.from('chat_voice').remove([`${currentUserId}/${file.name}`]);
+      }
+    }
+    
+    // Finally delete the user profile
+    await supabaseClient.from('profiles').delete().eq('id', currentUserId);
+    
+    // Sign out
+    await supabaseClient.auth.signOut();
+    localStorage.clear();
+    
+    alert('✅ Your account has been permanently deleted.');
+    window.location.href = 'index.html';
+    
+  } catch (err) {
+    console.error('Delete error:', err);
+    showToast('❌ Failed to delete account: ' + err.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete My Account';
+  }
+    }
+
+      
+    
     async function saveProfile() {
       const saveBtn = document.getElementById('saveBtn');
       const name = document.getElementById('editName').value.trim();
