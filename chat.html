@@ -11,35 +11,28 @@
   <script src="supabase.js"></script>
   
   <style>
-    /* ========================================
-       CHAT - PREMIUM DARK THEME
-       Pink Gradient | Professional Messaging
-       ======================================== */
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
       background: #0a0a0f;
       color: #ffffff;
     }
 
-    /* Navbar */
+    /* Premium Navbar */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 1000;
-      padding: 16px 32px;
+      padding: 18px 32px;
       background: rgba(10, 10, 15, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 20, 147, 0.2);
       transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .navbar.scrolled {
       padding: 12px 32px;
@@ -54,11 +47,109 @@
       -webkit-text-fill-color: transparent;
       text-decoration: none;
     }
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover {
+      color: #FF6B9D;
+      background: rgba(255, 20, 147, 0.1);
+    }
+    .btn-primary-nav {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      color: white;
+      padding: 8px 24px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-primary-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255,20,147,0.15);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #FF6B9D;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-links { display: none; }
+    }
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      right: -100%;
+      width: 280px;
+      background: #141423;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      z-index: 999;
+      transition: right 0.3s;
+    }
+    .mobile-menu.open { right: 16px; }
+    .mobile-menu-item {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .mobile-menu-item:hover {
+      background: rgba(255,20,147,0.15);
+      color: #FF6B9D;
+    }
 
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 107, 157, 0.05));
+      border-bottom: 1px solid rgba(255, 20, 147, 0.15);
+      padding: 100px 24px 50px;
+      text-align: center;
+    }
+    .hero-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .hero-banner h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .hero-banner p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    /* Page Layout */
     .page {
-      max-width: 480px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 90px 0 100px;
+      padding: 40px 0 100px;
     }
     
     .matches-section {
@@ -66,7 +157,6 @@
       border-bottom: 1px solid rgba(255,20,147,0.15);
       margin-bottom: 4px;
     }
-    
     .section-label {
       font-size: 0.7rem;
       font-weight: 700;
@@ -75,7 +165,6 @@
       letter-spacing: 1.5px;
       margin-bottom: 12px;
     }
-    
     .matches-scroll {
       display: flex;
       gap: 16px;
@@ -91,7 +180,6 @@
       gap: 5px;
       cursor: pointer;
     }
-    
     .match-ring {
       width: 58px;
       height: 58px;
@@ -100,7 +188,6 @@
       padding: 2px;
       position: relative;
     }
-    
     .match-ring-inner {
       width: 100%;
       height: 100%;
@@ -112,14 +199,12 @@
       font-size: 1.7rem;
       overflow: hidden;
     }
-    
     .match-ring-inner img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       border-radius: 50%;
     }
-    
     .online-dot-bubble {
       width: 13px;
       height: 13px;
@@ -132,7 +217,6 @@
       display: none;
     }
     .online-dot-bubble.visible { display: block; }
-    
     .match-bubble span {
       font-size: 0.68rem;
       color: rgba(255, 255, 255, 0.5);
@@ -143,7 +227,6 @@
     }
     
     .chats-list { padding: 8px 0; }
-    
     .chat-item {
       display: flex;
       align-items: center;
@@ -154,7 +237,6 @@
       position: relative;
     }
     .chat-item:hover { background: rgba(255,20,147,0.08); }
-    
     .chat-avatar-wrap { position: relative; flex-shrink: 0; }
     .chat-avatar {
       width: 52px;
@@ -167,13 +249,7 @@
       font-size: 1.5rem;
       overflow: hidden;
     }
-    .chat-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
-    
+    .chat-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .online-dot-list {
       width: 14px;
       height: 14px;
@@ -186,7 +262,6 @@
       display: none;
     }
     .online-dot-list.visible { display: block; }
-    
     .chat-info { flex: 1; min-width: 0; }
     .chat-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 3px; }
     .chat-preview {
@@ -196,7 +271,6 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    
     .chat-meta {
       display: flex;
       flex-direction: column;
@@ -209,6 +283,10 @@
       height: 8px;
       border-radius: 50%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
+    }
+    .last-seen {
+      font-size: 0.6rem;
+      color: rgba(255, 255, 255, 0.35);
     }
     
     .empty-chats {
@@ -241,7 +319,7 @@
       bottom: 0;
       background: #0a0a0f;
       z-index: 200;
-      max-width: 480px;
+      max-width: 600px;
       margin: 0 auto;
     }
     .chat-window.open { display: flex; }
@@ -272,12 +350,7 @@
       font-size: 1.2rem;
       overflow: hidden;
     }
-    .chat-header-avatar img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
-    }
+    .chat-header-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .online-dot-header {
       width: 11px;
       height: 11px;
@@ -292,7 +365,7 @@
     .online-dot-header.visible { display: block; }
     .chat-header-info { flex: 1; }
     .chat-header-name { font-size: 0.95rem; font-weight: 700; }
-    .chat-header-status { font-size: 0.72rem; color: rgba(255, 255, 255, 0.4); }
+    .chat-header-status { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); }
     .chat-header-status.online { color: #4caf50; }
     
     .messages-area {
@@ -325,6 +398,32 @@
       color: rgba(255, 255, 255, 0.85);
       border-bottom-left-radius: 4px;
     }
+    .msg.voice {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .voice-wave {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+    .voice-wave span {
+      width: 3px;
+      height: 12px;
+      background: currentColor;
+      border-radius: 2px;
+      animation: wave 0.5s ease infinite alternate;
+    }
+    .voice-wave span:nth-child(2) { height: 18px; animation-delay: 0.1s; }
+    .voice-wave span:nth-child(3) { height: 24px; animation-delay: 0.2s; }
+    .voice-wave span:nth-child(4) { height: 18px; animation-delay: 0.3s; }
+    .voice-wave span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+    @keyframes wave {
+      0% { transform: scaleY(0.5); }
+      100% { transform: scaleY(1); }
+    }
     
     .msg-footer {
       display: flex;
@@ -356,6 +455,21 @@
       outline: none;
     }
     .chat-input:focus { border-color: #FF1493; }
+    .voice-record-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: rgba(255,20,147,0.15);
+      border: 1px solid rgba(255,20,147,0.3);
+      color: #FF6B9D;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .voice-record-btn.recording {
+      background: #ff4444;
+      color: white;
+      animation: pulse 1s infinite;
+    }
     .send-btn {
       width: 46px;
       height: 46px;
@@ -383,7 +497,6 @@
       display: none;
     }
     .toast.show { display: block; animation: fadeUp 0.3s ease; }
-    
     @keyframes fadeUp {
       from { opacity: 0; transform: translateX(-50%) translateY(20px); }
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -423,16 +536,41 @@
 </head>
 <body>
 
-  <!-- Navbar -->
+  <!-- Premium Navbar -->
   <nav class="navbar" id="navbar">
     <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
       <a href="index.html" class="logo">💕 EntranceHearts</a>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <a href="browse.html" class="btn-ghost" style="color: rgba(255,255,255,0.7); padding: 8px 20px; border-radius: 100px; text-decoration: none;">🔥 Discover</a>
-        <a href="profile.html" class="btn-primary" style="background: linear-gradient(135deg, #FF1493, #FF6B9D); color: white; padding: 8px 20px; border-radius: 100px; text-decoration: none;">👤 Profile</a>
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <a href="browse.html" class="btn-ghost">🔥 Discover</a>
+        <a href="chat.html" class="btn-ghost" style="color: #FF6B9D;">💬 Chats</a>
+        <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
+        <a href="study.html" class="btn-ghost">📚 Study</a>
+        <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
+        <a href="ai-match.html" class="btn-ghost">🤖 AI Match</a>
+        <a href="profile.html" class="btn-primary-nav">👤 Profile</a>
       </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
+    <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+    <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
+    <a href="study.html" class="mobile-menu-item">📚 Study</a>
+    <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
+    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
+    <a href="profile.html" class="mobile-menu-item">👤 Profile</a>
+    <a href="login.html" class="mobile-menu-item">🚪 Logout</a>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-icon">💬✨</div>
+    <h1>Messages</h1>
+    <p>Chat with your matches in real-time</p>
+  </div>
 
   <div class="page">
     <div class="matches-section">
@@ -464,6 +602,9 @@
 
     <div class="chat-input-row">
       <input class="chat-input" id="chatInput" placeholder="Type a message..." autocomplete="off"/>
+      <button class="voice-record-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()">
+        <i class="fas fa-microphone"></i>
+      </button>
       <button class="send-btn" onclick="sendMessage()">➤</button>
     </div>
   </div>
@@ -487,6 +628,11 @@
     let matches = [];
     let msgSubscription = null;
     let onlineUsers = new Set();
+    
+    // Voice Recording Variables
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let isRecording = false;
 
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
@@ -497,6 +643,7 @@
       currentUserId = data.session.user.id;
       await loadMatches();
       subscribePresence();
+      updateLastSeen();
       
       const chatWith = localStorage.getItem('ehChatWith');
       if (chatWith) {
@@ -508,24 +655,37 @@
       }
     }
 
+    async function updateLastSeen() {
+      setInterval(async () => {
+        if (currentUserId) {
+          await supabaseClient.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUserId);
+        }
+      }, 30000);
+    }
+
+    function getLastSeenText(lastSeen) {
+      if (!lastSeen) return 'Offline';
+      const date = new Date(lastSeen);
+      const now = new Date();
+      const diff = Math.floor((now - date) / 1000);
+      if (diff < 60) return 'Online just now';
+      if (diff < 3600) return `Last seen ${Math.floor(diff / 60)} minutes ago`;
+      if (diff < 86400) return `Last seen ${Math.floor(diff / 3600)} hours ago`;
+      return `Last seen ${Math.floor(diff / 86400)} days ago`;
+    }
+
     async function loadMatches() {
       const { data: myLikes } = await supabaseClient
         .from('likes').select('to_user').eq('from_user', currentUserId);
       
-      if (!myLikes || myLikes.length === 0) { 
-        renderEmpty(); 
-        return; 
-      }
+          if (!myLikes || myLikes.length === 0) { renderEmpty(); return; }
       
       const likedIds = myLikes.map(l => l.to_user);
       const { data: mutual } = await supabaseClient
         .from('likes').select('from_user')
         .eq('to_user', currentUserId).in('from_user', likedIds);
       
-      if (!mutual || mutual.length === 0) { 
-        renderEmpty(); 
-        return; 
-      }
+      if (!mutual || mutual.length === 0) { renderEmpty(); return; }
       
       const matchIds = mutual.map(l => l.from_user);
       const { data: profiles } = await supabaseClient
@@ -567,12 +727,16 @@
     async function renderChatList() {
       const chatItems = await Promise.all(matches.map(async m => {
         const { data: msgs } = await supabaseClient
-          .from('messages').select('text,created_at,from_user,seen')
+          .from('messages').select('text,created_at,from_user,seen,is_voice')
           .or(`and(from_user.eq.${currentUserId},to_user.eq.${m.id}),and(from_user.eq.${m.id},to_user.eq.${currentUserId})`)
           .order('created_at', { ascending:false })
           .limit(1);
         const last = msgs?.[0];
-        const preview = last ? (last.from_user === currentUserId ? `You: ${last.text}` : last.text) : "Say hello 👋";
+        let preview = last ? (last.from_user === currentUserId ? `You: ` : '') : "Say hello 👋";
+        if (last) {
+          if (last.is_voice) preview += '🎤 Voice message';
+          else preview += last.text;
+        }
         const timeStr = last ? formatTime(last.created_at) : '';
         const hasUnread = last && last.from_user !== currentUserId && !last.seen;
         return { m, preview, timeStr, hasUnread };
@@ -587,6 +751,7 @@
           <div class="chat-info">
             <div class="chat-name">${m.name || 'User'}</div>
             <div class="chat-preview">${escapeHtml(preview)}</div>
+            <div class="last-seen">${getLastSeenText(m.last_seen)}</div>
           </div>
           <div class="chat-meta">
             ${timeStr ? `<div class="chat-time">${timeStr}</div>` : ''}
@@ -625,7 +790,7 @@
       if (currentChatUserId) {
         const isOnline = onlineUsers.has(currentChatUserId);
         const statusEl = document.getElementById('chatHeaderStatus');
-        statusEl.textContent = isOnline ? '● Online' : 'Offline';
+        statusEl.textContent = isOnline ? '● Online' : getLastSeenText(matches.find(m => m.id === currentChatUserId)?.last_seen);
         statusEl.classList.toggle('online', isOnline);
         document.getElementById('headerOnlineDot').classList.toggle('visible', isOnline);
       }
@@ -642,7 +807,7 @@
       
       const isOnline = onlineUsers.has(userId);
       const statusEl = document.getElementById('chatHeaderStatus');
-      statusEl.textContent = isOnline ? '● Online' : 'Offline';
+      statusEl.textContent = isOnline ? '● Online' : getLastSeenText(matches.find(m => m.id === userId)?.last_seen);
       statusEl.classList.toggle('online', isOnline);
       document.getElementById('headerOnlineDot').classList.toggle('visible', isOnline);
 
@@ -683,13 +848,27 @@
         return;
       }
 
-      area.innerHTML = msgs.map((m, i) => {
+      area.innerHTML = msgs.map((m) => {
         const sent = m.from_user === currentUserId;
         const time = new Date(m.created_at).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
         const tickHTML = sent ? `<span class="msg-tick ${m.seen ? 'seen' : ''}">${m.seen ? '✓✓' : '✓'}</span>` : '';
+        
+        let messageContent = '';
+        if (m.is_voice && m.voice_url) {
+          messageContent = `<div class="msg voice" onclick="playVoiceMessage('${m.voice_url}')">
+            <i class="fas fa-play"></i>
+            <div class="voice-wave">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <span>Voice message</span>
+          </div>`;
+        } else {
+          messageContent = escapeHtml(m.text);
+        }
+        
         return `
           <div class="msg-wrap ${sent ? 'sent' : 'received'}">
-            <div class="msg ${sent ? 'sent' : 'received'}">${escapeHtml(m.text)}</div>
+            <div class="msg ${sent ? 'sent' : 'received'}">${messageContent}</div>
             <div class="msg-footer"><span class="msg-time">${time}</span>${tickHTML}</div>
           </div>
         `;
@@ -698,69 +877,107 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    // REPLACE THIS ENTIRE FUNCTION
-function subscribeMessages() {
-  if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
-  
-  // Create a channel for real-time messages
-  msgSubscription = supabaseClient
-    .channel('messages-channel')
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `to_user=eq.${currentUserId},from_user=eq.${currentChatUserId}`
-      },
-      async (payload) => {
-        console.log('New message received:', payload);
-        await loadMessages();
-        await markSeen();
-        renderChatList();
-      }
-    )
-    .on(
-      'postgres_changes',
-      {
-        event: 'INSERT',
-        schema: 'public',
-        table: 'messages',
-        filter: `from_user=eq.${currentUserId},to_user=eq.${currentChatUserId}`
-      },
-      async (payload) => {
-        console.log('Message sent:', payload);
-        await loadMessages();
-        renderChatList();
-      }
-    )
-    .subscribe((status) => {
-      console.log('Subscription status:', status);
-    });
-}
+    function playVoiceMessage(url) {
+      const audio = new Audio(url);
+      audio.play();
+      showToast('🎤 Playing voice message');
+    }
+
+    function subscribeMessages() {
+      if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
+      msgSubscription = supabaseClient.channel('messages-channel')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+          if ((payload.new.from_user === currentChatUserId && payload.new.to_user === currentUserId) ||
+              (payload.new.from_user === currentUserId && payload.new.to_user === currentChatUserId)) {
+            await loadMessages();
+            await markSeen();
+            renderChatList();
+          }
+        })
+        .subscribe();
+    }
 
     async function sendMessage() {
-  const input = document.getElementById('chatInput');
-  const text = input.value.trim();
-  if (!text || !currentChatUserId) return;
-  input.value = '';
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text || !currentChatUserId) return;
+      input.value = '';
 
-  const { error } = await supabaseClient.from('messages').insert({
-    from_user: currentUserId,
-    to_user: currentChatUserId,
-    text: text,
-    seen: false
-  });
-  
-  if (error) {
-    console.error('Send error:', error);
-    showToast('Failed to send message');
-    return;
-  }
-  
-  // Message will appear via real-time subscription
-  await loadMessages();
-  renderChatList();
+      const { error } = await supabaseClient.from('messages').insert({
+        from_user: currentUserId,
+        to_user: currentChatUserId,
+        text: text,
+        seen: false,
+        is_voice: false
+      });
+      
+      if (error) { console.error('Send error:', error); showToast('Failed to send message'); return; }
+      
+      await loadMessages();
+      renderChatList();
+    }
+
+    // Voice Recording Functions
+    async function toggleVoiceRecording() {
+      if (!isRecording) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+          
+          mediaRecorder.ondataavailable = (event) => {
+            audioChunks.push(event.data);
+          };
+          
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            await sendVoiceMessage(audioBlob);
+            stream.getTracks().forEach(track => track.stop());
+          };
+          
+          mediaRecorder.start();
+          isRecording = true;
+          document.getElementById('voiceRecordBtn').classList.add('recording');
+          document.getElementById('voiceRecordBtn').innerHTML = '<i class="fas fa-stop"></i>';
+          showToast('🎤 Recording... Click again to stop');
+        } catch(err) {
+          showToast('Microphone access denied');
+        }
+      } else {
+        mediaRecorder.stop();
+        isRecording = false;
+        document.getElementById('voiceRecordBtn').classList.remove('recording');
+        document.getElementById('voiceRecordBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+      }
+    }
+
+    async function sendVoiceMessage(audioBlob) {
+      if (!currentChatUserId) return;
+      
+      const fileName = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.wav`;
+      const filePath = `voice_messages/${currentUserId}/${fileName}`;
+      
+      const { error: uploadError } = await supabaseClient.storage
+        .from('chat_voice')
+        .upload(filePath, audioBlob);
+      
+      if (uploadError) { showToast('Failed to send voice message'); return; }
+      
+      const { data: urlData } = supabaseClient.storage.from('chat_voice').getPublicUrl(filePath);
+      
+      const { error } = await supabaseClient.from('messages').insert({
+        from_user: currentUserId,
+        to_user: currentChatUserId,
+        text: 'Voice message',
+        seen: false,
+        is_voice: true,
+        voice_url: urlData.publicUrl
+      });
+      
+      if (error) { showToast('Failed to send voice message'); return; }
+      
+      await loadMessages();
+      renderChatList();
     }
 
     function formatTime(isoStr) {
@@ -783,18 +1000,37 @@ function subscribeMessages() {
       });
     }
 
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
     document.getElementById('chatInput')?.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') sendMessage();
     });
 
-    // Navbar scroll effect
+    // Mobile Menu
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.onclick = () => {
+        mobileMenu.classList.toggle('open');
+        menuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+      };
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          menuBtn.textContent = '☰';
+        }
+      });
+    }
+
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
-      if (navbar && window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else if (navbar) {
-        navbar.classList.remove('scrolled');
-      }
+      if (navbar && window.scrollY > 50) navbar.classList.add('scrolled');
+      else if (navbar) navbar.classList.remove('scrolled');
     });
 
     init();
