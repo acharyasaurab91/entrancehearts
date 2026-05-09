@@ -74,6 +74,25 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
     }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 100px;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 20, 147, 0.2);
+    }
+    .back-btn:hover {
+      background: rgba(255, 20, 147, 0.15);
+      color: #FF6B9D;
+      transform: translateX(-3px);
+    }
     .mobile-menu-btn {
       display: none;
       background: rgba(255,20,147,0.15);
@@ -333,10 +352,21 @@
       border-bottom: 1px solid rgba(255,20,147,0.2);
     }
     .back-btn-chat {
-      font-size: 1.3rem;
+      background: none;
+      border: none;
+      font-size: 1.1rem;
       cursor: pointer;
-      color: rgba(255, 255, 255, 0.6);
-      padding: 4px;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 12px;
+      border-radius: 100px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .back-btn-chat:hover {
+      background: rgba(255,20,147,0.15);
+      color: #FF6B9D;
     }
     .chat-header-avatar-wrap { position: relative; }
     .chat-header-avatar {
@@ -584,10 +614,12 @@
     </div>
   </div>
 
-  <!-- Chat Window -->
+  <!-- Chat Window with Back Button -->
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
-      <span class="back-btn-chat" onclick="closeChat()">←</span>
+      <button class="back-btn-chat" onclick="closeChat()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
       <div class="chat-header-avatar-wrap">
         <div class="chat-header-avatar" id="chatHeaderAvatar"></div>
         <div class="online-dot-header" id="headerOnlineDot"></div>
@@ -641,23 +673,21 @@
         return; 
       }
       currentUserId = data.session.user.id;
-
-      // ✅ ADD THIS LINE - Fix back button
-  const backBtn = document.querySelector('.back-btn');
-  if (backBtn) backBtn.href = 'browse.html';
-  
-  await loadMatches();
-  subscribePresence();
-  updateLastSeen();
-  // ... rest of code
-
+      
+      // Fix back button for logged-in users
+      const backBtn = document.querySelector('.back-btn');
+      if (backBtn) backBtn.href = 'browse.html';
+      
+      await loadMatches();
+      subscribePresence();
+      updateLastSeen();
       
       const chatWith = localStorage.getItem('ehChatWith');
       if (chatWith) {
         localStorage.removeItem('ehChatWith');
         const match = matches.find(m => m.id === chatWith);
         if (match) {
-          setTimeout(() => openChat(match.id, match.name, match.gender, match.avatar_url), 500);
+               setTimeout(() => openChat(match.id, match.name, match.gender, match.avatar_url), 500);
         }
       }
     }
@@ -685,7 +715,7 @@
       const { data: myLikes } = await supabaseClient
         .from('likes').select('to_user').eq('from_user', currentUserId);
       
-          if (!myLikes || myLikes.length === 0) { renderEmpty(); return; }
+      if (!myLikes || myLikes.length === 0) { renderEmpty(); return; }
       
       const likedIds = myLikes.map(l => l.to_user);
       const { data: mutual } = await supabaseClient
@@ -822,6 +852,10 @@
       await loadMessages();
       subscribeMessages();
       await markSeen();
+      
+      // Scroll to bottom
+      const area = document.getElementById('messagesArea');
+      area.scrollTop = area.scrollHeight;
     }
 
     function closeChat() {
@@ -884,24 +918,51 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    function playVoiceMessage(url) {
-      const audio = new Audio(url);
-      audio.play();
-      showToast('🎤 Playing voice message');
-    }
-
+    // FIXED REAL-TIME SUBSCRIPTION
     function subscribeMessages() {
       if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
-      msgSubscription = supabaseClient.channel('messages-channel')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-          if ((payload.new.from_user === currentChatUserId && payload.new.to_user === currentUserId) ||
-              (payload.new.from_user === currentUserId && payload.new.to_user === currentChatUserId)) {
-            await loadMessages();
-            await markSeen();
-            renderChatList();
+      
+      msgSubscription = supabaseClient
+        .channel(`chat-${currentUserId}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `to_user=eq.${currentUserId}`
+          },
+          async (payload) => {
+            console.log('New message received:', payload);
+            if (payload.new.from_user === currentChatUserId) {
+              await loadMessages();
+              await markSeen();
+              renderChatList();
+            } else if (payload.new.from_user !== currentUserId) {
+              // Update chat list for unread indicator
+              renderChatList();
+            }
           }
-        })
-        .subscribe();
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'messages',
+            filter: `from_user=eq.${currentUserId}`
+          },
+          async (payload) => {
+            console.log('Message sent:', payload);
+            if (payload.new.to_user === currentChatUserId) {
+              await loadMessages();
+              renderChatList();
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log('Subscription status:', status);
+        });
     }
 
     async function sendMessage() {
@@ -918,13 +979,20 @@
         is_voice: false
       });
       
-      if (error) { console.error('Send error:', error); showToast('Failed to send message'); return; }
+      if (error) {
+        console.error('Send error:', error);
+        showToast('Failed to send message');
+        return;
+      }
       
       await loadMessages();
       renderChatList();
+      
+      const area = document.getElementById('messagesArea');
+      area.scrollTop = area.scrollHeight;
     }
 
-    // Voice Recording Functions
+    // FIXED VOICE RECORDING
     async function toggleVoiceRecording() {
       if (!isRecording) {
         try {
@@ -937,54 +1005,85 @@
           };
           
           mediaRecorder.onstop = async () => {
-            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
             await sendVoiceMessage(audioBlob);
             stream.getTracks().forEach(track => track.stop());
           };
           
           mediaRecorder.start();
           isRecording = true;
-          document.getElementById('voiceRecordBtn').classList.add('recording');
-          document.getElementById('voiceRecordBtn').innerHTML = '<i class="fas fa-stop"></i>';
+          const recordBtn = document.getElementById('voiceRecordBtn');
+          recordBtn.classList.add('recording');
+          recordBtn.innerHTML = '<i class="fas fa-stop"></i>';
           showToast('🎤 Recording... Click again to stop');
         } catch(err) {
-          showToast('Microphone access denied');
+          console.error('Microphone error:', err);
+          showToast('❌ Microphone access denied. Please allow microphone permission.');
         }
       } else {
-        mediaRecorder.stop();
-        isRecording = false;
-        document.getElementById('voiceRecordBtn').classList.remove('recording');
-        document.getElementById('voiceRecordBtn').innerHTML = '<i class="fas fa-microphone"></i>';
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+          mediaRecorder.stop();
+          isRecording = false;
+          const recordBtn = document.getElementById('voiceRecordBtn');
+          recordBtn.classList.remove('recording');
+          recordBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+        }
       }
     }
 
     async function sendVoiceMessage(audioBlob) {
-      if (!currentChatUserId) return;
+      if (!currentChatUserId) {
+        showToast('No chat selected');
+        return;
+      }
       
-      const fileName = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.wav`;
-      const filePath = `voice_messages/${currentUserId}/${fileName}`;
+      const fileName = `voice_${Date.now()}_${Math.random().toString(36).substr(2, 6)}.webm`;
+      const filePath = `${currentUserId}/${fileName}`;
       
-      const { error: uploadError } = await supabaseClient.storage
-        .from('chat_voice')
-        .upload(filePath, audioBlob);
+      showToast('📤 Sending voice message...');
       
-      if (uploadError) { showToast('Failed to send voice message'); return; }
-      
-      const { data: urlData } = supabaseClient.storage.from('chat_voice').getPublicUrl(filePath);
-      
-      const { error } = await supabaseClient.from('messages').insert({
-        from_user: currentUserId,
-        to_user: currentChatUserId,
-        text: 'Voice message',
-        seen: false,
-        is_voice: true,
-        voice_url: urlData.publicUrl
-      });
-      
-      if (error) { showToast('Failed to send voice message'); return; }
-      
-      await loadMessages();
-      renderChatList();
+      try {
+        const { error: uploadError } = await supabaseClient.storage
+          .from('chat_voice')
+          .upload(filePath, audioBlob);
+        
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          showToast('❌ Failed to send voice message');
+          return;
+        }
+        
+        const { data: urlData } = supabaseClient.storage.from('chat_voice').getPublicUrl(filePath);
+        
+        const { error } = await supabaseClient.from('messages').insert({
+          from_user: currentUserId,
+          to_user: currentChatUserId,
+          text: '🎤 Voice message',
+          seen: false,
+          is_voice: true,
+          voice_url: urlData.publicUrl
+        });
+        
+        if (error) {
+          console.error('DB insert error:', error);
+          showToast('❌ Failed to save voice message');
+          return;
+        }
+        
+        showToast('✅ Voice message sent!');
+        await loadMessages();
+        renderChatList();
+        
+      } catch (err) {
+        console.error('Voice message error:', err);
+        showToast('❌ Failed to send voice message');
+      }
+    }
+
+    function playVoiceMessage(url) {
+      const audio = new Audio(url);
+      audio.play();
+      showToast('🎤 Playing voice message');
     }
 
     function formatTime(isoStr) {
