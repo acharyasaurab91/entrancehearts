@@ -74,6 +74,25 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
     }
+    .back-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      padding: 8px 16px;
+      border-radius: 100px;
+      transition: all 0.3s;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 20, 147, 0.2);
+    }
+    .back-btn:hover {
+      background: rgba(255, 20, 147, 0.15);
+      color: #FF6B9D;
+      transform: translateX(-3px);
+    }
     .mobile-menu-btn {
       display: none;
       background: rgba(255,20,147,0.15);
@@ -86,7 +105,6 @@
     }
     @media (max-width: 768px) {
       .mobile-menu-btn { display: block; }
-      .nav-links { display: none; }
     }
     .mobile-menu {
       position: fixed;
@@ -108,7 +126,6 @@
       color: white;
       text-decoration: none;
       border-radius: 12px;
-      transition: all 0.2s;
     }
     .mobile-menu-item:hover {
       background: rgba(255,20,147,0.15);
@@ -284,7 +301,6 @@
       border-radius: 24px;
       padding: 22px;
       margin-bottom: 16px;
-      transition: all 0.3s;
     }
     .info-card:hover {
       border-color: rgba(255,20,147,0.3);
@@ -334,7 +350,6 @@
       padding: 6px 16px;
       border-radius: 100px;
       font-size: 0.75rem;
-      transition: all 0.2s;
     }
     .tag:hover {
       border-color: #FF6B9D;
@@ -366,6 +381,27 @@
     .edit-btn:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
+    }
+    .delete-account-btn {
+      width: 100%;
+      padding: 15px;
+      background: rgba(255, 68, 68, 0.15);
+      border: 1px solid rgba(255, 68, 68, 0.3);
+      border-radius: 100px;
+      color: #ff6666;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .delete-account-btn:hover {
+      background: rgba(255, 68, 68, 0.3);
+      border-color: #ff4444;
+      color: #ff4444;
+      transform: translateY(-2px);
     }
     .logout-btn {
       width: 100%;
@@ -408,7 +444,7 @@
       border-top: 1px solid rgba(255,20,147,0.3);
       z-index: 400;
       transform: translateY(100%);
-      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+      transition: transform 0.35s ease;
       max-height: 90vh;
       overflow-y: auto;
       padding-bottom: 30px;
@@ -437,7 +473,6 @@
       color: rgba(255, 255, 255, 0.5);
       cursor: pointer;
       padding: 4px;
-      transition: all 0.2s;
     }
     .sheet-close:hover { color: #FF6B9D; }
     .sheet-body { padding: 24px; }
@@ -457,7 +492,6 @@
       margin-bottom: 14px;
       cursor: pointer;
       position: relative;
-      transition: all 0.3s;
     }
     .photo-preview-wrap:hover { transform: scale(1.02); }
     .photo-preview-inner {
@@ -522,7 +556,6 @@
       font-size: 0.9rem;
       font-family: 'Inter', sans-serif;
       outline: none;
-      transition: all 0.2s;
     }
     .field-input:focus {
       border-color: #FF1493;
@@ -548,7 +581,6 @@
       color: rgba(255, 255, 255, 0.65);
       font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.2s;
       background: rgba(255, 255, 255, 0.03);
     }
     .int-tag:hover {
@@ -573,7 +605,6 @@
       font-weight: 700;
       cursor: pointer;
       margin-top: 16px;
-      transition: all 0.3s;
     }
     .save-btn:hover {
       transform: translateY(-3px);
@@ -582,7 +613,6 @@
     .save-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      transform: none;
     }
     
     .toast {
@@ -645,7 +675,10 @@
   <!-- Premium Navbar -->
   <nav class="navbar" id="navbar">
     <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
-      <a href="index.html" class="logo">💕 EntranceHearts</a>
+      <div style="display: flex; align-items: center; gap: 20px;">
+        <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+        <a href="index.html" class="logo">💕 EntranceHearts</a>
+      </div>
       <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
         <a href="browse.html" class="btn-ghost">🔥 Discover</a>
         <a href="chat.html" class="btn-ghost">💬 Chats</a>
@@ -707,7 +740,7 @@
 
       <div class="field-group">
         <div class="field-label"><i class="fas fa-user"></i> Name</div>
-        <input class="field-input" id="editName" type="text" placeholder="Your full name" maxlength="40"/>
+            <input class="field-input" id="editName" type="text" placeholder="Your full name" maxlength="40"/>
       </div>
 
       <div class="field-group">
@@ -725,7 +758,7 @@
         <textarea class="field-input" id="editBio" placeholder="Write something about yourself..." maxlength="200"></textarea>
       </div>
 
-          <div class="field-group">
+      <div class="field-group">
         <div class="field-label"><i class="fas fa-graduation-cap"></i> Exam / Category</div>
         <select class="field-input" id="editCategory">
           <option value="cee">🏥 CEE Aspirant</option>
@@ -799,14 +832,12 @@
       if (!data.session) { window.location.href = 'login.html'; return; }
       currentUserId = data.session.user.id;
 
-      
-  // ✅ ADD THIS LINE - Fix back button
-  const backBtn = document.querySelector('.back-btn');
-  if (backBtn) backBtn.href = 'browse.html';
+      // Fix back button for logged-in users
+      const backBtn = document.querySelector('.back-btn');
+      if (backBtn) backBtn.href = 'browse.html';
 
-  const { data: profile } = await supabaseClient
-    .from('profiles').select('*').eq('id', currentUserId).single();
-  // ... rest of code
+      const { data: profile } = await supabaseClient
+        .from('profiles').select('*').eq('id', currentUserId).single();
       
       if (!profile) { window.location.href = 'signup.html'; return; }
       currentProfile = profile;
@@ -892,12 +923,10 @@
         </div>
 
         <div class="action-btns">
-  <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
-  <button class="delete-account-btn" onclick="deleteMyAccount()">
-    <i class="fas fa-trash-alt"></i> Delete My Account
-  </button>
-  <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
-</div>`;
+          <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
+          <button class="delete-account-btn" onclick="deleteMyAccount()"><i class="fas fa-trash-alt"></i> Delete My Account</button>
+          <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>`;
     }
 
     function buildInterestsGrid(selected) {
@@ -969,77 +998,58 @@
       setTimeout(() => { progressEl.style.display = 'none'; }, 1500);
     });
 
-
     async function deleteMyAccount() {
-  if (!confirm('⚠️ WARNING: This will permanently delete your account, all your messages, likes, confessions, and study materials. This action CANNOT be undone.\n\nAre you sure you want to delete your account?')) {
-    return;
-  }
-  
-  if (!confirm('Type "DELETE" to confirm account deletion:')) {
-    const confirmation = prompt('Type DELETE to confirm:');
-    if (confirmation !== 'DELETE') {
-      showToast('Account deletion cancelled');
-      return;
-    }
-  }
-  
-  const btn = event.target;
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
-  
-  try {
-    // Delete user's likes
-    await supabaseClient.from('likes').delete().eq('from_user', currentUserId);
-    await supabaseClient.from('likes').delete().eq('to_user', currentUserId);
-    
-    // Delete user's messages
-    await supabaseClient.from('messages').delete().or(`from_user.eq.${currentUserId},to_user.eq.${currentUserId}`);
-    
-    // Delete user's confessions
-    await supabaseClient.from('confessions').delete().eq('user_id', currentUserId);
-    
-    // Delete user's comments
-    await supabaseClient.from('confession_comments').delete().eq('user_id', currentUserId);
-    
-    // Delete user's study materials
-    await supabaseClient.from('study_materials').delete().eq('uploaded_by', currentUserId);
-    
-    // Delete user's avatar from storage
-    const { data: files } = await supabaseClient.storage.from('avatars').list(currentUserId);
-    if (files && files.length > 0) {
-      for (const file of files) {
-        await supabaseClient.storage.from('avatars').remove([`${currentUserId}/${file.name}`]);
+      if (!confirm('⚠️ WARNING: This will permanently delete your account, all your messages, likes, confessions, and study materials. This action CANNOT be undone.\n\nAre you sure you want to delete your account?')) {
+        return;
       }
-    }
-    
-    // Delete user's voice messages
-    const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(currentUserId);
-    if (voiceFiles && voiceFiles.length > 0) {
-      for (const file of voiceFiles) {
-        await supabaseClient.storage.from('chat_voice').remove([`${currentUserId}/${file.name}`]);
+      
+      const confirmation = prompt('Type "DELETE" to confirm account deletion:');
+      if (confirmation !== 'DELETE') {
+        showToast('Account deletion cancelled');
+        return;
       }
-    }
-    
-    // Finally delete the user profile
-    await supabaseClient.from('profiles').delete().eq('id', currentUserId);
-    
-    // Sign out
-    await supabaseClient.auth.signOut();
-    localStorage.clear();
-    
-    alert('✅ Your account has been permanently deleted.');
-    window.location.href = 'index.html';
-    
-  } catch (err) {
-    console.error('Delete error:', err);
-    showToast('❌ Failed to delete account: ' + err.message);
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete My Account';
-  }
+      
+      const btn = event.target;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+      
+      try {
+        await supabaseClient.from('likes').delete().eq('from_user', currentUserId);
+        await supabaseClient.from('likes').delete().eq('to_user', currentUserId);
+        await supabaseClient.from('messages').delete().or(`from_user.eq.${currentUserId},to_user.eq.${currentUserId}`);
+        await supabaseClient.from('confessions').delete().eq('user_id', currentUserId);
+        await supabaseClient.from('confession_comments').delete().eq('user_id', currentUserId);
+        await supabaseClient.from('study_materials').delete().eq('uploaded_by', currentUserId);
+        
+        const { data: files } = await supabaseClient.storage.from('avatars').list(currentUserId);
+        if (files && files.length > 0) {
+          for (const file of files) {
+            await supabaseClient.storage.from('avatars').remove([`${currentUserId}/${file.name}`]);
+          }
+        }
+        
+        const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(currentUserId);
+        if (voiceFiles && voiceFiles.length > 0) {
+          for (const file of voiceFiles) {
+            await supabaseClient.storage.from('chat_voice').remove([`${currentUserId}/${file.name}`]);
+          }
+        }
+        
+        await supabaseClient.from('profiles').delete().eq('id', currentUserId);
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
+        
+        alert('✅ Your account has been permanently deleted.');
+        window.location.href = 'index.html';
+        
+      } catch (err) {
+        console.error('Delete error:', err);
+        showToast('❌ Failed to delete account: ' + err.message);
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-trash-alt"></i> Delete My Account';
+      }
     }
 
-      
-    
     async function saveProfile() {
       const saveBtn = document.getElementById('saveBtn');
       const name = document.getElementById('editName').value.trim();
@@ -1131,7 +1141,6 @@
       });
     }
 
-    // Navbar scroll effect
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
       if (navbar && window.scrollY > 50) navbar.classList.add('scrolled');
