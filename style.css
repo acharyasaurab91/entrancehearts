@@ -867,3 +867,24 @@ h1, h2, h3 {
   background: rgba(255,20,147,0.15);
   color: var(--pink-secondary);
    }
+
+.delete-account-btn {
+  width: 100%;
+  padding: 14px;
+  background: rgba(255, 68, 68, 0.15);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 100px;
+  color: #ff6666;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.delete-account-btn:hover {
+  background: rgba(255, 68, 68, 0.3);
+  border-color: #ff4444;
+  color: #ff4444;
+}
