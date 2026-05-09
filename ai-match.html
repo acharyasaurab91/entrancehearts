@@ -2,30 +2,354 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>AI Match — EntranceHearts 💕</title>
   <link rel="stylesheet" href="style.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase.js"></script>
   
+  <style>
+    /* AI Match specific premium styles */
+    .ai-page {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 80px 24px 100px;
+    }
+    
+    .ai-hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .ai-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, rgba(230,57,70,0.2), rgba(255,107,157,0.1));
+      border: 1px solid var(--border-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 20px;
+      animation: float 3s ease-in-out infinite;
+    }
+    
+    .ai-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .ai-sub {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .question-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-light);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    
+    .question-card:hover {
+      border-color: var(--border-glow);
+    }
+    
+    .question-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+    
+    .question-text {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+    
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    
+    .option-btn {
+      padding: 12px;
+      background: var(--bg-card-hover);
+      border: 1px solid var(--border-medium);
+      border-radius: 14px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    
+    .option-btn.selected {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(255, 107, 157, 0.1);
+    }
+    
+    .ai-textarea {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-medium);
+      border-radius: 16px;
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .ai-textarea:focus {
+      border-color: var(--primary);
+    }
+    
+    .analyze-btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--gradient-primary);
+      border: none;
+      border-radius: 50px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    
+    .analyze-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-glow);
+    }
+    
+    .loading-area {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--bg-card);
+      border-radius: 28px;
+      display: none;
+    }
+    
+    .loading-spin {
+      font-size: 3rem;
+      animation: spin 1s linear infinite;
+      display: block;
+      margin-bottom: 16px;
+    }
+    
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .result-area {
+      display: none;
+    }
+    
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-glow);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .result-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 14px;
+    }
+    
+    .result-text {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    
+    .matched-person {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 16px;
+    }
+    
+    .matched-person:hover {
+      background: var(--bg-card-hover);
+    }
+    
+    .matched-avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--gradient-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    
+    .matched-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .matched-name {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .matched-meta {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    
+    .compat-bar {
+      height: 4px;
+      background: var(--border-medium);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    
+    .compat-fill {
+      height: 100%;
+      background: var(--gradient-primary);
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+    
+    .compat-label {
+      font-size: 0.7rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+    
+    .chat-now-btn {
+      background: rgba(255, 107, 157, 0.15);
+      border: 1px solid rgba(255, 107, 157, 0.3);
+      padding: 8px 20px;
+      border-radius: 50px;
+      color: var(--primary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    
+    .chat-now-btn:hover {
+      background: var(--primary);
+      color: white;
+    }
+    
+    .retry-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 1px solid var(--border-medium);
+      border-radius: 50px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    
+    .retry-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-glow);
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.85rem;
+      z-index: 200;
+      display: none;
+    }
+    
+    .toast.show {
+      display: block;
+      animation: fadeInUp 0.3s ease;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+  </style>
 </head>
 <body>
+
+  <!-- Premium Navbar -->
   <nav class="navbar">
-  <div class="logo">💕 EntranceHearts</div>
-  <div style="display: flex; gap: 10px; align-items: center;">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-  </div>
+    <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
+      <a href="index.html" class="logo" style="text-decoration: none;">💕 EntranceHearts</a>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <a href="browse.html" class="btn-ghost" style="padding: 8px 20px;">Discover</a>
+        <a href="chat.html" class="btn-ghost" style="padding: 8px 20px;">Chats</a>
+        <a href="profile.html" class="btn-primary" style="padding: 8px 20px;">Profile</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn" style="display: none;">☰</button>
+    </div>
   </nav>
 
-  <div class="page">
+  <div class="ai-page">
     <div class="ai-hero">
       <div class="ai-icon">🤖</div>
       <div class="ai-title">AI Matchmaker</div>
       <div class="ai-sub">Answer a few questions — our AI finds your perfect match from real users</div>
     </div>
 
-    <!-- QUESTION FORM -->
+    <!-- Question Form -->
     <div id="formArea">
       <div class="question-card">
         <div class="question-title">🎯 Your Style</div>
@@ -36,14 +360,14 @@
           <button class="option-btn" onclick="pick(this,'study')">🎵 With music</button>
           <button class="option-btn" onclick="pick(this,'study')">🌙 Late night</button>
         </div>
-        <div class="question-text" style="margin-top:18px">Your personality?</div>
+        <div class="question-text" style="margin-top:20px">Your personality?</div>
         <div class="options-grid">
           <button class="option-btn" onclick="pick(this,'personality')">😊 Introvert</button>
           <button class="option-btn" onclick="pick(this,'personality')">🎉 Extrovert</button>
           <button class="option-btn" onclick="pick(this,'personality')">⚖️ Ambivert</button>
           <button class="option-btn" onclick="pick(this,'personality')">🤔 Depends</button>
         </div>
-        <div class="question-text" style="margin-top:18px">What matters most?</div>
+        <div class="question-text" style="margin-top:20px">What matters most?</div>
         <div class="options-grid">
           <button class="option-btn" onclick="pick(this,'priority')">🧠 Same goals</button>
           <button class="option-btn" onclick="pick(this,'priority')">😂 Good humor</button>
@@ -63,18 +387,18 @@
       </button>
     </div>
 
-    <!-- LOADING -->
+    <!-- Loading -->
     <div class="loading-area" id="loadingArea">
       <span class="loading-spin">🤖</span>
-      <p style="color:rgba(255,255,255,0.4);font-size:0.88rem">
+      <p style="color: var(--text-muted); font-size: 0.88rem;">
         AI is analyzing your personality...
       </p>
-      <p style="color:rgba(255,255,255,0.2);font-size:0.75rem;margin-top:8px">
+      <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px; opacity: 0.6;">
         Finding the best match for you
       </p>
     </div>
 
-    <!-- RESULT -->
+    <!-- Result -->
     <div class="result-area" id="resultArea">
       <div class="result-card">
         <div class="result-title">🤖 AI Analysis</div>
@@ -88,6 +412,7 @@
     </div>
   </div>
 
+  <!-- Bottom Navigation -->
   <div class="bottom-nav">
     <a href="browse.html" class="nav-item"><span>🔥</span><span>Discover</span></a>
     <a href="chat.html" class="nav-item"><span>💬</span><span>Chats</span></a>
@@ -107,11 +432,8 @@
     let currentUserId = null;
     let currentUserProfile = null;
     let allProfiles = [];
-    
-    // User's picks
     let picks = { study: '', personality: '', priority: '' };
 
-    // Load session and profiles
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
       if (!data.session) { 
@@ -120,19 +442,16 @@
       }
       currentUserId = data.session.user.id;
       
-      // Get current user profile
       const { data: profile } = await supabaseClient
         .from('profiles').select('*').eq('id', currentUserId).single();
       currentUserProfile = profile;
       
-      // Get all other profiles
       const { data: profiles } = await supabaseClient
         .from('profiles').select('*').neq('id', currentUserId);
       allProfiles = profiles || [];
     }
 
     function pick(btn, group) {
-      // Remove selected class from same group
       document.querySelectorAll('.option-btn').forEach(b => {
         if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${group}'`)) {
           b.classList.remove('selected');
@@ -150,67 +469,49 @@
         return;
       }
       
-      // Check if all questions answered
       if (!picks.study || !picks.personality || !picks.priority) {
         showToast('Please answer all questions first!');
         return;
       }
 
-      // Hide form, show loading
       document.getElementById('formArea').style.display = 'none';
       document.getElementById('loadingArea').style.display = 'block';
 
-      // Simple AI matching logic (since Claude API requires backend)
-      // This simulates AI matching locally
       setTimeout(() => {
         performLocalMatching(desc);
       }, 2000);
     }
 
     function performLocalMatching(userDesc) {
-      // Calculate compatibility score for each profile
       const scoredProfiles = allProfiles.map(profile => {
-        let score = 50; // Base score
+        let score = 50;
         
-        // Same category = +20 points
         if (profile.category === currentUserProfile?.category) score += 20;
-        
-        // Same looking_for = +15 points
         if (profile.looking_for === currentUserProfile?.looking_for) score += 15;
         
-        // Interest matching
         const userInterests = currentUserProfile?.interests || [];
         const profileInterests = profile.interests || [];
         const commonInterests = userInterests.filter(i => profileInterests.includes(i)).length;
         score += Math.min(commonInterests * 5, 20);
         
-        // Age proximity (within 3 years = +10)
         const ageDiff = Math.abs((profile.age || 20) - (currentUserProfile?.age || 20));
         if (ageDiff <= 3) score += 10;
         
-        // Cap at 98
         return { ...profile, compatibility: Math.min(score, 98) };
       });
       
-      // Sort by compatibility
       scoredProfiles.sort((a, b) => b.compatibility - a.compatibility);
-      
-      // Get top 3 matches
       const topMatches = scoredProfiles.slice(0, 3);
       
-      // Generate AI-like analysis text
       const analysisText = `Based on your profile as a ${categoryLabels[currentUserProfile?.category] || 'student'} from ${currentUserProfile?.location || 'Nepal'}, who loves ${(currentUserProfile?.interests || ['studying']).slice(0,2).join(' and ')}, and your preference for ${picks.priority.toLowerCase()}, our AI has analyzed ${allProfiles.length}+ profiles.
 
-      You study best ${picks.study.toLowerCase()} and have a ${picks.personality.toLowerCase()} personality. This makes you most compatible with people who share similar study habits and values.
+You study best ${picks.study.toLowerCase()} and have a ${picks.personality.toLowerCase()} personality. This makes you most compatible with people who share similar study habits and values.
 
-      ✨ Your top matches are ready below! ✨`;
+✨ Your top matches are ready below! ✨`;
       
-      // Display results
       document.getElementById('loadingArea').style.display = 'none';
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('aiText').textContent = analysisText;
-      
-      // Render matches
       renderMatches(topMatches);
     }
 
@@ -218,7 +519,7 @@
       const container = document.getElementById('matchedList');
       
       if (matches.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.4)">No matches found. Check back later!</div>';
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No matches found. Check back later!</div>';
         return;
       }
       
@@ -245,24 +546,14 @@
     }
 
     function goToChat(userId) {
-      // Store the user ID to chat with in localStorage
       localStorage.setItem('ehChatWith', userId);
       window.location.href = 'chat.html';
     }
 
     function resetAI() {
-      // Reset picks
       picks = { study: '', personality: '', priority: '' };
-      
-      // Clear selections
-      document.querySelectorAll('.option-btn').forEach(btn => {
-        btn.classList.remove('selected');
-      });
-      
-      // Clear textarea
+      document.querySelectorAll('.option-btn').forEach(btn => btn.classList.remove('selected'));
       document.getElementById('selfDesc').value = '';
-      
-      // Show form, hide results
       document.getElementById('resultArea').style.display = 'none';
       document.getElementById('formArea').style.display = 'block';
     }
@@ -274,65 +565,43 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Check for pending chat on load
-    async function checkPendingChat() {
-      const chatWith = localStorage.getItem('ehChatWith');
-      if (chatWith) {
-        localStorage.removeItem('ehChatWith');
+    // Dark mode toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const themeToggle = document.getElementById('themeToggle');
+      
+      if (isDark) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        if (themeToggle) themeToggle.textContent = '🌙';
+      } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        if (themeToggle) themeToggle.textContent = '☀️';
       }
     }
-
-    init();
-    checkPendingChat();
-  </script>
-
-
-    <script>
-  function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const themeToggle = document.getElementById('themeToggle');
     
-    if (currentTheme === 'dark') {
-      html.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      if (themeToggle) themeToggle.textContent = '🌙';
-    } else {
-      html.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
+    const savedTheme = localStorage.getItem('theme');
+    const themeToggle = document.getElementById('themeToggle');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
       if (themeToggle) themeToggle.textContent = '☀️';
     }
-  }
-  
-  const savedTheme = localStorage.getItem('theme');
-  const themeToggle = document.getElementById('themeToggle');
-  if (savedTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.textContent = '☀️';
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    if (themeToggle) themeToggle.textContent = '🌙';
-  }
-    </script>
 
+    // Page transition
+    document.body.classList.add('fade-in');
     
-    
-  <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar && window.scrollY > 50) {
         navbar.classList.add('scrolled');
-      } else {
+      } else if (navbar) {
         navbar.classList.remove('scrolled');
       }
-    }
-  });
+    });
+
+    init();
   </script>
-  
 </body>
 </html>
