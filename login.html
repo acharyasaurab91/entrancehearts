@@ -316,7 +316,7 @@
     </div>
   </div>
 
-  <!-- OTP Reset Password Modal - STEP 1: Email -->
+  <!-- STEP 1: Email Modal -->
   <div id="resetEmailModal" class="modal-overlay">
     <div class="modal-content">
       <div style="font-size: 2.5rem; margin-bottom: 16px;">🔐</div>
@@ -335,7 +335,7 @@
     </div>
   </div>
 
-  <!-- OTP Reset Password Modal - STEP 2: Verify OTP -->
+  <!-- STEP 2: OTP Verification Modal -->
   <div id="otpModal" class="modal-overlay">
     <div class="modal-content">
       <div style="font-size: 2rem; margin-bottom: 16px;">📧</div>
@@ -354,14 +354,14 @@
       <button id="verifyOtpBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1493, #FF6B9D); border: none; border-radius: 100px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
         Verify OTP
       </button>
-      <div class="resend-link" style="text-align: center; margin-top: 12px;">
+      <div style="text-align: center; margin-top: 12px;">
         <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">Didn't receive code? </span>
         <button id="resendOtpBtn" style="background: none; border: none; color: #FF6B9D; cursor: pointer; font-size: 0.75rem;">Resend OTP</button>
       </div>
     </div>
   </div>
 
-  <!-- OTP Reset Password Modal - STEP 3: New Password -->
+  <!-- STEP 3: New Password Modal -->
   <div id="newPasswordModal" class="modal-overlay">
     <div class="modal-content">
       <div style="font-size: 2rem; margin-bottom: 16px;">🔐</div>
@@ -380,9 +380,8 @@
   </div>
 
   <script>
-    // ========== ORIGINAL LOGIN FUNCTIONS (KEPT INTACT) ==========
+    // ========== ORIGINAL LOGIN FUNCTIONS ==========
     let resetEmailGlobal = '';
-    let resetOtpGlobal = '';
 
     async function checkSession() {
       const { data } = await supabaseClient.auth.getSession();
@@ -465,8 +464,7 @@
       if (e.key === 'Enter') handleLogin();
     });
 
-    // ========== OTP PASSWORD RESET FUNCTIONS (NEW) ==========
-    
+    // ========== MODAL CONTROLS ==========
     function openResetEmailModal() {
       document.getElementById('resetEmailModal').classList.add('active');
       document.getElementById('resetEmail').value = '';
@@ -478,7 +476,6 @@
 
     function closeOtpModal() {
       document.getElementById('otpModal').classList.remove('active');
-      // Clear OTP inputs
       for (let i = 1; i <= 6; i++) {
         document.getElementById(`otp${i}`).value = '';
       }
@@ -509,7 +506,10 @@
         .map(id => document.getElementById(id).value).join('');
     }
 
-    // Send OTP via Supabase (using signInWithOtp)
+    // ========== OTP PASSWORD RESET ==========
+    let resendTimer = null;
+    let resendSeconds = 30;
+
     async function sendOtp() {
       const email = document.getElementById('resetEmail').value.trim();
       if (!email) {
@@ -523,12 +523,9 @@
       btn.textContent = 'Sending...';
 
       try {
-        // Send OTP via Supabase magic link (will send email with code)
         const { error } = await supabaseClient.auth.signInWithOtp({
           email: email,
-          options: {
-            shouldCreateUser: false  // Don't create new user, just send OTP
-          }
+          options: { shouldCreateUser: false }
         });
 
         if (error) throw error;
@@ -542,7 +539,22 @@
         showSuccess('OTP sent to your email!');
         
         // Start resend timer
-        startResendTimer();
+        resendSeconds = 30;
+        const resendBtn = document.getElementById('resendOtpBtn');
+        resendBtn.disabled = true;
+        resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+        
+        if (resendTimer) clearInterval(resendTimer);
+        resendTimer = setInterval(() => {
+          resendSeconds--;
+          if (resendSeconds <= 0) {
+            clearInterval(resendTimer);
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend OTP';
+          } else {
+            resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+          }
+        }, 1000);
 
       } catch (err) {
         showError(err.message || 'Failed to send OTP. Make sure email exists.');
@@ -552,29 +564,6 @@
       btn.textContent = originalText;
     }
 
-    let resendTimer = null;
-    let resendSeconds = 30;
-
-    function startResendTimer() {
-      const resendBtn = document.getElementById('resendOtpBtn');
-      resendSeconds = 30;
-      resendBtn.disabled = true;
-      resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
-      
-      if (resendTimer) clearInterval(resendTimer);
-      resendTimer = setInterval(() => {
-        resendSeconds--;
-        if (resendSeconds <= 0) {
-          clearInterval(resendTimer);
-          resendBtn.disabled = false;
-          resendBtn.textContent = 'Resend OTP';
-        } else {
-          resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
-        }
-      }, 1000);
-    }
-
-    // Verify OTP and open new password modal
     async function verifyOtp() {
       const otp = getOtpValue();
       if (otp.length !== 6) {
@@ -588,7 +577,6 @@
       btn.textContent = 'Verifying...';
 
       try {
-        // Verify OTP with Supabase
         const { error } = await supabaseClient.auth.verifyOtp({
           email: resetEmailGlobal,
           token: otp,
@@ -597,7 +585,6 @@
 
         if (error) throw error;
 
-        // OTP verified, open new password modal
         closeOtpModal();
         document.getElementById('newPasswordModal').classList.add('active');
         showSuccess('OTP verified! Set your new password.');
@@ -610,7 +597,6 @@
       btn.textContent = originalText;
     }
 
-    // Update password after OTP verification
     async function updatePassword() {
       const newPassword = document.getElementById('newPassword').value;
       const confirmPassword = document.getElementById('confirmPassword').value;
@@ -631,7 +617,6 @@
       btn.textContent = 'Updating...';
 
       try {
-        // Update password with Supabase (user is already authenticated via OTP)
         const { error } = await supabaseClient.auth.updateUser({
           password: newPassword
         });
@@ -640,8 +625,6 @@
 
         closeNewPasswordModal();
         showSuccess('Password updated successfully! Please login with your new password.');
-        
-        // Clear any remaining OTP data
         resetEmailGlobal = '';
         
       } catch (err) {
@@ -652,7 +635,6 @@
       btn.textContent = originalText;
     }
 
-    // Resend OTP
     async function resendOtp() {
       try {
         const { error } = await supabaseClient.auth.signInWithOtp({
@@ -661,9 +643,24 @@
         });
         
         if (error) throw error;
+            showSuccess('New OTP sent!');
         
-        showSuccess('New OTP sent!');
-        startResendTimer();
+        // Restart timer
+        resendSeconds = 30;
+        const resendBtn = document.getElementById('resendOtpBtn');
+        resendBtn.disabled = true;
+        
+        if (resendTimer) clearInterval(resendTimer);
+        resendTimer = setInterval(() => {
+          resendSeconds--;
+          if (resendSeconds <= 0) {
+            clearInterval(resendTimer);
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend OTP';
+          } else {
+            resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+          }
+        }, 1000);
         
       } catch (err) {
         showError(err.message || 'Failed to resend OTP');
