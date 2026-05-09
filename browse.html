@@ -11,25 +11,21 @@
   <script src="supabase.js"></script>
   
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
       background: #0a0a0f;
       color: #ffffff;
     }
 
+    /* Premium Navbar */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 1000;
-      padding: 16px 32px;
+      padding: 18px 32px;
       background: rgba(10, 10, 15, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 20, 147, 0.2);
@@ -64,15 +60,101 @@
       color: #FF6B9D;
       background: rgba(255, 20, 147, 0.1);
     }
+    .btn-primary-nav {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      color: white;
+      padding: 8px 24px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-primary-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255,20,147,0.15);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #FF6B9D;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-links { display: none; }
+    }
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      right: -100%;
+      width: 280px;
+      background: #141423;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      z-index: 999;
+      transition: right 0.3s;
+    }
+    .mobile-menu.open { right: 16px; }
+    .mobile-menu-item {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .mobile-menu-item:hover {
+      background: rgba(255,20,147,0.15);
+      color: #FF6B9D;
+    }
 
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 107, 157, 0.05));
+      border-bottom: 1px solid rgba(255, 20, 147, 0.15);
+      padding: 100px 24px 50px;
+      text-align: center;
+    }
+    .hero-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .hero-banner h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .hero-banner p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    /* Main Container */
     .page {
       max-width: 480px;
       margin: 0 auto;
-      padding: 90px 16px 100px;
+      padding: 40px 16px 100px;
     }
     
     .page-header {
       margin-bottom: 24px;
+      text-align: center;
     }
     .page-title {
       font-size: 1.8rem;
@@ -96,9 +178,7 @@
       padding-bottom: 4px;
       scrollbar-width: none;
     }
-    .filter-row::-webkit-scrollbar {
-      display: none;
-    }
+    .filter-row::-webkit-scrollbar { display: none; }
     .filter-btn {
       padding: 8px 20px;
       background: rgba(20, 20, 35, 0.8);
@@ -155,13 +235,9 @@
       height: 100%;
       object-fit: cover;
     }
-    .card-photo .fallback-avatar {
-      font-size: 5rem;
-    }
+    .card-photo .fallback-avatar { font-size: 5rem; }
     
-    .card-body {
-      padding: 20px;
-    }
+    .card-body { padding: 20px; }
     .ai-tag {
       display: inline-flex;
       align-items: center;
@@ -181,14 +257,8 @@
       align-items: baseline;
       margin-bottom: 8px;
     }
-    .card-name {
-      font-size: 1.4rem;
-      font-weight: 700;
-    }
-    .card-age {
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 1rem;
-    }
+    .card-name { font-size: 1.4rem; font-weight: 700; }
+    .card-age { color: rgba(255, 255, 255, 0.4); font-size: 1rem; }
     .card-category {
       display: inline-block;
       background: rgba(255, 20, 147, 0.12);
@@ -200,17 +270,8 @@
       font-weight: 600;
       margin-bottom: 12px;
     }
-    .card-location {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.8rem;
-      margin-bottom: 12px;
-    }
-    .card-bio {
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-bottom: 16px;
-    }
+    .card-location { color: rgba(255, 255, 255, 0.5); font-size: 0.8rem; margin-bottom: 12px; }
+    .card-bio { color: rgba(255, 255, 255, 0.7); font-size: 0.85rem; line-height: 1.5; margin-bottom: 16px; }
     .card-interests {
       display: flex;
       flex-wrap: wrap;
@@ -260,10 +321,7 @@
       box-shadow: 0 8px 30px rgba(255, 20, 147, 0.3);
     }
     
-    .loading-state {
-      text-align: center;
-      padding: 60px 20px;
-    }
+    .loading-state { text-align: center; padding: 60px 20px; }
     .loading-spin {
       font-size: 3rem;
       animation: spin 1s linear infinite;
@@ -275,11 +333,7 @@
       to { transform: rotate(360deg); }
     }
     
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      display: none;
-    }
+    .empty-state { text-align: center; padding: 60px 20px; display: none; }
     .e-emoji { font-size: 3rem; margin-bottom: 16px; }
     .empty-state h3 { font-size: 1.2rem; margin-bottom: 8px; }
     .empty-state p { color: rgba(255, 255, 255, 0.4); font-size: 0.85rem; }
@@ -326,11 +380,7 @@
       -webkit-text-fill-color: transparent;
       margin-bottom: 8px;
     }
-    .match-sub {
-      color: rgba(255, 255, 255, 0.5);
-      font-size: 0.85rem;
-      margin-bottom: 24px;
-    }
+    .match-sub { color: rgba(255, 255, 255, 0.5); font-size: 0.85rem; margin-bottom: 24px; }
     .match-btn {
       display: block;
       width: 100%;
@@ -394,21 +444,46 @@
 </head>
 <body>
 
+  <!-- Premium Navbar with Full Navigation -->
   <nav class="navbar" id="navbar">
     <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
       <a href="index.html" class="logo">💕 EntranceHearts</a>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <a href="profile.html" class="btn-ghost">👤 Profile</a>
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <a href="browse.html" class="btn-ghost" style="color: #FF6B9D;">🔥 Discover</a>
         <a href="chat.html" class="btn-ghost">💬 Chats</a>
+        <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
+        <a href="study.html" class="btn-ghost">📚 Study</a>
+        <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
         <a href="ai-match.html" class="btn-ghost">🤖 AI Match</a>
+        <a href="profile.html" class="btn-primary-nav">👤 Profile</a>
       </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
+    <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+    <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
+    <a href="study.html" class="mobile-menu-item">📚 Study</a>
+    <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
+    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
+    <a href="profile.html" class="mobile-menu-item">👤 Profile</a>
+    <a href="login.html" class="mobile-menu-item">🚪 Logout</a>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-icon">🔥✨</div>
+    <h1>Discover Matches</h1>
+    <p>Find your perfect match among aspirants</p>
+  </div>
 
   <div class="page">
     <div class="page-header">
       <div class="page-title">Discover 🔥</div>
-      <div class="page-sub">Find your match among aspirants</div>
+      <div class="page-sub">Swipe right to like, left to pass</div>
     </div>
     
     <div class="filter-row">
@@ -433,6 +508,7 @@
     </div>
   </div>
 
+  <!-- Match Popup -->
   <div class="match-popup" id="matchPopup">
     <div class="match-box">
       <div class="match-hearts">💕</div>
@@ -443,6 +519,7 @@
     </div>
   </div>
 
+  <!-- Bottom Navigation -->
   <div class="bottom-nav">
     <a href="browse.html" class="nav-item active"><span>🔥</span><span>Discover</span></a>
     <a href="chat.html" class="nav-item"><span>💬</span><span>Chats</span></a>
@@ -472,7 +549,6 @@
       }
       currentUserId = data.session.user.id;
       
-      // Load matched users (mutual likes)
       await loadMatchedUsers();
       await loadProfiles();
     }
@@ -496,8 +572,6 @@
         .in('from_user', likedIds);
       
       matchedIds = mutual ? mutual.map(m => m.from_user) : [];
-      
-      // Save matched IDs to localStorage for persistence
       localStorage.setItem('ehMatched', JSON.stringify(matchedIds));
     }
 
@@ -511,7 +585,6 @@
       renderNextCard();
     }
 
-    // Clean up old passed entries (older than 7 days)
     function cleanupOldPassed() {
       const now = Date.now();
       const sevenDays = 7 * 24 * 60 * 60 * 1000;
@@ -526,20 +599,12 @@
       cleanupOldPassed();
       
       return allProfiles.filter(p => {
-        // Don't show already matched users
         if (matchedIds.includes(p.id)) return false;
-        
-        // Don't show passed users (within 7 days)
         const isPassed = passedIds.some(entry => entry.id === p.id);
         if (isPassed) return false;
-        
-        // Don't show already seen/liked users (from old system - for backward compatibility)
         const isSeen = seenIds.includes(p.id);
         if (isSeen) return false;
-        
-        // Apply category filter
         const matchFilter = currentFilter === 'all' || p.category === currentFilter;
-        
         return matchFilter;
       });
     }
@@ -565,7 +630,7 @@
       document.getElementById('emptyState').style.display = 'none';
       currentProfile = filtered[0];
       
-      container.innerHTML = `
+          container.innerHTML = `
         <div class="swipe-card" id="currentCard">
           <div class="card-photo" id="cardPhoto">
             ${getAvatarDisplay(currentProfile)}
@@ -573,13 +638,13 @@
           <div class="card-body">
             <div class="ai-tag">🤖 Suggested for you</div>
             <div class="card-name-row">
-              <div class="card-name">${currentProfile.name || 'Anonymous'}</div>
+              <div class="card-name">${escapeHtml(currentProfile.name || 'Anonymous')}</div>
               <div class="card-age">${currentProfile.age || ''}</div>
             </div>
             <div class="card-category">
               ${categoryLabels[currentProfile.category] || currentProfile.category || 'Student'}
             </div>
-            <div class="card-location">📍 ${currentProfile.location || 'Nepal'}</div>
+            <div class="card-location">📍 ${escapeHtml(currentProfile.location || 'Nepal')}</div>
             ${currentProfile.bio ? `<div class="card-bio">${escapeHtml(currentProfile.bio)}</div>` : ''}
             <div class="card-interests">
               ${(currentProfile.interests || []).map(i => `<span>${escapeHtml(i)}</span>`).join('')}
@@ -598,34 +663,26 @@
       const card = document.getElementById('currentCard');
       card.classList.add('hide-right');
       
-      // Insert like
       await supabaseClient.from('likes').insert({
         from_user: currentUserId, 
         to_user: currentProfile.id
       });
       
-      // Check for mutual like
       const { data: mutual } = await supabaseClient
         .from('likes')
         .select('*')
         .eq('from_user', currentProfile.id)
         .eq('to_user', currentUserId);
       
-      // Add to seen (so it doesn't reappear)
       seenIds.push(currentProfile.id);
       localStorage.setItem('ehSeen', JSON.stringify(seenIds));
       
-      // If mutual, add to matched list
       if (mutual && mutual.length > 0) {
         matchedIds.push(currentProfile.id);
         localStorage.setItem('ehMatched', JSON.stringify(matchedIds));
-        setTimeout(() => {
-          showMatch(currentProfile.name);
-        }, 400);
+        setTimeout(() => { showMatch(currentProfile.name); }, 400);
       } else {
-        setTimeout(() => {
-          renderNextCard();
-        }, 400);
+        setTimeout(() => { renderNextCard(); }, 400);
       }
     }
 
@@ -634,20 +691,12 @@
       const card = document.getElementById('currentCard');
       card.classList.add('hide-left');
       
-      // Add to passed list with timestamp
-      passedIds.push({
-        id: currentProfile.id,
-        timestamp: Date.now()
-      });
+      passedIds.push({ id: currentProfile.id, timestamp: Date.now() });
       localStorage.setItem('ehPassed', JSON.stringify(passedIds));
-      
-      // Also add to seen for backward compatibility
       seenIds.push(currentProfile.id);
       localStorage.setItem('ehSeen', JSON.stringify(seenIds));
       
-      setTimeout(() => {
-        renderNextCard();
-      }, 400);
+      setTimeout(() => { renderNextCard(); }, 400);
     }
 
     function showMatch(name) {
@@ -673,7 +722,23 @@
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
-              return m;
+        return m;
+      });
+    }
+
+    // Mobile Menu
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.onclick = () => {
+        mobileMenu.classList.toggle('open');
+        menuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+      };
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          menuBtn.textContent = '☰';
+        }
       });
     }
 
