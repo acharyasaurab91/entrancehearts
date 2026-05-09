@@ -7,11 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       font-family: 'Poppins', sans-serif;
@@ -21,9 +17,7 @@
 
     .navbar {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
+      top: 0; left: 0; right: 0;
       background: rgba(10, 10, 15, 0.95);
       backdrop-filter: blur(20px);
       padding: 16px 20px;
@@ -49,25 +43,31 @@
       font-size: 0.9rem;
     }
 
+    .admin-badge {
+      background: rgba(230, 57, 70, 0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #ff6b9d;
+    }
+
     .container {
       max-width: 800px;
       margin: 0 auto;
       padding: 80px 20px 100px;
     }
 
-    /* Hero Section */
     .hero {
       text-align: center;
       margin-bottom: 30px;
     }
 
     .hero h1 {
-      font-size: 2rem;
+      font-size: 1.8rem;
       background: linear-gradient(135deg, #ff6b9d, #e63946);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 8px;
     }
 
     .hero p {
@@ -75,7 +75,7 @@
       font-size: 0.85rem;
     }
 
-    /* Category Tabs */
+    /* Category Tabs - ORGANIZED */
     .category-tabs {
       display: flex;
       gap: 12px;
@@ -139,7 +139,7 @@
       flex-wrap: wrap;
     }
 
-    .form-row input, .form-row select {
+    .form-row input, .form-row select, .form-row textarea {
       flex: 1;
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -150,7 +150,12 @@
       font-size: 0.85rem;
     }
 
-    .form-row input:focus, .form-row select:focus {
+    .form-row textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
       outline: none;
       border-color: #ff6b9d;
     }
@@ -174,11 +179,6 @@
       display: none;
     }
 
-    .file-label {
-      cursor: pointer;
-      color: #ff6b9d;
-    }
-
     .selected-file {
       font-size: 0.75rem;
       color: rgba(255, 255, 255, 0.5);
@@ -200,8 +200,8 @@
       transform: translateY(-2px);
     }
 
-    /* Materials Grid */
-    .materials-header {
+    /* Sort Options */
+    .sort-section {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -210,23 +210,36 @@
       gap: 10px;
     }
 
-    .materials-header h3 {
-      font-size: 1.1rem;
+    .sort-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
     }
 
-    .search-box {
+    .sort-buttons {
       display: flex;
       gap: 8px;
     }
 
-    .search-box input {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+    .sort-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 6px 14px;
       border-radius: 50px;
-      padding: 8px 16px;
-      color: white;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    .sort-btn.active {
+      background: #ff6b9d;
+    }
+
+    /* Materials Grid - ORGANIZED */
+    .category-stats {
       font-size: 0.8rem;
-      width: 200px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .materials-grid {
@@ -301,6 +314,7 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      cursor: pointer;
       transition: all 0.2s;
     }
 
@@ -309,16 +323,17 @@
       border-color: #ff6b9d;
     }
 
-    .delete-material {
+    .admin-delete-btn {
       background: none;
       border: none;
       color: rgba(255, 255, 255, 0.3);
       cursor: pointer;
       font-size: 0.8rem;
       padding: 4px 8px;
+      transition: color 0.2s;
     }
 
-    .delete-material:hover {
+    .admin-delete-btn:hover {
       color: #e63946;
     }
 
@@ -358,25 +373,13 @@
       }
     }
 
-    /* Admin Badge */
-    .admin-badge {
-      background: rgba(230, 57, 70, 0.2);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      color: #ff6b9d;
-    }
-
     @media (max-width: 600px) {
       .form-row {
         flex-direction: column;
       }
-      .materials-header {
+      .sort-section {
         flex-direction: column;
         align-items: stretch;
-      }
-      .search-box input {
-        width: 100%;
       }
     }
   </style>
@@ -395,12 +398,13 @@
   <div class="container">
     <div class="hero">
       <h1>📖 Study Material Library</h1>
-      <p>Share and download notes, past questions, and study resources for CEE, IOE, +2 & Management</p>
+      <p>Share and download notes, past questions, and study resources</p>
+      <p style="font-size:0.7rem;margin-top:5px;">⚠️ Uploaded files become property of EntranceHearts. Only Admin can delete.</p>
     </div>
 
-    <!-- Category Tabs -->
+    <!-- Category Tabs - ORGANIZED -->
     <div class="category-tabs">
-      <button class="cat-btn active" data-cat="all">📚 All</button>
+      <button class="cat-btn active" data-cat="all">📚 All Materials</button>
       <button class="cat-btn" data-cat="CEE">🏥 CEE (MBBS)</button>
       <button class="cat-btn" data-cat="IOE">⚙️ IOE (Engineering)</button>
       <button class="cat-btn" data-cat="+2">📖 +2 (Science)</button>
@@ -423,25 +427,29 @@
           </select>
         </div>
         <div class="form-row">
-          <textarea id="materialDesc" placeholder="Description (what's included, which chapter, etc.)" style="flex:1;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:12px;color:white;font-family:'Poppins',sans-serif;resize:vertical;min-height:70px;"></textarea>
+          <textarea id="materialDesc" placeholder="Description (what's included, which chapter, etc.)"></textarea>
         </div>
         <div class="file-input-wrapper" onclick="document.getElementById('fileInput').click()">
           <i class="fas fa-cloud-upload-alt"></i> Click to upload PDF/File
-          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+          <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.png">
         </div>
         <div id="selectedFileName" class="selected-file">No file selected</div>
         <button class="upload-btn" onclick="uploadMaterial()">📤 Share Material</button>
       </div>
     </div>
 
-    <!-- Materials List -->
-    <div class="materials-header">
-      <h3>📚 Study Materials</h3>
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search materials..." onkeyup="renderMaterials()">
+    <!-- Sort Options -->
+    <div class="sort-section">
+      <span class="sort-label"><i class="fas fa-sort"></i> Sort by:</span>
+      <div class="sort-buttons">
+        <button class="sort-btn active" data-sort="newest">📅 Newest First</button>
+        <button class="sort-btn" data-sort="oldest">📅 Oldest First</button>
+        <button class="sort-btn" data-sort="downloads">⬇️ Most Downloads</button>
       </div>
     </div>
 
+    <!-- Materials Grid -->
+    <div id="categoryStats" class="category-stats"></div>
     <div id="materialsGrid" class="materials-grid"></div>
   </div>
 
@@ -450,12 +458,13 @@
   <script>
     let materials = [];
     let currentCategory = "all";
+    let currentSort = "newest";
     let isAdmin = false;
-    const ADMIN_CODE = "entrancehearts2024";
+    const ADMIN_CODE = "drsaurab@2022";
 
     // Load materials from localStorage
     function loadMaterials() {
-      const saved = localStorage.getItem('entrancehearts_materials');
+      const saved = localStorage.getItem('entrancehearts_materials_v2');
       if (saved) {
         materials = JSON.parse(saved);
       } else {
@@ -476,11 +485,11 @@
             id: 2,
             title: "IOE Entrance Preparation Guide",
             category: "IOE",
-            description: "Complete guide for IOE entrance exam. Includes tips, tricks, and important formulas for Mathematics, Physics, Chemistry.",
+            description: "Complete guide for IOE entrance exam. Includes tips, tricks, and important formulas.",
             fileName: "IOE_Preparation_Guide.pdf",
             fileData: null,
             uploader: "Anonymous",
-            timestamp: Date.now(),
+            timestamp: Date.now() - 86400000,
             downloads: 189
           },
           {
@@ -491,29 +500,29 @@
             fileName: "Physics_Mechanics_Notes.pdf",
             fileData: null,
             uploader: "Anonymous",
-            timestamp: Date.now(),
+            timestamp: Date.now() - 172800000,
             downloads: 312
           },
           {
             id: 4,
             title: "Management - Accountancy Formulas",
             category: "Management",
-            description: "All important accountancy formulas for +2 Management students. Ratio analysis, journal entries, and more.",
+            description: "All important accountancy formulas for +2 Management students.",
             fileName: "Accountancy_Formulas.pdf",
             fileData: null,
             uploader: "Anonymous",
-            timestamp: Date.now(),
+            timestamp: Date.now() - 259200000,
             downloads: 156
           },
           {
             id: 5,
             title: "CEE Biology Important Diagrams",
             category: "CEE",
-            description: "Must-know diagrams for CEE entrance exam. Labeled diagrams with explanations.",
+            description: "Must-know diagrams for CEE entrance exam.",
             fileName: "Biology_Diagrams_CEE.pdf",
             fileData: null,
             uploader: "Anonymous",
-            timestamp: Date.now(),
+            timestamp: Date.now() - 345600000,
             downloads: 178
           }
         ];
@@ -523,7 +532,7 @@
     }
 
     function saveMaterials() {
-      localStorage.setItem('entrancehearts_materials', JSON.stringify(materials));
+      localStorage.setItem('entrancehearts_materials_v2', JSON.stringify(materials));
     }
 
     let currentFile = null;
@@ -556,7 +565,6 @@
 
       if (currentFile) {
         fileName = currentFile.name;
-        // For demo, store as text (in production, store as base64 or upload to cloud)
         const reader = new FileReader();
         reader.onload = function(e) {
           fileData = e.target.result;
@@ -590,7 +598,7 @@
       document.getElementById('selectedFileName').innerHTML = "No file selected";
       currentFile = null;
       
-      showToast("📚 Material shared successfully!");
+      showToast("📚 Material shared successfully! (Admin only can delete)");
       renderMaterials();
     }
 
@@ -601,28 +609,31 @@
         saveMaterials();
         
         if (material.fileData) {
-          // Create download link for stored file
           const link = document.createElement('a');
           link.href = material.fileData;
           link.download = material.fileName;
           link.click();
+          showToast(`📥 Downloading: ${material.fileName}`);
         } else {
-          // For sample files, simulate download
-          showToast(`📥 Downloading: ${material.fileName} (Demo - Add actual file to enable download)`);
+          showToast(`📥 Demo: ${material.fileName} (Add actual file to enable download)`);
         }
         renderMaterials();
       }
     }
 
+    // ONLY ADMIN CAN DELETE - Users cannot delete their uploaded files
     function deleteMaterial(id) {
-      const material = materials.find(m => m.id === id);
-      if (!material) return;
+      if (!isAdmin) {
+        showToast("❌ Only Admin can delete study materials. Your uploaded files become property of EntranceHearts.");
+        return;
+      }
       
-      if (isAdmin || confirm(`Delete "${material.title}"? This cannot be undone.`)) {
+      const material = materials.find(m => m.id === id);
+      if (material && confirm(`Delete "${material.title}"? This cannot be undone.`)) {
         materials = materials.filter(m => m.id !== id);
         saveMaterials();
         renderMaterials();
-        showToast("🗑️ Material deleted");
+        showToast("🗑️ Material deleted by Admin");
       }
     }
 
@@ -632,7 +643,7 @@
         if (code === ADMIN_CODE) {
           isAdmin = true;
           document.getElementById('adminIndicator').style.display = 'inline-block';
-          showToast("👑 Admin mode activated! You can delete any material.");
+          showToast("👑 Admin mode activated! You can delete any study material.");
           renderMaterials();
         } else {
           showToast("❌ Wrong admin code!");
@@ -654,9 +665,21 @@
       return `${diff} days ago`;
     }
 
+    function getSortedMaterials(filteredMaterials) {
+      const sorted = [...filteredMaterials];
+      if (currentSort === "newest") {
+        sorted.sort((a, b) => b.timestamp - a.timestamp);
+      } else if (currentSort === "oldest") {
+        sorted.sort((a, b) => a.timestamp - b.timestamp);
+      } else if (currentSort === "downloads") {
+        sorted.sort((a, b) => b.downloads - a.downloads);
+      }
+      return sorted;
+    }
+
     function renderMaterials() {
       const container = document.getElementById('materialsGrid');
-      const searchTerm = document.getElementById('searchInput')?.value.toLowerCase() || "";
+      const statsContainer = document.getElementById('categoryStats');
       
       let filtered = materials;
       
@@ -665,31 +688,37 @@
         filtered = filtered.filter(m => m.category === currentCategory);
       }
       
-   // Filter by search
-      if (searchTerm) {
-        filtered = filtered.filter(m => 
-          m.title.toLowerCase().includes(searchTerm) || 
-          m.description.toLowerCase().includes(searchTerm)
-        );
-      }
+      // Sort
+      const sortedMaterials = getSortedMaterials(filtered);
+      
+          // Update stats
+      const categoryNames = {
+        'all': 'All Categories',
+        'CEE': '🏥 CEE (MBBS)',
+        'IOE': '⚙️ IOE (Engineering)',
+        '+2': '📖 +2 (Science)',
+        'Management': '💼 Management'
+      };
+      const categoryDisplay = categoryNames[currentCategory] || 'All Categories';
+      statsContainer.innerHTML = `📚 ${categoryDisplay} • ${sortedMaterials.length} ${sortedMaterials.length === 1 ? 'material' : 'materials'}`;
 
-      if (filtered.length === 0) {
+      if (sortedMaterials.length === 0) {
         container.innerHTML = `
           <div class="empty-state">
             <i class="fas fa-book-open" style="font-size:3rem;margin-bottom:12px;display:block;"></i>
-            <p>No study materials found. Be the first to share your notes! 📚</p>
+            <p>No study materials in this category. Be the first to share your notes! 📚</p>
           </div>
         `;
         return;
       }
 
-      container.innerHTML = filtered.map(material => `
+      container.innerHTML = sortedMaterials.map(material => `
         <div class="material-card">
           <div class="material-header">
             <div class="material-title">📄 ${escapeHtml(material.title)}</div>
             <div style="display:flex;gap:8px;align-items:center;">
               <span class="material-badge">${material.category}</span>
-              ${isAdmin ? `<button class="delete-material" onclick="deleteMaterial(${material.id})">🗑️</button>` : ''}
+              ${isAdmin ? `<button class="admin-delete-btn" onclick="deleteMaterial(${material.id})" title="Admin Delete">🗑️ Admin Delete</button>` : ''}
             </div>
           </div>
           <div class="material-description">${escapeHtml(material.description)}</div>
@@ -723,6 +752,16 @@
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         currentCategory = btn.dataset.cat;
+        renderMaterials();
+      });
+    });
+
+    // Sort button event listeners
+    document.querySelectorAll('.sort-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentSort = btn.dataset.sort;
         renderMaterials();
       });
     });
