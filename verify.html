@@ -10,43 +10,32 @@
   <script src="supabase.js"></script>
   <style>
     .verify-page {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(ellipse at top, #1a1a2e 0%, #0f0f1a 100%);
-      padding: 20px;
+      min-height:100vh; display:flex; align-items:center;
+      justify-content:center;
+      background:radial-gradient(ellipse at top,#1a1a2e 0%,#0f0f1a 100%);
+      padding:20px;
     }
     .verify-box {
-      background: #0f3460;
-      border-radius: 24px;
-      padding: 40px 28px;
-      text-align: center;
-      max-width: 380px;
-      width: 100%;
-      border: 1px solid rgba(255,107,157,0.2);
+      background:#0f3460; border-radius:24px; padding:40px 28px;
+      text-align:center; max-width:380px; width:100%;
+      border:1px solid rgba(255,107,157,0.2);
     }
-    .verify-emoji { font-size: 4rem; margin-bottom: 16px; }
-    .verify-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
+    .verify-emoji { font-size:4rem; margin-bottom:16px; }
+    .verify-title { font-size:1.4rem; font-weight:700; margin-bottom:8px; }
     .verify-sub {
-      color: #a0a0b0;
-      font-size: 0.85rem;
-      line-height: 1.6;
-      margin-bottom: 24px;
+      color:#a0a0b0; font-size:0.85rem;
+      line-height:1.6; margin-bottom:24px;
     }
     .spinner {
-      font-size: 2rem;
-      animation: spin 1s linear infinite;
-      display: block;
-      margin: 0 auto 16px;
+      font-size:2rem; animation:spin 1s linear infinite;
+      display:block; margin:0 auto 16px;
     }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
+    @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .action-btn {
+      display:inline-block; padding:13px 28px;
+      background:linear-gradient(135deg,#e63946,#ff6b9d);
+      border-radius:12px; color:white; text-decoration:none;
+      font-weight:600; font-size:0.9rem; margin-top:8px;
     }
   </style>
 </head>
@@ -61,66 +50,85 @@
       <div class="verify-sub">Please wait while we confirm your email.</div>
     </div>
   </div>
+
   <script>
     async function handleVerification() {
       try {
-        const { data, error } = await supabaseClient.auth.getSession();
+        // Supabase puts the token in the URL hash or query string
+        // Handle both formats
+        const hash = window.location.hash.substring(1);
+        const query = window.location.search.substring(1);
+        const params = new URLSearchParams(hash || query);
 
-        if (error) throw error;
+        const accessToken = params.get('access_token');
+        const refreshToken = params.get('refresh_token');
+        const type = params.get('type');
+        const errorDesc = params.get('error_description');
 
-        if (data.session) {
-          const userId = data.session.user.id;
+        // If there's an error in the URL
+        if (errorDesc) throw new Error(decodeURIComponent(errorDesc));
 
-          // Check if profile exists
-          const { data: profile } = await supabaseClient
-            .from('profiles')
-            .select('id')
-            .eq('id', userId)
-            .single();
+        let session = null;
 
-          if (!profile) {
-            // Save pending profile from localStorage
-            const tempUser = localStorage.getItem('ehTempUser');
-            if (tempUser) {
-              const userData = JSON.parse(tempUser);
-              await supabaseClient.from('profiles').insert({
-                id: userId,
-                ...userData
-              });
-              localStorage.removeItem('ehTempUser');
-            }
-          }
-
-          localStorage.setItem('ehLoggedIn', 'true');
-          localStorage.setItem('ehUserId', userId);
-
-          document.getElementById('verifyBox').innerHTML = `
-            <div class="verify-emoji">🎉</div>
-            <div class="verify-title" style="color:#ff6b9d">
-              Email Verified!
-            </div>
-            <div class="verify-sub">
-              Welcome to EntranceHearts! Redirecting you now...
-            </div>
-          `;
-          setTimeout(() => window.location.href = 'browse.html', 2000);
+        if (accessToken) {
+          // Magic link or email confirm — set the session manually
+          const { data, error } = await supabaseClient.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          });
+          if (error) throw error;
+          session = data.session;
         } else {
-          throw new Error('Session not found');
+          // Try getting existing session
+          const { data, error } = await supabaseClient.auth.getSession();
+          if (error) throw error;
+          session = data.session;
         }
+
+        if (!session) throw new Error('No session found');
+
+        const userId = session.user.id;
+
+        // Check if profile exists, create if not
+        const { data: profile } = await supabaseClient
+          .from('profiles').select('id').eq('id', userId).single();
+
+        if (!profile) {
+          const tempData = localStorage.getItem('ehSignupData');
+          if (tempData) {
+            await supabaseClient.from('profiles').upsert({
+              id: userId,
+              ...JSON.parse(tempData)
+            });
+            localStorage.removeItem('ehSignupData');
+          }
+        }
+
+        localStorage.removeItem('ehSignupEmail');
+        localStorage.removeItem('ehSignupPassword');
+
+        document.getElementById('verifyBox').innerHTML = `
+          <div class="verify-emoji">🎉</div>
+          <div class="verify-title" style="color:#ff6b9d">Email Verified!</div>
+          <div class="verify-sub">Welcome to EntranceHearts! Redirecting you now...</div>
+        `;
+        setTimeout(() => window.location.href = 'browse.html', 2000);
+
       } catch(err) {
         document.getElementById('verifyBox').innerHTML = `
           <div class="verify-emoji">❌</div>
           <div class="verify-title">Verification Failed</div>
           <div class="verify-sub">
-            The link may have expired. Please try signing up again.
+            ${err.message === 'No session found'
+              ? 'This link has expired or already been used.'
+              : (err.message || 'Something went wrong.')}
+            <br/><br/>Please sign up again or use the code sent to your email.
           </div>
-          <a href="signup.html" class="btn-primary"
-            style="display:block;text-align:center;margin-top:16px">
-            Try Again
-          </a>
+          <a href="signup.html" class="action-btn">Try Again</a>
         `;
       }
     }
+
     handleVerification();
   </script>
 </body>
