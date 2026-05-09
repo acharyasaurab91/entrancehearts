@@ -685,11 +685,10 @@
     }
 
     init();
-  </script>
 
 
 
-    <script>
+  
   function toggleTheme() {
     const html = document.documentElement;
     const currentTheme = html.getAttribute('data-theme');
@@ -715,12 +714,12 @@
     document.documentElement.removeAttribute('data-theme');
     if (themeToggle) themeToggle.textContent = '🌙';
   }
-    </script>
+  
 
 
     
   <!-- Page transition effect -->
-  <script>
+
     document.body.classList.add('fade-in');
     
     window.addEventListener('scroll', function() {
