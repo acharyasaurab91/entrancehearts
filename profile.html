@@ -283,7 +283,10 @@
 </head>
 <body>
   <nav class="navbar">
-    <div class="logo">💕 EntranceHearts</div>
+  <div class="logo">💕 EntranceHearts</div>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+  </div>
   </nav>
 
   <div class="page" id="profilePage">
@@ -684,6 +687,38 @@
     init();
   </script>
 
+
+
+    <script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (currentTheme === 'dark') {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      if (themeToggle) themeToggle.textContent = '🌙';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      if (themeToggle) themeToggle.textContent = '☀️';
+    }
+  }
+  
+  const savedTheme = localStorage.getItem('theme');
+  const themeToggle = document.getElementById('themeToggle');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (themeToggle) themeToggle.textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    if (themeToggle) themeToggle.textContent = '🌙';
+  }
+    </script>
+
+
+    
   <!-- Page transition effect -->
   <script>
     document.body.classList.add('fade-in');
