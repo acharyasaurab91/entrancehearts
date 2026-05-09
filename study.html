@@ -70,31 +70,6 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .nav-right {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .admin-badge {
-      background: rgba(255, 20, 147, 0.2);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      color: #FF6B9D;
-    }
-    .admin-btn {
-      background: rgba(255, 20, 147, 0.15);
-      border: 1px solid rgba(255, 20, 147, 0.3);
-      color: #FF6B9D;
-      cursor: pointer;
-      font-size: 0.7rem;
-      padding: 6px 14px;
-      border-radius: 20px;
-      transition: all 0.2s;
-    }
-    .admin-btn:hover {
-      background: rgba(255, 20, 147, 0.3);
-    }
 
     /* Hero Banner */
     .hero-banner {
@@ -370,20 +345,6 @@
       font-size: 0.7rem;
       color: #FF6B9D;
     }
-    .admin-delete-btn {
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.3);
-      cursor: pointer;
-      font-size: 0.8rem;
-      padding: 4px 10px;
-      border-radius: 20px;
-      transition: all 0.2s;
-    }
-    .admin-delete-btn:hover {
-      color: #FF1493;
-      background: rgba(255, 20, 147, 0.1);
-    }
     .material-description {
       font-size: 0.85rem;
       color: rgba(255, 255, 255, 0.7);
@@ -463,15 +424,11 @@
 </head>
 <body>
 
-  <!-- Premium Navbar -->
+  <!-- Premium Navbar (Admin Button Removed) -->
   <nav class="navbar" id="navbar">
     <div class="nav-left">
       <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
       <div class="logo">📚 Study Segment</div>
-    </div>
-    <div class="nav-right">
-      <span id="adminIndicator" class="admin-badge" style="display: none;">👑 Admin</span>
-      <button class="admin-btn" onclick="toggleAdminMode()">Admin Mode</button>
     </div>
   </nav>
 
@@ -544,8 +501,6 @@
     let materials = [];
     let currentCategory = "all";
     let currentSort = "newest";
-    let isAdmin = false;
-    const ADMIN_CODE = "drsaurab@2022";
     let currentUserId = null;
     let currentFile = null;
 
@@ -651,7 +606,7 @@
             downloads: 0
           });
 
-       if (dbError) throw dbError;
+        if (dbError) throw dbError;
 
         // Clear form
         document.getElementById('materialTitle').value = '';
@@ -688,40 +643,7 @@
       }
     }
 
-    async function deleteMaterial(id) {
-      if (!isAdmin) {
-        showToast('❌ Only Admin can delete materials');
-        return;
-      }
-      
-      if (!confirm('Delete this material? This cannot be undone.')) return;
-      
-      const { error } = await supabaseClient
-        .from('study_materials')
-        .delete()
-        .eq('id', id);
-      
-      if (error) {
-        showToast('Delete failed');
-      } else {
-        showToast('🗑️ Material deleted');
-        await loadMaterials();
-      }
-    }
-
-    function toggleAdminMode() {
-      const code = prompt('Enter Admin Code:');
-      if (code === ADMIN_CODE) {
-        isAdmin = true;
-        document.getElementById('adminIndicator').style.display = 'inline-block';
-        showToast('👑 Admin mode activated');
-        renderMaterials();
-      } else {
-        showToast('❌ Wrong code');
-      }
-    }
-
-    function renderMaterials() {
+      function renderMaterials() {
       const container = document.getElementById('materialsGrid');
       let filtered = materials;
       
@@ -756,10 +678,7 @@
         <div class="material-card">
           <div class="material-header">
             <div class="material-title">${getFileIcon(m.file_name)} ${escapeHtml(m.title)}</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <span class="material-badge">${m.category}</span>
-              ${isAdmin ? `<button class="admin-delete-btn" onclick="deleteMaterial(${m.id})"><i class="fas fa-trash"></i> Delete</button>` : ''}
-            </div>
+            <span class="material-badge">${m.category}</span>
           </div>
           <div class="material-description">${escapeHtml(m.description)}</div>
           <div class="material-meta">
