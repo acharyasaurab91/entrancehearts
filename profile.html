@@ -18,13 +18,20 @@
       background:rgba(10,10,15,0.95);
       backdrop-filter:blur(20px);
       border-bottom:1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      padding: 10px 20px;
+      background: rgba(10,10,15,0.98);
     }
     .logo {
       font-size:1.1rem; font-weight:800;
       background:linear-gradient(135deg,#ff6b9d,#e63946);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .page { max-width:480px; margin:0 auto; padding:70px 16px 100px; }
+    .page { max-width:480px; margin:0 auto; padding:70px 16px 100px; animation: fadeIn 0.5s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    
     .profile-hero { text-align:center; margin-bottom:28px; padding-top:10px; }
     .profile-avatar-wrap {
       width:110px; height:110px; border-radius:50%;
@@ -38,7 +45,34 @@
       font-size:3.5rem; overflow:hidden;
     }
     .profile-avatar-inner img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
-    .profile-name { font-size:1.5rem; font-weight:800; margin-bottom:6px; }
+    
+    /* Name with badge container */
+    .name-badge-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .profile-name { font-size:1.5rem; font-weight:800; }
+    
+    /* Premium Badge Styles */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+    .badge-gold {
+      background: linear-gradient(135deg, rgba(249, 168, 37, 0.15), rgba(255, 215, 0, 0.1));
+      border: 1px solid rgba(249, 168, 37, 0.5);
+      color: #f9a825;
+    }
+    
     .profile-tag {
       display:inline-block;
       background:rgba(255,107,157,0.1);
@@ -107,7 +141,7 @@
       font-size:0.95rem; font-family:'Poppins',sans-serif; cursor:pointer;
     }
 
-    /* ── EDIT SHEET ── */
+    /* EDIT SHEET */
     .sheet-overlay {
       display:none; position:fixed; inset:0;
       background:rgba(0,0,0,0.7); z-index:300;
@@ -144,7 +178,6 @@
     }
     .sheet-body { padding:20px; }
 
-    /* Photo picker */
     .photo-picker {
       display:flex; flex-direction:column; align-items:center;
       margin-bottom:24px;
@@ -175,7 +208,6 @@
       font-size:0.75rem; color:#ff6b9d; margin-top:6px; display:none;
     }
 
-    /* Form fields */
     .field-group { margin-bottom:18px; }
     .field-label {
       font-size:0.75rem; font-weight:600;
@@ -196,7 +228,6 @@
     textarea.field-input { resize:none; height:90px; line-height:1.5; }
     select.field-input { appearance:none; cursor:pointer; }
 
-    /* Interest tags picker */
     .interests-grid { display:flex; flex-wrap:wrap; gap:8px; }
     .int-tag {
       padding:7px 14px; border-radius:50px;
@@ -212,7 +243,6 @@
       color:#ff6b9d; font-weight:600;
     }
 
-    /* Save button */
     .save-btn {
       width:100%; padding:15px;
       background:linear-gradient(135deg,#e63946,#ff6b9d);
@@ -223,7 +253,6 @@
     }
     .save-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
-    /* Toast */
     .toast {
       position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
       background:#1e1e2e; border:1px solid rgba(255,107,157,0.3);
@@ -276,7 +305,6 @@
     </div>
     <div class="sheet-body">
 
-      <!-- Photo -->
       <div class="photo-picker">
         <div class="photo-preview-wrap" onclick="document.getElementById('photoFileInput').click()">
           <div class="photo-preview-inner" id="editPhotoPreview">👤</div>
@@ -287,31 +315,26 @@
         <input type="file" id="photoFileInput" accept="image/*"/>
       </div>
 
-      <!-- Name -->
       <div class="field-group">
         <div class="field-label">Name</div>
         <input class="field-input" id="editName" type="text" placeholder="Your full name" maxlength="40"/>
       </div>
 
-      <!-- Age -->
       <div class="field-group">
         <div class="field-label">Age</div>
         <input class="field-input" id="editAge" type="number" placeholder="Your age" min="14" max="30"/>
       </div>
 
-      <!-- Location -->
       <div class="field-group">
         <div class="field-label">Location</div>
         <input class="field-input" id="editLocation" type="text" placeholder="e.g. Kathmandu" maxlength="40"/>
       </div>
 
-      <!-- Bio -->
       <div class="field-group">
         <div class="field-label">Bio</div>
         <textarea class="field-input" id="editBio" placeholder="Write something about yourself..." maxlength="200"></textarea>
       </div>
 
-      <!-- Category -->
       <div class="field-group">
         <div class="field-label">Exam / Category</div>
         <select class="field-input" id="editCategory">
@@ -322,7 +345,6 @@
         </select>
       </div>
 
-      <!-- Looking For -->
       <div class="field-group">
         <div class="field-label">Looking For</div>
         <select class="field-input" id="editLookingFor">
@@ -333,7 +355,6 @@
         </select>
       </div>
 
-      <!-- Interests -->
       <div class="field-group">
         <div class="field-label">Interests (pick any)</div>
         <div class="interests-grid" id="interestsGrid"></div>
@@ -345,7 +366,6 @@
     </div>
   </div>
 
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
   <div class="bottom-nav">
@@ -372,7 +392,24 @@
     let currentProfile = null;
     let newAvatarUrl = null;
 
-    /* ── INIT ── */
+    // ========== CHECK VERIFICATION FUNCTION ==========
+    async function checkVerification() {
+      try {
+        const { data: profile } = await supabaseClient
+          .from('profiles')
+          .select('is_verified')
+          .eq('id', currentUserId)
+          .single();
+        
+        if (profile?.is_verified) {
+          const badge = document.getElementById('verifiedBadge');
+          if (badge) badge.style.display = 'inline-flex';
+        }
+      } catch(e) {
+        console.log('Verification check failed:', e);
+      }
+    }
+
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
       if (!data.session) { window.location.href = 'login.html'; return; }
@@ -382,6 +419,9 @@
         .from('profiles').select('*').eq('id', currentUserId).single();
       if (!profile) { window.location.href = 'signup.html'; return; }
       currentProfile = profile;
+
+      // Check if user is verified
+      await checkVerification();
 
       const { data: likes } = await supabaseClient
         .from('likes').select('*').eq('from_user', currentUserId);
@@ -407,17 +447,24 @@
       buildInterestsGrid(profile.interests || []);
     }
 
-    /* ── RENDER PROFILE VIEW ── */
     function render(p, likes, matches, msgs, completion) {
       const avatarContent = p.avatar_url
         ? `<img src="${p.avatar_url}" alt="${p.name}"/>`
         : genderEmoji[p.gender] || '👤';
+      
+      // Check if user has is_verified flag
+      const isVerified = p.is_verified === true;
+      const verifiedBadgeHTML = isVerified ? '<span class="badge badge-gold" id="verifiedBadge">⭐ Verified</span>' : '<span id="verifiedBadge" style="display:none;"></span>';
+      
       document.getElementById('profilePage').innerHTML = `
         <div class="profile-hero">
           <div class="profile-avatar-wrap">
             <div class="profile-avatar-inner">${avatarContent}</div>
           </div>
-          <div class="profile-name">${p.name || 'Your Name'}</div>
+          <div class="name-badge-container">
+            <div class="profile-name">${p.name || 'Your Name'}</div>
+            ${verifiedBadgeHTML}
+          </div>
           <div class="profile-tag">${categoryLabels[p.category] || 'Aspirant'}</div>
           <div class="profile-location">
             📍 ${p.location || 'Nepal'}
@@ -466,7 +513,7 @@
             <span class="info-label">Category</span>
             <span class="info-val">${categoryLabels[p.category] || '—'}</span>
           </div>
-          <div class="info-row">
+             <div class="info-row">
             <span class="info-label">Looking For</span>
             <span class="info-val">${p.looking_for
               ? p.looking_for.charAt(0).toUpperCase() + p.looking_for.slice(1) : '—'}</span>
@@ -487,7 +534,6 @@
         </div>`;
     }
 
-    /* ── BUILD INTERESTS GRID ── */
     function buildInterestsGrid(selected) {
       document.getElementById('interestsGrid').innerHTML = ALL_INTERESTS.map(tag => `
         <div class="int-tag ${selected.includes(tag) ? 'selected' : ''}"
@@ -503,7 +549,6 @@
       return [...document.querySelectorAll('.int-tag.selected')].map(el => el.textContent.trim());
     }
 
-    /* ── OPEN / CLOSE EDIT SHEET ── */
     function openEdit() {
       const p = currentProfile;
       document.getElementById('editName').value = p.name || '';
@@ -513,7 +558,6 @@
       document.getElementById('editCategory').value = p.category || 'cee';
       document.getElementById('editLookingFor').value = p.looking_for || 'friendship';
 
-      // Photo preview
       const preview = document.getElementById('editPhotoPreview');
       preview.innerHTML = p.avatar_url
         ? `<img src="${p.avatar_url}" alt="photo"/>`
@@ -533,7 +577,6 @@
       document.body.style.overflow = '';
     }
 
-    /* ── PHOTO UPLOAD ── */
     document.getElementById('photoFileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -547,7 +590,7 @@
       const path = `${currentUserId}/avatar_${Date.now()}.${ext}`;
 
       const { error } = await supabaseClient.storage
-        .from('avatars').upload(path, file, { upsert:true });
+        .from('avatars').upload(path, file, { upsert: true });
 
       if (error) {
         progressEl.textContent = '❌ Upload failed';
@@ -558,14 +601,12 @@
       const { data: urlData } = supabaseClient.storage.from('avatars').getPublicUrl(path);
       newAvatarUrl = urlData.publicUrl;
 
-      // Update preview
       document.getElementById('editPhotoPreview').innerHTML =
         `<img src="${newAvatarUrl}" alt="photo"/>`;
       progressEl.textContent = '✅ Photo ready!';
       setTimeout(() => { progressEl.style.display = 'none'; }, 1500);
     });
 
-    /* ── SAVE PROFILE ── */
     async function saveProfile() {
       const saveBtn = document.getElementById('saveBtn');
       const name = document.getElementById('editName').value.trim();
@@ -595,7 +636,6 @@
         return;
       }
 
-      // Update local copy
       currentProfile = { ...currentProfile, ...updates };
 
       const fields = [currentProfile.name, currentProfile.age, currentProfile.gender,
@@ -626,7 +666,6 @@
       saveBtn.textContent = '💾 Save Changes';
     }
 
-    /* ── TOAST ── */
     function showToast(msg) {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -634,7 +673,6 @@
       setTimeout(() => t.classList.remove('show'), 2500);
     }
 
-    /* ── LOGOUT ── */
     async function logout() {
       if (confirm('Are you sure you want to logout?')) {
         await supabaseClient.auth.signOut();
@@ -646,25 +684,21 @@
     init();
   </script>
 
-
+  <!-- Page transition effect -->
   <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
+    document.body.classList.add('fade-in');
+    
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
       }
-    }
-  });
+    });
   </script>
 
-  
-  
 </body>
 </html>
