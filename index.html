@@ -3,21 +3,18 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-  <meta name="theme-color" content="#e63946"/>
-  <meta name="apple-mobile-web-app-capable" content="yes"/>
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 
   <!-- SEO -->
   <title>EntranceHearts 💕 — Nepal's #1 Dating App for CEE, IOE & +2 Students</title>
   <meta name="description" content="Nepal's first dating & friendship app for CEE, IOE, +2 and Management entrance exam students. Find your perfect match among aspirants. Free to join!"/>
-  <meta name="keywords" content="Nepal dating app, CEE aspirants, IOE students, +2 Nepal, entrance exam Nepal"/>
+  <meta name="keywords" content="Nepal dating app, CEE aspirants, IOE students, +2 Nepal"/>
   <meta name="author" content="EntranceHearts"/>
   <meta name="robots" content="index, follow"/>
-  <link rel="canonical" href="https://entrancehearts.netlify.app/"/>
+  <link rel="canonical" href="https://entrancehearts.vercel.app/"/>
 
-  <!-- Open Graph / Social Media -->
+  <!-- Open Graph -->
   <meta property="og:type" content="website"/>
-  <meta property="og:url" content="https://entrancehearts.netlify.app/"/>
+  <meta property="og:url" content="https://entrancehearts.vercel.app/"/>
   <meta property="og:title" content="EntranceHearts 💕 — Find Your Match Among Nepal Aspirants"/>
   <meta property="og:description" content="Nepal's first dating app for CEE, IOE, +2 and Management students. Free to join!"/>
   <meta property="og:image" content="/icon-512.png"/>
@@ -25,11 +22,15 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json"/>
-  <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="theme-color" content="#e63946"/>
   <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="EntranceHearts"/>
+  <link rel="apple-touch-icon" href="icon-192.png"/>
 
   <!-- Fonts & CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link rel="stylesheet" href="style.css"/>
 </head>
@@ -46,23 +47,27 @@
     <button class="install-close" id="closeInstallBtn">✕</button>
   </div>
 
-  <!-- Navigation -->
+  <!-- Navbar -->
   <nav class="navbar">
     <div class="logo">💕 EntranceHearts</div>
     <div class="nav-links">
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
       <a href="login.html" class="btn-ghost">Login</a>
       <a href="signup.html" class="btn-primary">Join Free</a>
+      <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
+      <a href="study.html" class="btn-ghost">📚 Study</a>
+      <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
     </div>
-    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">☰</button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
   </nav>
 
   <!-- Mobile Menu -->
   <div class="mobile-menu" id="mobileMenu">
+    <a href="login.html" class="mobile-menu-item">🔐 Login</a>
+    <a href="signup.html" class="mobile-menu-item">✨ Join Free</a>
     <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
     <a href="study.html" class="mobile-menu-item">📚 Study</a>
     <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
-    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
     <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
     <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
   </div>
@@ -77,10 +82,9 @@
       <span class="hero-badge">💼 Management</span>
       <span class="hero-badge">🇳🇵 Nepal</span>
     </div>
-    <h1 class="hero-title">Find Your <span class="gradient-text">Perfect Match</span> <br/>Among Aspirants</h1>
+    <h1 class="hero-title">Find Your <span class="gradient-text">Perfect Match</span><br/>Among Aspirants</h1>
     <p class="hero-subtitle">Nepal's first dating & friendship app built exclusively for entrance exam students. Connect with someone who truly understands your journey.</p>
 
-    <!-- Floating Cards -->
     <div class="floating-cards">
       <div class="float-card">
         <div class="float-avatar">👩</div>
@@ -109,6 +113,7 @@
     <div class="hero-cta">
       <a href="signup.html" class="btn-primary btn-large">✨ Find My Match</a>
       <a href="confessions.html" class="btn-ghost btn-large">💌 Confessions</a>
+      <a href="#how" class="btn-ghost btn-large">How it Works</a>
     </div>
 
     <div class="hero-stats">
@@ -147,32 +152,19 @@
     </div>
   </section>
 
-  <!-- Confession Wall Preview -->
-  <section class="section confession-preview">
-    <div class="section-header">
-      <span class="section-tag">Anonymous</span>
-      <h2>Share Your <span class="gradient-text">Feelings</span> Freely</h2>
-      <p class="section-sub">No judgment. Just real emotions from aspirants like you.</p>
+  <!-- Share Section -->
+  <div class="share-section">
+    <div class="share-card">
+      <h3>💌 Know an aspirant? Share EntranceHearts!</h3>
+      <p>Help your friends find their match too 🇳🇵</p>
+      <div class="share-btns">
+        <button class="share-btn share-wa" id="shareWaBtn">💬 WhatsApp</button>
+        <button class="share-btn share-fb" id="shareFbBtn">📘 Facebook</button>
+        <button class="share-btn share-copy" id="copyLinkBtn">🔗 Copy Link</button>
+      </div>
+      <div class="copy-toast" id="copyToast">✅ Link copied!</div>
     </div>
-    <div class="preview-card">
-      <div class="preview-quote">"I have a crush on someone in my CEE class but too shy to say it..."</div>
-      <div class="preview-reactions">❤️ 24 💬 12</div>
-      <a href="confessions.html" class="btn-ghost">View Confessions →</a>
-    </div>
-  </section>
-
-  <!-- Study Materials Preview -->
-  <section class="section study-preview">
-    <div class="section-header">
-      <span class="section-tag">Study Resources</span>
-      <h2>Share & Download <span class="gradient-text">Notes</span></h2>
-      <p class="section-sub">CEE, IOE, +2, Management - All resources in one place.</p>
-    </div>
-    <div class="preview-card">
-      <div class="preview-stats">📚 45+ Notes • ⬇️ 1.2K Downloads</div>
-      <a href="study.html" class="btn-ghost">Browse Library →</a>
-    </div>
-  </section>
+  </div>
 
   <!-- CTA Section -->
   <section class="cta-section">
@@ -186,9 +178,9 @@
     <div class="footer-content">
       <span class="logo">💕 EntranceHearts</span>
       <div class="footer-links">
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-        <a href="contact.html">Contact</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
       </div>
       <p>Made with ❤️ for Nepal's entrance exam aspirants</p>
       <p>© 2026 EntranceHearts. All rights reserved.</p>
@@ -196,8 +188,8 @@
   </footer>
 
   <script>
-    // PWA & Theme Logic
-    const APP_URL = 'https://entrancehearts.netlify.app/';
+    // App constants
+    const APP_URL = 'https://entrancehearts.vercel.app/';
     
     // Service Worker
     if ('serviceWorker' in navigator) {
@@ -256,7 +248,7 @@
       if (themeToggle) themeToggle.textContent = '☀️';
     }
 
-    // Mobile Menu Toggle
+    // Mobile Menu
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
     if (mobileMenuBtn && mobileMenu) {
@@ -293,6 +285,10 @@
         setTimeout(() => toast?.classList.remove('show'), 2000);
       } catch(e) { alert('Press Ctrl+C to copy'); }
     };
+
+    document.getElementById('shareWaBtn')?.addEventListener('click', shareWhatsApp);
+    document.getElementById('shareFbBtn')?.addEventListener('click', shareFacebook);
+    document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
   </script>
 </body>
 </html>
