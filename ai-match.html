@@ -11,11 +11,82 @@
   <script src="supabase.js"></script>
   
   <style>
-    /* AI Match specific premium styles */
+    /* ========================================
+       AI MATCH - PREMIUM DARK THEME
+       Pink Gradient | Professional Design
+       ======================================== */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #ffffff;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 32px;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 20, 147, 0.2);
+      transition: all 0.3s;
+    }
+    .navbar.scrolled {
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.95);
+    }
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+    }
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover {
+      color: #FF6B9D;
+      background: rgba(255, 20, 147, 0.1);
+    }
+
+    /* AI Match Specific */
     .ai-page {
       max-width: 600px;
       margin: 0 auto;
-      padding: 80px 24px 100px;
+      padding: 90px 24px 100px;
     }
     
     .ai-hero {
@@ -27,8 +98,8 @@
       width: 80px;
       height: 80px;
       border-radius: 24px;
-      background: linear-gradient(135deg, rgba(230,57,70,0.2), rgba(255,107,157,0.1));
-      border: 1px solid var(--border-glow);
+      background: linear-gradient(135deg, rgba(255,20,147,0.2), rgba(255,107,157,0.1));
+      border: 1px solid rgba(255,20,147,0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -37,18 +108,23 @@
       animation: float 3s ease-in-out infinite;
     }
     
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    
     .ai-title {
       font-size: 1.8rem;
       font-weight: 800;
       margin-bottom: 8px;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
     
     .ai-sub {
-      color: var(--text-muted);
+      color: rgba(255, 255, 255, 0.5);
       font-size: 0.85rem;
       line-height: 1.6;
       max-width: 400px;
@@ -56,8 +132,8 @@
     }
     
     .question-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-light);
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.15);
       border-radius: 24px;
       padding: 24px;
       margin-bottom: 20px;
@@ -65,13 +141,14 @@
     }
     
     .question-card:hover {
-      border-color: var(--border-glow);
+      border-color: rgba(255,20,147,0.4);
+      transform: translateY(-2px);
     }
     
     .question-title {
       font-size: 0.75rem;
       font-weight: 700;
-      color: var(--primary);
+      color: #FF6B9D;
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 12px;
@@ -91,10 +168,10 @@
     
     .option-btn {
       padding: 12px;
-      background: var(--bg-card-hover);
-      border: 1px solid var(--border-medium);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.85rem;
       font-family: 'Inter', sans-serif;
       cursor: pointer;
@@ -103,18 +180,18 @@
     }
     
     .option-btn.selected {
-      border-color: var(--primary);
-      color: var(--primary);
-      background: rgba(255, 107, 157, 0.1);
+      border-color: #FF1493;
+      color: #FF6B9D;
+      background: rgba(255, 20, 147, 0.1);
     }
     
     .ai-textarea {
       width: 100%;
       padding: 14px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-medium);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 16px;
-      color: var(--text-primary);
+      color: white;
       font-size: 0.9rem;
       font-family: 'Inter', sans-serif;
       resize: vertical;
@@ -123,15 +200,15 @@
     }
     
     .ai-textarea:focus {
-      border-color: var(--primary);
+      border-color: #FF1493;
     }
     
     .analyze-btn {
       width: 100%;
       padding: 16px;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
       border: none;
-      border-radius: 50px;
+      border-radius: 100px;
       color: white;
       font-size: 1rem;
       font-weight: 700;
@@ -142,13 +219,14 @@
     
     .analyze-btn:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-glow);
+      box-shadow: 0 8px 30px rgba(255, 20, 147, 0.3);
     }
     
     .loading-area {
       text-align: center;
       padding: 60px 20px;
-      background: var(--bg-card);
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.2);
       border-radius: 28px;
       display: none;
     }
@@ -170,8 +248,8 @@
     }
     
     .result-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-glow);
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.2);
       border-radius: 24px;
       padding: 24px;
       margin-bottom: 20px;
@@ -180,14 +258,14 @@
     .result-title {
       font-size: 0.75rem;
       font-weight: 700;
-      color: var(--primary);
+      color: #FF6B9D;
       text-transform: uppercase;
       letter-spacing: 1px;
       margin-bottom: 14px;
     }
     
     .result-text {
-      color: var(--text-secondary);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 0.9rem;
       line-height: 1.7;
       white-space: pre-wrap;
@@ -198,21 +276,21 @@
       align-items: center;
       gap: 16px;
       padding: 16px;
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid rgba(255,20,147,0.1);
       cursor: pointer;
       transition: all 0.2s;
       border-radius: 16px;
     }
     
     .matched-person:hover {
-      background: var(--bg-card-hover);
+      background: rgba(255, 20, 147, 0.08);
     }
     
     .matched-avatar {
       width: 56px;
       height: 56px;
       border-radius: 50%;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -235,37 +313,37 @@
     
     .matched-meta {
       font-size: 0.7rem;
-      color: var(--text-muted);
+      color: rgba(255, 255, 255, 0.4);
       margin-bottom: 8px;
     }
     
     .compat-bar {
       height: 4px;
-      background: var(--border-medium);
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 2px;
       overflow: hidden;
     }
     
     .compat-fill {
       height: 100%;
-      background: var(--gradient-primary);
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
       border-radius: 2px;
       transition: width 1s ease;
     }
     
     .compat-label {
       font-size: 0.7rem;
-      color: var(--primary);
+      color: #FF6B9D;
       font-weight: 600;
       margin-top: 4px;
     }
     
     .chat-now-btn {
-      background: rgba(255, 107, 157, 0.15);
-      border: 1px solid rgba(255, 107, 157, 0.3);
+      background: rgba(255, 20, 147, 0.15);
+      border: 1px solid rgba(255, 20, 147, 0.3);
       padding: 8px 20px;
-      border-radius: 50px;
-      color: var(--primary);
+      border-radius: 100px;
+      color: #FF6B9D;
       font-size: 0.75rem;
       font-weight: 600;
       cursor: pointer;
@@ -274,7 +352,7 @@
     }
     
     .chat-now-btn:hover {
-      background: var(--primary);
+      background: #FF1493;
       color: white;
     }
     
@@ -282,17 +360,17 @@
       width: 100%;
       padding: 14px;
       background: transparent;
-      border: 1px solid var(--border-medium);
-      border-radius: 50px;
-      color: var(--text-secondary);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 100px;
+      color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       transition: all 0.2s;
       margin-top: 8px;
     }
     
     .retry-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
+      border-color: #FF1493;
+      color: #FF6B9D;
     }
     
     .toast {
@@ -300,10 +378,10 @@
       bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--bg-secondary);
-      border: 1px solid var(--border-glow);
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.3);
       padding: 12px 24px;
-      border-radius: 50px;
+      border-radius: 100px;
       font-size: 0.85rem;
       z-index: 200;
       display: none;
@@ -311,10 +389,10 @@
     
     .toast.show {
       display: block;
-      animation: fadeInUp 0.3s ease;
+      animation: fadeUp 0.3s ease;
     }
     
-    @keyframes fadeInUp {
+    @keyframes fadeUp {
       from {
         opacity: 0;
         transform: translateX(-50%) translateY(20px);
@@ -324,23 +402,105 @@
         transform: translateX(-50%) translateY(0);
       }
     }
+
+    /* Bottom Navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(10, 10, 15, 0.95);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,20,147,0.2);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0 20px;
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255, 255, 255, 0.4);
+      text-decoration: none;
+      font-size: 0.65rem;
+      font-weight: 600;
+      transition: all 0.2s;
+      padding: 6px 12px;
+      border-radius: 40px;
+    }
+    .nav-item span:first-child { font-size: 1.3rem; }
+    .nav-item:hover { color: #FF6B9D; background: rgba(255,20,147,0.1); }
+    .nav-item.active { color: #FF6B9D; }
+
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255,20,147,0.15);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #FF6B9D;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-links { display: none; }
+    }
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      right: -100%;
+      width: 280px;
+      background: #141423;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      z-index: 999;
+      transition: right 0.3s;
+    }
+    .mobile-menu.open { right: 16px; }
+    .mobile-menu-item {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+    }
+    .mobile-menu-item:hover {
+      background: rgba(255,20,147,0.15);
+      color: #FF6B9D;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Premium Navbar -->
-  <nav class="navbar">
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
     <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
-      <a href="index.html" class="logo" style="text-decoration: none;">💕 EntranceHearts</a>
+      <a href="index.html" class="logo">💕 EntranceHearts</a>
       <div style="display: flex; gap: 12px; align-items: center;">
-        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-        <a href="browse.html" class="btn-ghost" style="padding: 8px 20px;">Discover</a>
-        <a href="chat.html" class="btn-ghost" style="padding: 8px 20px;">Chats</a>
-        <a href="profile.html" class="btn-primary" style="padding: 8px 20px;">Profile</a>
+        <a href="browse.html" class="btn-ghost">🔥 Discover</a>
+        <a href="chat.html" class="btn-ghost">💬 Chats</a>
+        <a href="profile.html" class="btn-primary">👤 Profile</a>
       </div>
-      <button class="mobile-menu-btn" id="mobileMenuBtn" style="display: none;">☰</button>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
   </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="index.html" class="mobile-menu-item">🏠 Home</a>
+    <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
+    <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+    <a href="profile.html" class="mobile-menu-item">👤 Profile</a>
+    <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
+    <a href="study.html" class="mobile-menu-item">📚 Study</a>
+    <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
+  </div>
 
   <div class="ai-page">
     <div class="ai-hero">
@@ -390,12 +550,8 @@
     <!-- Loading -->
     <div class="loading-area" id="loadingArea">
       <span class="loading-spin">🤖</span>
-      <p style="color: var(--text-muted); font-size: 0.88rem;">
-        AI is analyzing your personality...
-      </p>
-      <p style="color: var(--text-muted); font-size: 0.75rem; margin-top: 8px; opacity: 0.6;">
-        Finding the best match for you
-      </p>
+      <p style="color: rgba(255,255,255,0.5); font-size: 0.88rem;">AI is analyzing your personality...</p>
+      <p style="color: rgba(255,255,255,0.3); font-size: 0.75rem; margin-top: 8px;">Finding the best match for you</p>
     </div>
 
     <!-- Result -->
@@ -518,8 +674,8 @@ You study best ${picks.study.toLowerCase()} and have a ${picks.personality.toLow
     function renderMatches(matches) {
       const container = document.getElementById('matchedList');
       
-      if (matches.length === 0) {
-        container.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-muted)">No matches found. Check back later!</div>';
+        if (matches.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:40px;color:rgba(255,255,255,0.4)">No matches found. Check back later!</div>';
         return;
       }
       
@@ -565,35 +721,25 @@ You study best ${picks.study.toLowerCase()} and have a ${picks.personality.toLow
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Dark mode toggle
-    function toggleTheme() {
-      const html = document.documentElement;
-      const isDark = html.getAttribute('data-theme') === 'dark';
-      const themeToggle = document.getElementById('themeToggle');
-      
-      if (isDark) {
-        html.removeAttribute('data-theme');
-        localStorage.setItem('theme', 'light');
-        if (themeToggle) themeToggle.textContent = '🌙';
-      } else {
-        html.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-        if (themeToggle) themeToggle.textContent = '☀️';
-      }
-    }
-    
-    const savedTheme = localStorage.getItem('theme');
-    const themeToggle = document.getElementById('themeToggle');
-    if (savedTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-      if (themeToggle) themeToggle.textContent = '☀️';
+    // Mobile Menu
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.onclick = () => {
+        mobileMenu.classList.toggle('open');
+        menuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+      };
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          menuBtn.textContent = '☰';
+        }
+      });
     }
 
-    // Page transition
-    document.body.classList.add('fade-in');
-    
-    window.addEventListener('scroll', function() {
-      const navbar = document.querySelector('.navbar');
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
       if (navbar && window.scrollY > 50) {
         navbar.classList.add('scrolled');
       } else if (navbar) {
