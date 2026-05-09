@@ -2,23 +2,385 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Study Segment 📚 - EntranceHearts</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
   
+  <style>
+    /* ========================================
+       STUDY SEGMENT - PREMIUM DARK THEME
+       Pink Gradient | Study Material Library
+       ======================================== */
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #ffffff;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 16px 32px;
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 20, 147, 0.2);
+      transition: all 0.3s;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .navbar.scrolled {
+      padding: 12px 32px;
+      background: rgba(10, 10, 15, 0.95);
+    }
+    .back-btn {
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .back-btn:hover {
+      color: #FF6B9D;
+    }
+    .logo {
+      font-size: 1.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .admin-badge {
+      background: rgba(255, 20, 147, 0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #FF6B9D;
+    }
+    .admin-btn {
+      background: none;
+      border: none;
+      color: #FF6B9D;
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .admin-btn:hover {
+      background: rgba(255, 20, 147, 0.15);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 90px 20px 100px;
+    }
+    
+    .hero {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .hero h1 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .hero p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+    
+    .category-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cat-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,20,147,0.2);
+      padding: 10px 20px;
+      border-radius: 100px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .cat-btn.active {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      border-color: transparent;
+      color: white;
+    }
+    .cat-btn:hover {
+      transform: translateY(-2px);
+    }
+    
+    .upload-section {
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.2);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 30px;
+    }
+    .upload-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .upload-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .form-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .form-row input, .form-row select, .form-row textarea {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,20,147,0.2);
+      border-radius: 14px;
+      padding: 12px 16px;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .form-row textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+      border-color: #FF1493;
+      background: rgba(255, 20, 147, 0.05);
+    }
+    
+    .file-input-wrapper {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed rgba(255,20,147,0.3);
+      border-radius: 14px;
+      padding: 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .file-input-wrapper:hover {
+      background: rgba(255, 20, 147, 0.05);
+      border-color: #FF1493;
+    }
+    .file-input-wrapper input {
+      display: none;
+    }
+    .selected-file {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.5);
+      margin-top: 8px;
+    }
+    .upload-btn {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      border: none;
+      padding: 14px;
+      border-radius: 100px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .upload-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+    }
+    
+    .sort-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .sort-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+    .sort-buttons {
+      display: flex;
+      gap: 8px;
+    }
+    .sort-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,20,147,0.2);
+      padding: 6px 14px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .sort-btn.active {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      color: white;
+      border-color: transparent;
+    }
+    
+    .category-stats {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,20,147,0.1);
+    }
+    
+    .materials-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .material-card {
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.15);
+      border-radius: 20px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    .material-card:hover {
+      border-color: rgba(255,20,147,0.4);
+      transform: translateY(-2px);
+    }
+    .material-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .material-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #FF6B9D;
+    }
+    .material-badge {
+      background: rgba(255, 20, 147, 0.12);
+      padding: 4px 10px;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      color: #FF6B9D;
+    }
+    .admin-delete-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+    .admin-delete-btn:hover {
+      color: #FF1493;
+      background: rgba(255, 20, 147, 0.1);
+    }
+    .material-description {
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    .material-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    .download-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255,20,147,0.2);
+      padding: 8px 16px;
+      border-radius: 100px;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .download-btn:hover {
+      background: #FF1493;
+      border-color: #FF1493;
+      transform: translateY(-2px);
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(255, 255, 255, 0.4);
+    }
+    
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #141423;
+      border: 1px solid rgba(255,20,147,0.3);
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      z-index: 200;
+      display: none;
+    }
+    .toast.show {
+      display: block;
+      animation: fadeUp 0.3s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+  </style>
 </head>
 <body>
 
-  <nav class="navbar">
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
     <a href="index.html" class="back-btn">← Back</a>
     <div class="logo">📚 Study Segment</div>
     <div style="display: flex; gap: 10px; align-items: center;">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    </div>
-    <div>
       <span id="adminIndicator" class="admin-badge" style="display: none;">👑 Admin</span>
-      <button onclick="toggleAdminMode()" style="background:none;border:none;color:#ff6b9d;cursor:pointer;font-size:0.7rem;">Admin</button>
+      <button class="admin-btn" onclick="toggleAdminMode()">Admin</button>
     </div>
   </nav>
 
@@ -26,10 +388,10 @@
     <div class="hero">
       <h1>📖 Study Material Library</h1>
       <p>Share and download notes, past questions, and study resources</p>
-      <p style="font-size:0.7rem;margin-top:5px;">⚠️ Uploaded files become property of EntranceHearts. Only Admin can delete.</p>
+      <p style="font-size:0.7rem; margin-top:5px; color: rgba(255,255,255,0.4);">⚠️ Uploaded files become property of EntranceHearts. Only Admin can delete.</p>
     </div>
 
-    <!-- Category Tabs - ORGANIZED -->
+    <!-- Category Tabs -->
     <div class="category-tabs">
       <button class="cat-btn active" data-cat="all">📚 All Materials</button>
       <button class="cat-btn" data-cat="CEE">🏥 CEE (MBBS)</button>
@@ -89,13 +451,11 @@
     let isAdmin = false;
     const ADMIN_CODE = "drsaurab@2022";
 
-    // Load materials from localStorage
     function loadMaterials() {
       const saved = localStorage.getItem('entrancehearts_materials_v2');
       if (saved) {
         materials = JSON.parse(saved);
       } else {
-        // Sample materials
         materials = [
           {
             id: 1,
@@ -218,7 +578,6 @@
       materials.unshift(newMaterial);
       saveMaterials();
       
-      // Clear form
       document.getElementById('materialTitle').value = "";
       document.getElementById('materialDesc').value = "";
       document.getElementById('fileInput').value = "";
@@ -248,10 +607,9 @@
       }
     }
 
-    // ONLY ADMIN CAN DELETE - Users cannot delete their uploaded files
     function deleteMaterial(id) {
       if (!isAdmin) {
-        showToast("❌ Only Admin can delete study materials. Your uploaded files become property of EntranceHearts.");
+        showToast("❌ Only Admin can delete study materials.");
         return;
       }
       
@@ -310,15 +668,12 @@
       
       let filtered = materials;
       
-      // Filter by category
       if (currentCategory !== "all") {
         filtered = filtered.filter(m => m.category === currentCategory);
       }
       
-      // Sort
-      const sortedMaterials = getSortedMaterials(filtered);
+          const sortedMaterials = getSortedMaterials(filtered);
       
-          // Update stats
       const categoryNames = {
         'all': 'All Categories',
         'CEE': '🏥 CEE (MBBS)',
@@ -345,7 +700,7 @@
             <div class="material-title">📄 ${escapeHtml(material.title)}</div>
             <div style="display:flex;gap:8px;align-items:center;">
               <span class="material-badge">${material.category}</span>
-              ${isAdmin ? `<button class="admin-delete-btn" onclick="deleteMaterial(${material.id})" title="Admin Delete">🗑️ Admin Delete</button>` : ''}
+              ${isAdmin ? `<button class="admin-delete-btn" onclick="deleteMaterial(${material.id})">🗑️</button>` : ''}
             </div>
           </div>
           <div class="material-description">${escapeHtml(material.description)}</div>
@@ -373,7 +728,6 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Category filter event listeners
     document.querySelectorAll('.cat-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -383,7 +737,6 @@
       });
     });
 
-    // Sort button event listeners
     document.querySelectorAll('.sort-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
@@ -393,58 +746,17 @@
       });
     });
 
-    // Initial load
-    loadMaterials();
-  </script>
-
-
-
-  <script>
-  function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const themeToggle = document.getElementById('themeToggle');
-    
-    if (currentTheme === 'dark') {
-      html.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      if (themeToggle) themeToggle.textContent = '🌙';
-    } else {
-      html.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      if (themeToggle) themeToggle.textContent = '☀️';
-    }
-  }
-  
-  const savedTheme = localStorage.getItem('theme');
-  const themeToggle = document.getElementById('themeToggle');
-  if (savedTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.textContent = '☀️';
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    if (themeToggle) themeToggle.textContent = '🌙';
-  }
-  </script>
-
-  
-  <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.getElementById('navbar');
+      if (navbar && window.scrollY > 50) {
         navbar.classList.add('scrolled');
-      } else {
+      } else if (navbar) {
         navbar.classList.remove('scrolled');
       }
-    }
-  });
-  </script>
+    });
 
-  
+    loadMaterials();
+  </script>
 </body>
 </html>
