@@ -799,8 +799,15 @@
       if (!data.session) { window.location.href = 'login.html'; return; }
       currentUserId = data.session.user.id;
 
-      const { data: profile } = await supabaseClient
-        .from('profiles').select('*').eq('id', currentUserId).single();
+      
+  // ✅ ADD THIS LINE - Fix back button
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'browse.html';
+
+  const { data: profile } = await supabaseClient
+    .from('profiles').select('*').eq('id', currentUserId).single();
+  // ... rest of code
+      
       if (!profile) { window.location.href = 'signup.html'; return; }
       currentProfile = profile;
 
