@@ -637,10 +637,11 @@
 
   <!-- NAVBAR -->
   <nav class="navbar">
-    <div class="logo">💕 EntranceHearts</div>
-    <div class="nav-buttons">
-      <a href="login.html" class="btn-ghost">Login</a>
-      <a href="signup.html" class="btn-primary">Join Free</a>
+  <div class="logo">💕 EntranceHearts</div>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+    <a href="login.html" class="btn-ghost">Login</a>
+    <a href="signup.html" class="btn-primary">Join Free</a>
       <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
       <a href="study.html" class="btn-ghost">📚 Study</a>
       <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
@@ -862,6 +863,36 @@
     document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
   </script>
 
+<script>
+  // Dark/Light Mode Toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const themeToggle = document.getElementById('themeToggle');
+    
+    if (currentTheme === 'dark') {
+      html.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      themeToggle.textContent = '🌙';
+    } else {
+      html.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      themeToggle.textContent = '☀️';
+    }
+  }
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme');
+  const themeToggle = document.getElementById('themeToggle');
+  if (savedTheme === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark');
+    if (themeToggle) themeToggle.textContent = '☀️';
+  } else {
+    document.documentElement.removeAttribute('data-theme');
+    if (themeToggle) themeToggle.textContent = '🌙';
+  }
+</script>
+        
   <script>
   // Page transition effect
   document.body.classList.add('fade-in');
