@@ -641,9 +641,16 @@
         return; 
       }
       currentUserId = data.session.user.id;
-      await loadMatches();
-      subscribePresence();
-      updateLastSeen();
+
+      // ✅ ADD THIS LINE - Fix back button
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'browse.html';
+  
+  await loadMatches();
+  subscribePresence();
+  updateLastSeen();
+  // ... rest of code
+
       
       const chatWith = localStorage.getItem('ehChatWith');
       if (chatWith) {
