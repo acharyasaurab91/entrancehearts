@@ -222,15 +222,11 @@
       color: #FF6B9D;
       text-decoration: none;
       font-weight: 600;
-      transition: color 0.2s;
-    }
-    
-    .auth-switch a:hover {
-      color: #FF1493;
     }
 
-    /* Modal */
+    /* Modal Styles */
     .modal-overlay {
+      display: none;
       position: fixed;
       top: 0;
       left: 0;
@@ -239,7 +235,6 @@
       background: rgba(0, 0, 0, 0.95);
       backdrop-filter: blur(12px);
       z-index: 1000;
-      display: none;
       align-items: center;
       justify-content: center;
     }
@@ -255,6 +250,27 @@
       max-width: 400px;
       width: 90%;
     }
+    .otp-inputs {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin: 20px 0;
+    }
+    .otp-input {
+      width: 50px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,20,147,0.3);
+      color: white;
+      font-size: 1.4rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .otp-input:focus {
+      outline: none;
+      border-color: #FF1493;
+    }
   </style>
 </head>
 <body>
@@ -269,7 +285,7 @@
   </nav>
 
   <div class="auth-page">
-    <div class="auth-box">
+    <div class="auth-box" id="authBox">
       <div class="auth-logo">💕</div>
       <div class="welcome-back">Welcome Back!</div>
       <div class="auth-subtitle">Login to find your match</div>
@@ -300,98 +316,74 @@
     </div>
   </div>
 
-  <!-- Forgot Password Modal -->
-  <div id="forgotModal" class="modal-overlay">
+  <!-- OTP Reset Password Modal - STEP 1: Email -->
+  <div id="resetEmailModal" class="modal-overlay">
     <div class="modal-content">
       <div style="font-size: 2.5rem; margin-bottom: 16px;">🔐</div>
       <h3 style="margin-bottom: 8px;">Reset Password</h3>
       <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px;">
-        Enter your email to receive password reset link
+        Enter your email to receive OTP
       </p>
       <input type="email" id="resetEmail" placeholder="your@email.com" 
         style="width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,20,147,0.3); border-radius: 14px; color: white; margin-bottom: 20px;">
-      <button id="sendResetBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1493, #FF6B9D); border: none; border-radius: 100px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
-        Send Reset Link
+      <button id="sendOtpBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1493, #FF6B9D); border: none; border-radius: 100px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
+        Send OTP
       </button>
-      <button onclick="closeForgotModal()" style="width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,20,147,0.3); border-radius: 100px; color: rgba(255,255,255,0.7); cursor: pointer;">
+      <button onclick="closeResetEmailModal()" style="width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,20,147,0.3); border-radius: 100px; color: rgba(255,255,255,0.7); cursor: pointer;">
         Cancel
       </button>
     </div>
   </div>
 
+  <!-- OTP Reset Password Modal - STEP 2: Verify OTP -->
+  <div id="otpModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="font-size: 2rem; margin-bottom: 16px;">📧</div>
+      <h3 style="margin-bottom: 8px;">Enter OTP</h3>
+      <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 8px;">
+        We sent a 6-digit code to <span id="otpEmailDisplay" style="color: #FF6B9D;"></span>
+      </p>
+      <div class="otp-inputs">
+        <input class="otp-input" id="otp1" maxlength="1" oninput="otpMove(this, 'otp2')" onkeydown="otpBack(event, this, '')">
+        <input class="otp-input" id="otp2" maxlength="1" oninput="otpMove(this, 'otp3')" onkeydown="otpBack(event, this, 'otp1')">
+        <input class="otp-input" id="otp3" maxlength="1" oninput="otpMove(this, 'otp4')" onkeydown="otpBack(event, this, 'otp2')">
+        <input class="otp-input" id="otp4" maxlength="1" oninput="otpMove(this, 'otp5')" onkeydown="otpBack(event, this, 'otp3')">
+        <input class="otp-input" id="otp5" maxlength="1" oninput="otpMove(this, 'otp6')" onkeydown="otpBack(event, this, 'otp4')">
+        <input class="otp-input" id="otp6" maxlength="1" oninput="otpMove(this, '')" onkeydown="otpBack(event, this, 'otp5')">
+      </div>
+      <button id="verifyOtpBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1493, #FF6B9D); border: none; border-radius: 100px; color: white; font-weight: 600; cursor: pointer; margin-bottom: 12px;">
+        Verify OTP
+      </button>
+      <div class="resend-link" style="text-align: center; margin-top: 12px;">
+        <span style="color: rgba(255,255,255,0.4); font-size: 0.75rem;">Didn't receive code? </span>
+        <button id="resendOtpBtn" style="background: none; border: none; color: #FF6B9D; cursor: pointer; font-size: 0.75rem;">Resend OTP</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTP Reset Password Modal - STEP 3: New Password -->
+  <div id="newPasswordModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="font-size: 2rem; margin-bottom: 16px;">🔐</div>
+      <h3 style="margin-bottom: 8px;">Create New Password</h3>
+      <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem; margin-bottom: 20px;">
+        Enter your new password
+      </p>
+      <input type="password" id="newPassword" placeholder="New password (min 8 characters)" 
+        style="width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,20,147,0.3); border-radius: 14px; color: white; margin-bottom: 16px;">
+      <input type="password" id="confirmPassword" placeholder="Confirm password" 
+        style="width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,20,147,0.3); border-radius: 14px; color: white; margin-bottom: 20px;">
+      <button id="updatePasswordBtn" style="width: 100%; padding: 14px; background: linear-gradient(135deg, #FF1493, #FF6B9D); border: none; border-radius: 100px; color: white; font-weight: 600; cursor: pointer;">
+        Update Password
+      </button>
+    </div>
+  </div>
+
   <script>
-    // Forgot Password Functions
-    function openForgotModal() {
-      document.getElementById('forgotModal').classList.add('active');
-    }
-    
-    function closeForgotModal() {
-      document.getElementById('forgotModal').classList.remove('active');
-      document.getElementById('resetEmail').value = '';
-    }
-    
-    async function sendResetLink() {
-      const email = document.getElementById('resetEmail').value.trim();
-      if (!email) {
-        showResetError('Please enter your email');
-        return;
-      }
-      
-      const btn = document.getElementById('sendResetBtn');
-      const originalText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Sending...';
-      
-      try {
-        // Supabase password reset
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: window.location.origin + '/update-password.html'
-        });
-        
-        if (error) throw error;
-        
-        // Show success
-        const msgDiv = document.getElementById('successMsg');
-        msgDiv.textContent = '✅ Password reset link sent! Check your email.';
-        msgDiv.style.display = 'block';
-        
-        setTimeout(() => {
-          closeForgotModal();
-          setTimeout(() => {
-            msgDiv.style.display = 'none';
-          }, 3000);
-        }, 2000);
-        
-      } catch (err) {
-        console.error('Reset error:', err);
-        showResetError(err.message || 'Failed to send reset link. Try again.');
-      }
-      
-      btn.disabled = false;
-      btn.textContent = originalText;
-    }
-    
-    function showResetError(msg) {
-      const errorDiv = document.getElementById('errorMsg');
-      errorDiv.textContent = '❌ ' + msg;
-      errorDiv.style.display = 'block';
-      setTimeout(() => errorDiv.style.display = 'none', 4000);
-    }
-    
-    function showError(msg) {
-      const el = document.getElementById('errorMsg');
-      el.textContent = '❌ ' + msg;
-      el.style.display = 'block';
-      setTimeout(() => el.style.display = 'none', 4000);
-    }
+    // ========== ORIGINAL LOGIN FUNCTIONS (KEPT INTACT) ==========
+    let resetEmailGlobal = '';
+    let resetOtpGlobal = '';
 
-    function showSuccess(msg) {
-      const el = document.getElementById('successMsg');
-      el.textContent = '✅ ' + msg;
-      el.style.display = 'block';
-    }
-
-    // Session check
     async function checkSession() {
       const { data } = await supabaseClient.auth.getSession();
       if (data.session) {
@@ -409,7 +401,20 @@
     }
     checkSession();
 
-    // Login handler
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = '❌ ' + msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 4000);
+    }
+
+    function showSuccess(msg) {
+      const el = document.getElementById('successMsg');
+      el.textContent = '✅ ' + msg;
+      el.style.display = 'block';
+      setTimeout(() => el.style.display = 'none', 4000);
+    }
+
     async function handleLogin() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
@@ -460,9 +465,217 @@
       if (e.key === 'Enter') handleLogin();
     });
 
+    // ========== OTP PASSWORD RESET FUNCTIONS (NEW) ==========
+    
+    function openResetEmailModal() {
+      document.getElementById('resetEmailModal').classList.add('active');
+      document.getElementById('resetEmail').value = '';
+    }
+
+    function closeResetEmailModal() {
+      document.getElementById('resetEmailModal').classList.remove('active');
+    }
+
+    function closeOtpModal() {
+      document.getElementById('otpModal').classList.remove('active');
+      // Clear OTP inputs
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById(`otp${i}`).value = '';
+      }
+    }
+
+    function closeNewPasswordModal() {
+      document.getElementById('newPasswordModal').classList.remove('active');
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }
+
+    // OTP input helpers
+    function otpMove(current, nextId) {
+      current.value = current.value.replace(/[^0-9]/g, '');
+      if (current.value.length === 1 && nextId) {
+        document.getElementById(nextId).focus();
+      }
+    }
+
+    function otpBack(e, current, prevId) {
+      if (e.key === 'Backspace' && current.value === '' && prevId) {
+        document.getElementById(prevId).focus();
+      }
+    }
+
+    function getOtpValue() {
+      return ['otp1', 'otp2', 'otp3', 'otp4', 'otp5', 'otp6']
+        .map(id => document.getElementById(id).value).join('');
+    }
+
+    // Send OTP via Supabase (using signInWithOtp)
+    async function sendOtp() {
+      const email = document.getElementById('resetEmail').value.trim();
+      if (!email) {
+        showError('Please enter your email');
+        return;
+      }
+
+      const btn = document.getElementById('sendOtpBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      try {
+        // Send OTP via Supabase magic link (will send email with code)
+        const { error } = await supabaseClient.auth.signInWithOtp({
+          email: email,
+          options: {
+            shouldCreateUser: false  // Don't create new user, just send OTP
+          }
+        });
+
+        if (error) throw error;
+
+        resetEmailGlobal = email;
+        document.getElementById('otpEmailDisplay').textContent = email;
+        
+        closeResetEmailModal();
+        document.getElementById('otpModal').classList.add('active');
+        
+        showSuccess('OTP sent to your email!');
+        
+        // Start resend timer
+        startResendTimer();
+
+      } catch (err) {
+        showError(err.message || 'Failed to send OTP. Make sure email exists.');
+      }
+
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+
+    let resendTimer = null;
+    let resendSeconds = 30;
+
+    function startResendTimer() {
+      const resendBtn = document.getElementById('resendOtpBtn');
+      resendSeconds = 30;
+      resendBtn.disabled = true;
+      resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+      
+      if (resendTimer) clearInterval(resendTimer);
+      resendTimer = setInterval(() => {
+        resendSeconds--;
+        if (resendSeconds <= 0) {
+          clearInterval(resendTimer);
+          resendBtn.disabled = false;
+          resendBtn.textContent = 'Resend OTP';
+        } else {
+          resendBtn.textContent = `Resend OTP (${resendSeconds}s)`;
+        }
+      }, 1000);
+    }
+
+    // Verify OTP and open new password modal
+    async function verifyOtp() {
+      const otp = getOtpValue();
+      if (otp.length !== 6) {
+        showError('Please enter the 6-digit OTP');
+        return;
+      }
+
+      const btn = document.getElementById('verifyOtpBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Verifying...';
+
+      try {
+        // Verify OTP with Supabase
+        const { error } = await supabaseClient.auth.verifyOtp({
+          email: resetEmailGlobal,
+          token: otp,
+          type: 'email'
+        });
+
+        if (error) throw error;
+
+        // OTP verified, open new password modal
+        closeOtpModal();
+        document.getElementById('newPasswordModal').classList.add('active');
+        showSuccess('OTP verified! Set your new password.');
+
+      } catch (err) {
+        showError(err.message || 'Invalid OTP. Please try again.');
+      }
+
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+
+    // Update password after OTP verification
+    async function updatePassword() {
+      const newPassword = document.getElementById('newPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (newPassword.length < 8) {
+        showError('Password must be at least 8 characters');
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      const btn = document.getElementById('updatePasswordBtn');
+      const originalText = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Updating...';
+
+      try {
+        // Update password with Supabase (user is already authenticated via OTP)
+        const { error } = await supabaseClient.auth.updateUser({
+          password: newPassword
+        });
+
+        if (error) throw error;
+
+        closeNewPasswordModal();
+        showSuccess('Password updated successfully! Please login with your new password.');
+        
+        // Clear any remaining OTP data
+        resetEmailGlobal = '';
+        
+      } catch (err) {
+        showError(err.message || 'Failed to update password');
+      }
+
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+
+    // Resend OTP
+    async function resendOtp() {
+      try {
+        const { error } = await supabaseClient.auth.signInWithOtp({
+          email: resetEmailGlobal,
+          options: { shouldCreateUser: false }
+        });
+        
+        if (error) throw error;
+        
+        showSuccess('New OTP sent!');
+        startResendTimer();
+        
+      } catch (err) {
+        showError(err.message || 'Failed to resend OTP');
+      }
+    }
+
     // Attach event listeners
-    document.getElementById('forgotPasswordLink').addEventListener('click', openForgotModal);
-    document.getElementById('sendResetBtn').addEventListener('click', sendResetLink);
+    document.getElementById('forgotPasswordLink').addEventListener('click', openResetEmailModal);
+    document.getElementById('sendOtpBtn').addEventListener('click', sendOtp);
+    document.getElementById('verifyOtpBtn').addEventListener('click', verifyOtp);
+    document.getElementById('updatePasswordBtn').addEventListener('click', updatePassword);
+    document.getElementById('resendOtpBtn').addEventListener('click', resendOtp);
 
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
