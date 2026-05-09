@@ -70,31 +70,6 @@
       background-clip: text;
       -webkit-text-fill-color: transparent;
     }
-    .nav-right {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .admin-badge {
-      background: rgba(255, 20, 147, 0.2);
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 0.7rem;
-      color: #FF6B9D;
-    }
-    .admin-btn {
-      background: rgba(255, 20, 147, 0.15);
-      border: 1px solid rgba(255, 20, 147, 0.3);
-      color: #FF6B9D;
-      cursor: pointer;
-      font-size: 0.7rem;
-      padding: 6px 14px;
-      border-radius: 20px;
-      transition: all 0.2s;
-    }
-    .admin-btn:hover {
-      background: rgba(255, 20, 147, 0.3);
-    }
 
     /* Hero Banner */
     .hero-banner {
@@ -176,9 +151,6 @@
       padding: 24px;
       margin-bottom: 30px;
       transition: all 0.3s;
-    }
-    .post-form:hover {
-      border-color: rgba(255, 20, 147, 0.4);
     }
     .post-form textarea {
       width: 100%;
@@ -467,15 +439,11 @@
 </head>
 <body>
 
-  <!-- Premium Navbar -->
+  <!-- Premium Navbar (Admin Button Removed) -->
   <nav class="navbar" id="navbar">
     <div class="nav-left">
       <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
       <div class="logo">💌 Confession Wall</div>
-    </div>
-    <div class="nav-right">
-      <span id="adminIndicator" class="admin-badge" style="display: none;">👑 Admin</span>
-      <button class="admin-btn" onclick="toggleAdminMode()">Admin Mode</button>
     </div>
   </nav>
 
@@ -499,7 +467,7 @@
         <span class="char-count" id="charCount">0/500</span>
         <div class="post-buttons">
           <button class="post-btn" onclick="postConfession()"><i class="fas fa-paper-plane"></i> Post Confession</button>
-          <button class="gif-btn" onclick="openGifPicker(addGifToInput)"><i class="fas fa-icons"></i> Add GIF</button>
+          <button class="gif-btn" onclick="openGifPicker()"><i class="fas fa-icons"></i> Add GIF</button>
         </div>
       </div>
     </div>
@@ -519,34 +487,26 @@
   <div id="toast" class="toast"></div>
 
   <!-- GIF Modal -->
-  <div id="gifModal" style="display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.95); z-index:1000; align-items:center; justify-content:center;">
-    <div style="background:#141423; border-radius:24px; padding:24px; max-width:400px; width:90%;">
-      <h3 style="margin-bottom:16px;">🎬 Choose a GIF</h3>
-      <input type="text" id="gifSearch" placeholder="Search GIFs..." style="width:100%; padding:12px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,20,147,0.3); border-radius:12px; color:white; margin-bottom:16px;">
-      <div id="gifResults" style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px; max-height:400px; overflow-y:auto;"></div>
-      <button onclick="closeGifPicker()" style="margin-top:16px; width:100%; padding:12px; background:transparent; border:1px solid rgba(255,20,147,0.3); border-radius:12px; color:white; cursor:pointer;">Cancel</button>
+  <div id="gifModal" style="display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.95); backdrop-filter: blur(12px); z-index:1000; align-items:center; justify-content:center;">
+    <div style="background:#141423; border-radius:28px; padding:28px; max-width:400px; width:90%;">
+      <div style="font-size:2rem; text-align:center; margin-bottom:12px;">🎬</div>
+      <h3 style="margin-bottom:16px; text-align:center;">Choose a GIF</h3>
+      <input type="text" id="gifSearch" placeholder="Search GIFs..." onkeyup="searchGifs(this.value)" style="width:100%; padding:14px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,20,147,0.3); border-radius:14px; color:white; margin-bottom:20px;">
+      <div id="gifResults" style="display:grid; grid-template-columns:repeat(2,1fr); gap:12px; max-height:400px; overflow-y:auto; padding:4px;"></div>
+      <button onclick="closeGifPicker()" style="margin-top:20px; width:100%; padding:12px; background:transparent; border:1px solid rgba(255,20,147,0.3); border-radius:100px; color:white; cursor:pointer;">Cancel</button>
     </div>
   </div>
 
   <script>
     let confessions = [];
-    let isAdmin = false;
-    const ADMIN_CODE = "drsaurab@2022";
     let currentUserId = null;
-    let currentUserEmail = null;
     let expandedComments = {};
-
-    // Stats
-    let totalLikes = 0;
-    let totalComments = 0;
 
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
       if (!data.session) { window.location.href = 'login.html'; return; }
       currentUserId = data.session.user.id;
-      currentUserEmail = data.session.user.email;
       await loadConfessions();
-      await updateStats();
     }
 
     async function loadConfessions() {
@@ -562,7 +522,6 @@
       
       confessions = data || [];
       
-      // Load comments for each confession
       for (let confession of confessions) {
         const { data: comments } = await supabaseClient
           .from('confession_comments')
@@ -578,12 +537,10 @@
 
     async function updateStats() {
       document.getElementById('totalConfessions').innerText = confessions.length;
-      
-      const totalLikesCount = confessions.reduce((sum, c) => sum + (c.likes || 0), 0);
-      const totalCommentsCount = confessions.reduce((sum, c) => sum + (c.comments?.length || 0), 0);
-      
-      document.getElementById('totalLikes').innerText = totalLikesCount;
-      document.getElementById('totalComments').innerText = totalCommentsCount;
+      const totalLikes = confessions.reduce((sum, c) => sum + (c.likes || 0), 0);
+      const totalComments = confessions.reduce((sum, c) => sum + (c.comments?.length || 0), 0);
+      document.getElementById('totalLikes').innerText = totalLikes;
+      document.getElementById('totalComments').innerText = totalComments;
     }
 
     async function postConfession() {
@@ -600,18 +557,13 @@
       else if (lowerText.includes("+2") || lowerText.includes("plus two")) exam = "+2";
       else if (lowerText.includes("management") || lowerText.includes("bbs") || lowerText.includes("bba")) exam = "Management";
 
-      const { error } = await supabaseClient
-        .from('confessions')
-        .insert({
-          text: text,
-          exam: exam,
-          user_id: currentUserId
-        });
+      const { error } = await supabaseClient.from('confessions').insert({
+        text: text,
+        exam: exam,
+        user_id: currentUserId
+      });
 
-      if (error) {
-        showToast('Failed to post confession');
-        return;
-      }
+      if (error) { showToast('Failed to post confession'); return; }
 
       input.value = "";
       document.getElementById('charCount').innerText = "0/500";
@@ -620,19 +572,10 @@
     }
 
     async function deleteConfession(id) {
-      if (!isAdmin && !confirm('Delete your confession?')) return;
-      
-      const { error } = await supabaseClient
-        .from('confessions')
-        .delete()
-        .eq('id', id);
-      
-      if (error) {
-        showToast('Failed to delete');
-      } else {
-        showToast('🗑️ Confession deleted');
-        await loadConfessions();
-      }
+      if (!confirm('Delete this confession?')) return;
+      const { error } = await supabaseClient.from('confessions').delete().eq('id', id);
+      if (error) { showToast('Failed to delete'); }
+      else { showToast('🗑️ Confession deleted'); await loadConfessions(); }
     }
 
     async function likeConfession(id) {
@@ -683,28 +626,17 @@
           user_id: currentUserId
         });
 
-      if (error) {
-        showToast('Failed to post comment');
-        return;
-      }
+      if (error) { showToast('Failed to post comment'); return; }
 
-           input.value = "";
-      showToast('💬 Anonymous comment added!');
+      input.value = "";
+      showToast('💬 Comment added!');
       await loadConfessions();
     }
 
     async function deleteComment(confessionId, commentId) {
       if (!confirm('Delete this comment?')) return;
-      
-      const { error } = await supabaseClient
-        .from('confession_comments')
-        .delete()
-        .eq('id', commentId);
-      
-      if (!error) {
-        showToast('Comment deleted');
-        await loadConfessions();
-      }
+      const { error } = await supabaseClient.from('confession_comments').delete().eq('id', commentId);
+      if (!error) { showToast('Comment deleted'); await loadConfessions(); }
     }
 
     function toggleComments(confessionId) {
@@ -712,25 +644,60 @@
       renderConfessions();
     }
 
-    function canDeleteConfession(confession) {
-      return isAdmin || confession.user_id === currentUserId;
+    // GIF Functions - FIXED
+    let selectedGifUrl = null;
+
+    function openGifPicker() {
+      document.getElementById('gifModal').style.display = 'flex';
+      searchGifs('');
     }
 
-    function canDeleteComment(comment) {
-      return isAdmin || comment.user_id === currentUserId;
+    function closeGifPicker() {
+      document.getElementById('gifModal').style.display = 'none';
     }
 
-    function toggleAdminMode() {
-      const code = prompt('Enter Admin Code:');
-      if (code === ADMIN_CODE) {
-        isAdmin = true;
-        document.getElementById('adminIndicator').style.display = 'inline-block';
-        showToast('👑 Admin mode activated');
-        renderConfessions();
+    async function searchGifs(query) {
+      const apiKey = 'AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8';
+      let url;
+      if (query && query.trim() !== '') {
+        url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=${apiKey}&limit=20`;
       } else {
-        showToast('❌ Wrong code');
+        url = `https://tenor.googleapis.com/v2/trending?key=${apiKey}&limit=20`;
+      }
+      
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        const resultsDiv = document.getElementById('gifResults');
+        
+        if (data.results && data.results.length > 0) {
+          resultsDiv.innerHTML = data.results.map(gif => `
+            <div onclick="selectGif('${gif.media_formats.gif.url}')" style="cursor:pointer; border-radius:12px; overflow:hidden; transition:transform 0.2s; background:rgba(255,255,255,0.05);">
+              <img src="${gif.media_formats.tinygif.url}" style="width:100%; height:auto; display:block;">
+            </div>
+          `).join('');
+        } else {
+          resultsDiv.innerHTML = '<p style="text-align:center;padding:20px;color:rgba(255,255,255,0.5);">No GIFs found. Try a different search.</p>';
+        }
+      } catch(e) {
+        console.error('GIF search error:', e);
+        document.getElementById('gifResults').innerHTML = '<p style="text-align:center;padding:20px;color:rgba(255,255,255,0.5);">Failed to load GIFs. Please try again.</p>';
       }
     }
+
+    function selectGif(gifUrl) {
+      const input = document.getElementById('confessionInput');
+      const currentText = input.value;
+      input.value = currentText + (currentText ? '\n' : '') + `🎬 GIF: ${gifUrl}`;
+      showToast('🎬 GIF added to your confession!');
+      closeGifPicker();
+    }
+
+    let searchTimeout;
+    document.getElementById('gifSearch')?.addEventListener('input', function(e) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => searchGifs(e.target.value), 500);
+    });
 
     function renderConfessions() {
       const container = document.getElementById('confessionsList');
@@ -750,7 +717,6 @@
         const commentCount = confession.comments?.length || 0;
         const isExpanded = expandedComments[confession.id];
         const userOwnsConfession = confession.user_id === currentUserId;
-        const showDelete = canDeleteConfession(confession);
         
         let reactionsHtml = '';
         if (confession.reactions && Object.keys(confession.reactions).length > 0) {
@@ -765,7 +731,7 @@
               </div>
               <div>
                 <span class="timestamp">${formatTime(confession.created_at)}</span>
-                ${showDelete ? `<button class="delete-btn" onclick="deleteConfession(${confession.id})"><i class="fas fa-trash"></i> Delete</button>` : ''}
+                ${userOwnsConfession ? `<button class="delete-btn" onclick="deleteConfession(${confession.id})"><i class="fas fa-trash"></i> Delete</button>` : ''}
               </div>
             </div>
             <div class="confession-text">${escapeHtml(confession.text)}</div>
@@ -796,14 +762,13 @@
                   ${!confession.comments || confession.comments.length === 0 ? '<div style="color:rgba(255,255,255,0.3);font-size:0.7rem;padding:8px;">No comments yet. Be the first to comment 💬</div>' : ''}
                   ${(confession.comments || []).map(comment => {
                     const userOwnsComment = comment.user_id === currentUserId;
-                    const showCommentDelete = canDeleteComment(comment);
                     return `
                       <div class="comment-item">
                         <div style="display:flex;align-items:center;gap:6px;flex:1;">
                           <span class="comment-anonymous">🕊️ Anonymous ${userOwnsComment ? '(You)' : ''}</span>
                           <span class="comment-text">${escapeHtml(comment.text)}</span>
                         </div>
-                        ${showCommentDelete ? `<button class="comment-delete" onclick="deleteComment(${confession.id}, ${comment.id})"><i class="fas fa-trash"></i></button>` : ''}
+                        ${userOwnsComment ? `<button class="comment-delete" onclick="deleteComment(${confession.id}, ${comment.id})"><i class="fas fa-trash"></i></button>` : ''}
                       </div>
                     `;
                   }).join('')}
@@ -838,57 +803,6 @@
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
-
-    // GIF Functions
-    let currentGifCallback = null;
-
-    function openGifPicker(callback) {
-      currentGifCallback = callback;
-      document.getElementById('gifModal').style.display = 'flex';
-      document.getElementById('gifSearch').value = '';
-      searchGifs('');
-    }
-
-    function closeGifPicker() {
-      document.getElementById('gifModal').style.display = 'none';
-    }
-
-    async function searchGifs(query) {
-      const url = query ? `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12` : `https://tenor.googleapis.com/v2/trending?key=AIzaSyC9VJpZ8qk8q8q8q8q8q8q8q8q8q8q8&limit=12`;
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        const results = document.getElementById('gifResults');
-        if (data.results && data.results.length > 0) {
-          results.innerHTML = data.results.map(gif => `
-            <div style="cursor:pointer; border-radius:12px; overflow:hidden; background:rgba(255,255,255,0.05);" onclick="selectGif('${gif.media_formats.gif.url}')">
-              <img src="${gif.media_formats.tinygif.url}" style="width:100%; height:auto;">
-            </div>
-          `).join('');
-        } else {
-          results.innerHTML = '<p style="text-align:center;padding:20px;">No GIFs found</p>';
-        }
-      } catch(e) {
-        document.getElementById('gifResults').innerHTML = '<p style="text-align:center;padding:20px;">Failed to load GIFs</p>';
-      }
-    }
-
-    function selectGif(gifUrl) {
-      if (currentGifCallback) currentGifCallback(gifUrl);
-      closeGifPicker();
-    }
-
-    function addGifToInput(gifUrl) {
-      const input = document.getElementById('confessionInput');
-      input.value += (input.value ? '\n' : '') + `[GIF: ${gifUrl}]`;
-      showToast('🎬 GIF added!');
-    }
-
-    let searchTimeout;
-    document.getElementById('gifSearch')?.addEventListener('input', function(e) {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => searchGifs(e.target.value), 300);
-    });
 
     document.getElementById('confessionInput').addEventListener('input', function() {
       const count = this.value.length;
