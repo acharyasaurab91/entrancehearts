@@ -311,6 +311,92 @@
       </div>
     </div>
 
+
+
+    <!-- Add this inside the stats-grid section -->
+<div class="stat-card" style="cursor: pointer;" onclick="togglePomodoro()">
+  <div class="stat-value" id="pomodoroCount">0</div>
+  <div class="stat-label">🍅 Pomodoros</div>
+</div>
+
+<!-- Add Pomodoro Modal -->
+<div class="modal-overlay" id="pomodoroModal">
+  <div class="modal-content" style="text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 16px;">🍅</div>
+    <h3 style="margin-bottom: 8px;">Pomodoro Timer</h3>
+    <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-bottom: 20px;">25 min focus • 5 min break</p>
+    <div class="timer-display" id="pomodoroDisplay" style="font-size: 3rem; margin-bottom: 20px;">25:00</div>
+    <div class="timer-controls" style="justify-content: center;">
+      <button class="timer-btn" onclick="startPomodoro()">▶ Start</button>
+      <button class="timer-btn" onclick="pausePomodoro()">⏸ Pause</button>
+      <button class="timer-btn" onclick="resetPomodoro()">🔄 Reset</button>
+    </div>
+    <button onclick="closePomodoro()" style="margin-top: 20px; background: transparent; border: 1px solid rgba(255,255,255,0.1); padding: 10px 20px; border-radius: 50px; color: white; cursor: pointer;">Close</button>
+  </div>
+</div>
+
+<script>
+// Add to existing timer.html script
+let pomodoroInterval = null;
+let pomodoroSeconds = 25 * 60;
+let isPomodoroRunning = false;
+let pomodoroCount = parseInt(localStorage.getItem('ehPomodoroCount') || '0');
+
+document.getElementById('pomodoroCount').innerText = pomodoroCount;
+
+function togglePomodoro() {
+  document.getElementById('pomodoroModal').classList.add('active');
+  updatePomodoroDisplay();
+}
+
+function closePomodoro() {
+  document.getElementById('pomodoroModal').classList.remove('active');
+  if (pomodoroInterval) {
+    clearInterval(pomodoroInterval);
+    isPomodoroRunning = false;
+  }
+}
+
+function updatePomodoroDisplay() {
+  const mins = Math.floor(pomodoroSeconds / 60);
+  const secs = pomodoroSeconds % 60;
+  document.getElementById('pomodoroDisplay').innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+}
+
+function startPomodoro() {
+  if (isPomodoroRunning) return;
+  isPomodoroRunning = true;
+  pomodoroInterval = setInterval(() => {
+    if (pomodoroSeconds <= 0) {
+      // Pomodoro complete!
+      pomodoroCount++;
+      localStorage.setItem('ehPomodoroCount', pomodoroCount);
+      document.getElementById('pomodoroCount').innerText = pomodoroCount;
+      showConfetti();
+      showToast('🍅 Pomodoro completed! Time for a break!');
+      resetPomodoro();
+    } else {
+      pomodoroSeconds--;
+      updatePomodoroDisplay();
+    }
+  }, 1000);
+}
+
+function pausePomodoro() {
+  if (!isPomodoroRunning) return;
+  isPomodoroRunning = false;
+  clearInterval(pomodoroInterval);
+}
+
+function resetPomodoro() {
+  pausePomodoro();
+  pomodoroSeconds = 25 * 60;
+  updatePomodoroDisplay();
+}
+</script>
+
+
+    
     <!-- Leaderboard -->
     <div class="leaderboard-card">
       <div class="leaderboard-title">
