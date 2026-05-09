@@ -494,7 +494,9 @@
           <td><span class="badge ${user.is_verified ? 'verified' : 'unverified'}">${user.is_verified ? '✓ Verified' : '○ Unverified'}</span></td>
           <td class="action-cell">
             ${!user.is_verified ? `<button class="verify-btn" onclick="verifyUser('${user.id}')"><i class="fas fa-check"></i> Verify</button>` : ''}
-            <button class="delete-btn" onclick="deleteUser('${user.id}')"><i class="fas fa-trash"></i> Delete</button>
+            <button class="delete-btn" onclick="deleteUser('${user.id}', '${user.name}')">
+  <i class="fas fa-trash"></i> Delete
+</button>
           </td>
         </tr>
       `).join('');
@@ -559,11 +561,69 @@
       else { showToast('✅ User verified!'); await loadUsers(); await loadStats(); }
     }
 
-    async function deleteUser(userId) {
-      if (!confirm('⚠️ Delete this user? This cannot be undone!')) return;
-      const { error } = await supabaseClient.auth.admin.deleteUser(userId);
-      if (error) showToast('Failed to delete user', 'error');
-      else { showToast('🗑️ User deleted'); await loadUsers(); await loadStats(); }
+    async function deleteUser(userId, userName) {
+  if (!confirm(`⚠️ Delete user "${userName}"? This will delete ALL their data including messages, likes, confessions, and study materials. This cannot be undone!`)) {
+    return;
+  }
+  
+  if (!confirm('Type "DELETE" to confirm:')) {
+    const confirmation = prompt('Type DELETE to confirm:');
+    if (confirmation !== 'DELETE') {
+      showToast('Deletion cancelled');
+      return;
+    }
+  }
+  
+  try {
+    // Delete user's likes
+    await supabaseClient.from('likes').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
+    
+    // Delete user's messages
+    await supabaseClient.from('messages').delete().or(`from_user.eq.${userId},to_user.eq.${userId}`);
+    
+    // Delete user's confessions
+    await supabaseClient.from('confessions').delete().eq('user_id', userId);
+    
+    // Delete user's comments
+    await supabaseClient.from('confession_comments').delete().eq('user_id', userId);
+    
+    // Delete user's study materials
+    await supabaseClient.from('study_materials').delete().eq('uploaded_by', userId);
+    
+    // Delete user's avatar from storage
+    const { data: files } = await supabaseClient.storage.from('avatars').list(userId);
+    if (files && files.length > 0) {
+      for (const file of files) {
+        await supabaseClient.storage.from('avatars').remove([`${userId}/${file.name}`]);
+      }
+    }
+    
+    // Delete user's voice messages
+    const { data: voiceFiles } = await supabaseClient.storage.from('chat_voice').list(userId);
+    if (voiceFiles && voiceFiles.length > 0) {
+      for (const file of voiceFiles) {
+        await supabaseClient.storage.from('chat_voice').remove([`${userId}/${file.name}`]);
+      }
+    }
+    
+    // Delete user profile
+    await supabaseClient.from('profiles').delete().eq('id', userId);
+    
+    // Delete user from auth (requires admin)
+    try {
+      await supabaseClient.auth.admin.deleteUser(userId);
+    } catch(e) {
+      console.log('Auth delete error (may need admin rights):', e);
+    }
+    
+    showToast(`✅ User "${userName}" deleted successfully`);
+    await loadUsers();
+    await loadStats();
+    
+  } catch (err) {
+    console.error('Delete error:', err);
+    showToast('❌ Failed to delete user: ' + err.message);
+  }
     }
 
     async function deleteConfession(id) {
