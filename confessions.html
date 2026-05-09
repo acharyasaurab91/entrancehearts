@@ -18,7 +18,6 @@
       color: white;
     }
 
-    /* Navigation */
     .navbar {
       position: fixed;
       top: 0;
@@ -49,14 +48,20 @@
       font-size: 0.9rem;
     }
 
-    /* Main Container */
+    .admin-badge {
+      background: rgba(230, 57, 70, 0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      color: #ff6b9d;
+    }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
       padding: 80px 20px 100px;
     }
 
-    /* Hero Section */
     .hero {
       text-align: center;
       margin-bottom: 30px;
@@ -76,7 +81,6 @@
       font-size: 0.85rem;
     }
 
-    /* Post Form */
     .post-form {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
@@ -130,7 +134,6 @@
       transform: scale(1.02);
     }
 
-    /* Filter Tabs */
     .filter-tabs {
       display: flex;
       gap: 10px;
@@ -155,11 +158,10 @@
       color: white;
     }
 
-    /* Confession Cards */
     .confessions-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 20px;
     }
 
     .confession-card {
@@ -172,7 +174,6 @@
 
     .confession-card:hover {
       border-color: rgba(255, 107, 157, 0.3);
-      background: rgba(255, 107, 157, 0.03);
     }
 
     .card-header {
@@ -180,6 +181,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .anonymous-badge {
@@ -212,6 +215,20 @@
       margin-right: 8px;
     }
 
+    .delete-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      font-size: 0.7rem;
+      margin-left: 8px;
+      transition: color 0.2s;
+    }
+
+    .delete-btn:hover {
+      color: #e63946;
+    }
+
     .like-section {
       display: flex;
       align-items: center;
@@ -237,24 +254,99 @@
       color: #ff6b9d;
     }
 
-    .like-btn.liked {
-      color: #ff6b9d;
+    /* Comments Section */
+    .comments-section {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
-    /* Empty State */
+    .comment-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .comment-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50px;
+      padding: 8px 14px;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.8rem;
+    }
+
+    .comment-input:focus {
+      outline: none;
+      border-color: #ff6b9d;
+    }
+
+    .comment-btn {
+      background: linear-gradient(135deg, #e63946, #ff6b9d);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 50px;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .comments-list {
+      margin-top: 8px;
+    }
+
+    .comment-item {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comment-text {
+      font-size: 0.75rem;
+      color: rgba(255, 255, 255, 0.7);
+      flex: 1;
+    }
+
+    .comment-anonymous {
+      font-size: 0.6rem;
+      color: #ff6b9d;
+      margin-right: 8px;
+    }
+
+    .comment-delete {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.3);
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+
+    .comment-delete:hover {
+      color: #e63946;
+    }
+
+    .show-comments-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 107, 157, 0.7);
+      font-size: 0.7rem;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: rgba(255, 255, 255, 0.4);
     }
 
-    .empty-state i {
-      font-size: 3rem;
-      margin-bottom: 12px;
-      display: block;
-    }
-
-    /* Toast Message */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -284,15 +376,6 @@
         transform: translateX(-50%) translateY(0);
       }
     }
-
-    @media (max-width: 480px) {
-      .container {
-        padding: 70px 16px 100px;
-      }
-      .hero h1 {
-        font-size: 1.6rem;
-      }
-    }
   </style>
 </head>
 <body>
@@ -300,16 +383,18 @@
   <nav class="navbar">
     <a href="index.html" class="back-btn">← Back</a>
     <div class="logo">💌 Confession Wall</div>
-    <div style="width: 50px;"></div>
+    <div>
+      <span id="adminIndicator" class="admin-badge" style="display: none;">👑 Admin Mode</span>
+      <button onclick="toggleAdminMode()" style="background:none;border:none;color:#ff6b9d;cursor:pointer;font-size:0.7rem;">Admin</button>
+    </div>
   </nav>
 
   <div class="container">
     <div class="hero">
       <h1>Anonymous Confessions 💕</h1>
-      <p>Share your feelings without revealing your identity. No matching required.</p>
+      <p>Share your feelings, comment anonymously, and connect with aspirants</p>
     </div>
 
-    <!-- Post Form -->
     <div class="post-form">
       <textarea id="confessionInput" placeholder="Share your confession, feelings, or thoughts... (Everyone can see this anonymously)"></textarea>
       <div class="form-footer">
@@ -318,7 +403,6 @@
       </div>
     </div>
 
-    <!-- Filter Tabs -->
     <div class="filter-tabs">
       <button class="filter-btn active" data-filter="all">All Confessions</button>
       <button class="filter-btn" data-filter="CEE">🎓 CEE</button>
@@ -327,56 +411,67 @@
       <button class="filter-btn" data-filter="Management">💼 Management</button>
     </div>
 
-    <!-- Confessions List -->
-    <div id="confessionsList" class="confessions-list">
-      <div class="empty-state">
-        <i>💭</i>
-        <p>No confessions yet. Be the first to share your feelings!</p>
-      </div>
-    </div>
+    <div id="confessionsList" class="confessions-list"></div>
   </div>
 
   <div id="toast" class="toast"></div>
 
   <script>
-    // Sample initial confessions (will be replaced by localStorage data)
     let confessions = [];
+    let isAdmin = false;
+    const ADMIN_CODE = "drsaurab@2022"; // Change this to your secret admin code
 
-    // Load from localStorage
+    function toggleAdminMode() {
+      if (!isAdmin) {
+        const code = prompt("Enter Admin Code:");
+        if (code === ADMIN_CODE) {
+          isAdmin = true;
+          document.getElementById('adminIndicator').style.display = 'inline-block';
+          showToast("👑 Admin mode activated! You can delete any confession or comment.");
+          renderConfessions();
+        } else {
+          showToast("❌ Wrong admin code!");
+        }
+      } else {
+        isAdmin = false;
+        document.getElementById('adminIndicator').style.display = 'none';
+        showToast("Admin mode deactivated");
+        renderConfessions();
+      }
+    }
+
     function loadConfessions() {
-      const saved = localStorage.getItem('entrancehearts_confessions');
+      const saved = localStorage.getItem('entrancehearts_confessions_v2');
       if (saved) {
         confessions = JSON.parse(saved);
       } else {
-        // Sample data for demo
         confessions = [
           {
             id: 1,
             text: "I have a huge crush on someone in my CEE coaching class but too shy to say it. If you're from Himalayan Academy and reading this... hi 👀",
             exam: "CEE",
             timestamp: new Date(Date.now() - 86400000).toISOString(),
-            likes: 12
+            likes: 12,
+            comments: [
+              { id: 101, text: "Same here! Good luck 🤞", timestamp: Date.now() - 70000000 },
+              { id: 102, text: "Just go for it!", timestamp: Date.now() - 60000000 }
+            ]
           },
           {
             id: 2,
             text: "Being an IOE aspirant is lonely. Sometimes I just want someone to study with at 2 AM. Anyone else feel the same?",
             exam: "IOE",
             timestamp: new Date(Date.now() - 172800000).toISOString(),
-            likes: 34
+            likes: 34,
+            comments: []
           },
           {
             id: 3,
             text: "To the girl who sits in the front row at Pulchowk library, I think you're beautiful. Hope this confession reaches you somehow ❤️",
             exam: "IOE",
             timestamp: new Date(Date.now() - 259200000).toISOString(),
-            likes: 28
-          },
-          {
-            id: 4,
-            text: "I pretended to be sick today just to avoid mock test. Now I feel guilty. Anyone else did this? 😭",
-            exam: "+2",
-            timestamp: new Date(Date.now() - 345600000).toISOString(),
-            likes: 56
+            likes: 28,
+            comments: []
           }
         ];
         saveConfessions();
@@ -385,7 +480,7 @@
     }
 
     function saveConfessions() {
-      localStorage.setItem('entrancehearts_confessions', JSON.stringify(confessions));
+      localStorage.setItem('entrancehearts_confessions_v2', JSON.stringify(confessions));
     }
 
     function postConfession() {
@@ -402,12 +497,11 @@
         return;
       }
 
-      // Detect exam category from keywords (simple AI)
       let exam = "All";
       const lowerText = text.toLowerCase();
       if (lowerText.includes("cee") || lowerText.includes("mbbs") || lowerText.includes("medical")) exam = "CEE";
       else if (lowerText.includes("ioe") || lowerText.includes("engineering") || lowerText.includes("pulchowk")) exam = "IOE";
-      else if (lowerText.includes("+2") || lowerText.includes("plus two") || lowerText.includes("higher secondary")) exam = "+2";
+      else if (lowerText.includes("+2") || lowerText.includes("plus two")) exam = "+2";
       else if (lowerText.includes("management") || lowerText.includes("bbs") || lowerText.includes("bba")) exam = "Management";
 
       const newConfession = {
@@ -415,7 +509,8 @@
         text: text,
         exam: exam,
         timestamp: new Date().toISOString(),
-        likes: 0
+        likes: 0,
+        comments: []
       };
 
       confessions.unshift(newConfession);
@@ -427,17 +522,76 @@
       renderConfessions();
     }
 
+    function deleteConfession(id) {
+      const confession = confessions.find(c => c.id === id);
+      if (!confession) return;
+      
+      // Check if user can delete (admin OR confirmation)
+      if (isAdmin || confirm("Delete your confession? This cannot be undone.")) {
+        confessions = confessions.filter(c => c.id !== id);
+        saveConfessions();
+        renderConfessions();
+        showToast("🗑️ Confession deleted");
+      }
+    }
+
     function likeConfession(id) {
       const confession = confessions.find(c => c.id === id);
       if (confession) {
         confession.likes++;
         saveConfessions();
         renderConfessions();
-        showToast("❤️ You liked this confession!");
+      }
+    }
+
+    function addComment(confessionId) {
+      const input = document.getElementById(`comment-input-${confessionId}`);
+      const text = input.value.trim();
+      
+      if (!text) {
+        showToast("Please write a comment");
+        return;
+      }
+      
+      if (text.length < 2) {
+        showToast("Comment too short");
+        return;
+      }
+
+      const confession = confessions.find(c => c.id === confessionId);
+      if (confession) {
+        const newComment = {
+          id: Date.now(),
+          text: text,
+          timestamp: Date.now()
+        };
+        confession.comments.push(newComment);
+        saveConfessions();
+        input.value = "";
+        renderConfessions();
+        showToast("💬 Anonymous comment added!");
+      }
+    }
+
+    function deleteComment(confessionId, commentId) {
+      const confession = confessions.find(c => c.id === confessionId);
+      if (confession) {
+        if (isAdmin || confirm("Delete this comment?")) {
+          confession.comments = confession.comments.filter(c => c.id !== commentId);
+          saveConfessions();
+          renderConfessions();
+          showToast("Comment deleted");
+        }
       }
     }
 
     let currentFilter = "all";
+    let expandedComments = {};
+
+    function toggleComments(confessionId) {
+      expandedComments[confessionId] = !expandedComments[confessionId];
+      renderConfessions();
+    }
 
     function renderConfessions() {
       const container = document.getElementById('confessionsList');
@@ -457,23 +611,55 @@
         return;
       }
 
-      container.innerHTML = filtered.map(confession => `
-        <div class="confession-card">
-          <div class="card-header">
-            <span class="anonymous-badge">🕊️ Anonymous</span>
-            <span class="timestamp">${formatTime(confession.timestamp)}</span>
+      container.innerHTML = filtered.map(confession => {
+        const commentCount = confession.comments.length;
+        const isExpanded = expandedComments[confession.id];
+        
+        return `
+          <div class="confession-card">
+            <div class="card-header">
+              <span class="anonymous-badge">🕊️ Anonymous ${isAdmin ? `(ID: ${confession.id})` : ''}</span>
+              <div>
+                <span class="timestamp">${formatTime(confession.timestamp)}</span>
+                <button class="delete-btn" onclick="deleteConfession(${confession.id})">🗑️ Delete</button>
+              </div>
+            </div>
+            <div class="confession-text">${escapeHtml(confession.text)}</div>
+            <div>
+              <span class="exam-tag">${confession.exam !== "All" ? confession.exam : "General"}</span>
+            </div>
+            <div class="like-section">
+              <button class="like-btn" onclick="likeConfession(${confession.id})">
+                ❤️ ${confession.likes}
+              </button>
+              <button class="like-btn" onclick="toggleComments(${confession.id})">
+                💬 ${commentCount} ${commentCount === 1 ? 'Comment' : 'Comments'}
+              </button>
+            </div>
+            
+            ${isExpanded ? `
+              <div class="comments-section">
+                <div class="comment-form">
+                  <input type="text" id="comment-input-${confession.id}" class="comment-input" placeholder="Write an anonymous comment...">
+                  <button class="comment-btn" onclick="addComment(${confession.id})">Post</button>
+                </div>
+                <div class="comments-list">
+                  ${confession.comments.length === 0 ? '<div style="color:rgba(255,255,255,0.3);font-size:0.7rem;padding:8px;">No comments yet. Be the first to comment 💬</div>' : ''}
+                  ${confession.comments.map(comment => `
+                    <div class="comment-item">
+                      <div style="display:flex;align-items:center;gap:6px;flex:1;">
+                        <span class="comment-anonymous">🕊️ Anonymous</span>
+                        <span class="comment-text">${escapeHtml(comment.text)}</span>
+                      </div>
+                      <button class="comment-delete" onclick="deleteComment(${confession.id}, ${comment.id})">🗑️</button>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
           </div>
-          <div class="confession-text">${escapeHtml(confession.text)}</div>
-          <div>
-            <span class="exam-tag">${confession.exam !== "All" ? confession.exam : "General"}</span>
-          </div>
-          <div class="like-section">
-            <button class="like-btn" onclick="likeConfession(${confession.id})">
-              ❤️ ${confession.likes}
-            </button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function formatTime(timestamp) {
@@ -500,7 +686,6 @@
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    // Character counter
     document.getElementById('confessionInput').addEventListener('input', function() {
       const count = this.value.length;
       document.getElementById('charCount').innerText = `${count}/500`;
@@ -510,7 +695,6 @@
       }
     });
 
-    // Filter buttons
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -520,7 +704,6 @@
       });
     });
 
-    // Initialize
     loadConfessions();
   </script>
 </body>
