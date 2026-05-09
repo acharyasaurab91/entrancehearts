@@ -327,7 +327,7 @@
       font-size: 0.88rem;
     }
 
-    /* Chat Window */
+    /* Premium Chat Window */
     .chat-window {
       display: none;
       flex-direction: column;
@@ -341,177 +341,204 @@
       max-width: 600px;
       margin: 0 auto;
     }
-    .chat-window.open { display: flex; }
+    .chat-window.open { display: flex; animation: slideUp 0.3s ease; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     
     .chat-header {
       display: flex;
       align-items: center;
       gap: 12px;
-      padding: 14px 16px;
-      background: rgba(10, 10, 15, 0.98);
+      padding: 16px 20px;
+      background: rgba(20, 20, 35, 0.95);
+      backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255,20,147,0.2);
     }
     .back-btn-chat {
-      background: none;
+      background: rgba(255,255,255,0.08);
       border: none;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       cursor: pointer;
-      color: rgba(255, 255, 255, 0.7);
-      padding: 8px 12px;
+      color: rgba(255, 255, 255, 0.8);
+      padding: 8px 16px;
       border-radius: 100px;
       transition: all 0.2s;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      font-weight: 500;
     }
     .back-btn-chat:hover {
-      background: rgba(255,20,147,0.15);
+      background: rgba(255,20,147,0.2);
       color: #FF6B9D;
     }
     .chat-header-avatar-wrap { position: relative; }
     .chat-header-avatar {
-      width: 40px;
-      height: 40px;
+      width: 45px;
+      height: 45px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.05);
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       overflow: hidden;
     }
     .chat-header-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
     .online-dot-header {
-      width: 11px;
-      height: 11px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background: #4caf50;
-      border: 2px solid #0a0a0f;
+      border: 2px solid #141423;
       position: absolute;
-      bottom: 0;
-      right: 0;
+      bottom: 2px;
+      right: 2px;
       display: none;
     }
     .online-dot-header.visible { display: block; }
     .chat-header-info { flex: 1; }
-    .chat-header-name { font-size: 0.95rem; font-weight: 700; }
-    .chat-header-status { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); }
+    .chat-header-name { font-size: 1rem; font-weight: 700; margin-bottom: 2px; }
+    .chat-header-status { font-size: 0.7rem; color: rgba(255, 255, 255, 0.45); }
     .chat-header-status.online { color: #4caf50; }
     
     .messages-area {
       flex: 1;
       overflow-y: auto;
-      padding: 16px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      background: linear-gradient(180deg, rgba(10,10,15,0.98), #0a0a0f);
     }
     
-    .msg-wrap { display: flex; flex-direction: column; }
+    .msg-wrap { display: flex; flex-direction: column; margin-bottom: 4px; }
     .msg-wrap.sent { align-items: flex-end; }
     .msg-wrap.received { align-items: flex-start; }
     
     .msg {
       max-width: 75%;
       padding: 10px 16px;
-      border-radius: 20px;
-      font-size: 0.87rem;
-      line-height: 1.5;
+      border-radius: 22px;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      position: relative;
+      word-wrap: break-word;
     }
     .msg.sent {
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       color: white;
       border-bottom-right-radius: 4px;
+      box-shadow: 0 2px 8px rgba(255,20,147,0.2);
     }
     .msg.received {
       background: #141423;
-      color: rgba(255, 255, 255, 0.85);
+      color: rgba(255, 255, 255, 0.9);
       border-bottom-left-radius: 4px;
+      border: 1px solid rgba(255,20,147,0.15);
     }
     .msg.voice {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       cursor: pointer;
+      padding: 8px 16px;
     }
+    .msg.voice i {
+      font-size: 1.2rem;
+      transition: transform 0.2s;
+    }
+    .msg.voice i:hover { transform: scale(1.1); }
     .voice-wave {
       display: flex;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
     }
     .voice-wave span {
       width: 3px;
       height: 12px;
       background: currentColor;
       border-radius: 2px;
-      animation: wave 0.5s ease infinite alternate;
+      animation: wave 0.8s ease infinite alternate;
     }
     .voice-wave span:nth-child(2) { height: 18px; animation-delay: 0.1s; }
     .voice-wave span:nth-child(3) { height: 24px; animation-delay: 0.2s; }
     .voice-wave span:nth-child(4) { height: 18px; animation-delay: 0.3s; }
     .voice-wave span:nth-child(5) { height: 12px; animation-delay: 0.4s; }
     @keyframes wave {
-      0% { transform: scaleY(0.5); }
-      100% { transform: scaleY(1); }
+      0% { transform: scaleY(0.5); opacity: 0.5; }
+      100% { transform: scaleY(1); opacity: 1; }
     }
     
     .msg-footer {
       display: flex;
       align-items: center;
+      justify-content: flex-end;
       gap: 4px;
-      margin-top: 3px;
+      margin-top: 4px;
       padding: 0 4px;
     }
-    .msg-time { font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); }
-    .msg-tick { font-size: 0.65rem; color: rgba(255, 255, 255, 0.3); }
+    .msg-time { font-size: 0.6rem; color: rgba(255, 255, 255, 0.35); }
+    .msg-tick { font-size: 0.6rem; color: rgba(255, 255, 255, 0.35); }
     .msg-tick.seen { color: #4fc3f7; }
     
     .chat-input-row {
       display: flex;
-      gap: 10px;
-      padding: 12px 16px;
-      background: rgba(10, 10, 15, 0.98);
+      gap: 12px;
+      padding: 16px 20px;
+      background: rgba(20, 20, 35, 0.95);
+      backdrop-filter: blur(20px);
       border-top: 1px solid rgba(255,20,147,0.2);
     }
     .chat-input {
       flex: 1;
-      padding: 12px 16px;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.06);
       border: 1px solid rgba(255,20,147,0.2);
       border-radius: 100px;
       color: white;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-family: 'Inter', sans-serif;
       outline: none;
+      transition: all 0.2s;
     }
-    .chat-input:focus { border-color: #FF1493; }
+    .chat-input:focus { border-color: #FF1493; background: rgba(255,20,147,0.05); }
     .voice-record-btn {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: rgba(255,20,147,0.15);
       border: 1px solid rgba(255,20,147,0.3);
       color: #FF6B9D;
       cursor: pointer;
       transition: all 0.2s;
+      font-size: 1.1rem;
     }
+    .voice-record-btn:hover { background: rgba(255,20,147,0.25); transform: scale(1.02); }
     .voice-record-btn.recording {
       background: #ff4444;
       color: white;
       animation: pulse 1s infinite;
     }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
     .send-btn {
-      width: 46px;
-      height: 46px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       border: none;
       color: white;
-      font-size: 1rem;
+      font-size: 1.1rem;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: all 0.2s;
     }
-    .send-btn:active { transform: scale(0.95); }
+    .send-btn:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(255,20,147,0.3); }
+    .send-btn:active { transform: scale(0.96); }
     
     .toast {
       position: fixed;
@@ -525,6 +552,7 @@
       font-size: 0.85rem;
       z-index: 300;
       display: none;
+      white-space: nowrap;
     }
     .toast.show { display: block; animation: fadeUp 0.3s ease; }
     @keyframes fadeUp {
@@ -543,7 +571,7 @@
       border-top: 1px solid rgba(255,20,147,0.2);
       display: flex;
       justify-content: space-around;
-      padding: 12px 0 20px;
+      padding: 12px 0 22px;
       z-index: 100;
     }
     .nav-item {
@@ -556,7 +584,7 @@
       font-size: 0.65rem;
       font-weight: 600;
       transition: all 0.2s;
-      padding: 6px 12px;
+      padding: 8px 16px;
       border-radius: 40px;
     }
     .nav-item span:first-child { font-size: 1.3rem; }
@@ -614,7 +642,7 @@
     </div>
   </div>
 
-  <!-- Chat Window with Back Button -->
+  <!-- Premium Chat Window -->
   <div class="chat-window" id="chatWindow">
     <div class="chat-header">
       <button class="back-btn-chat" onclick="closeChat()">
@@ -637,7 +665,7 @@
       <button class="voice-record-btn" id="voiceRecordBtn" onclick="toggleVoiceRecording()">
         <i class="fas fa-microphone"></i>
       </button>
-      <button class="send-btn" onclick="sendMessage()">➤</button>
+      <button class="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
     </div>
   </div>
 
@@ -649,6 +677,7 @@
     <a href="profile.html" class="nav-item"><span>👤</span><span>Profile</span></a>
   </div>
 
+  
   <div id="toast" class="toast"></div>
 
   <script>
@@ -687,7 +716,7 @@
         localStorage.removeItem('ehChatWith');
         const match = matches.find(m => m.id === chatWith);
         if (match) {
-               setTimeout(() => openChat(match.id, match.name, match.gender, match.avatar_url), 500);
+          setTimeout(() => openChat(match.id, match.name, match.gender, match.avatar_url), 500);
         }
       }
     }
@@ -705,8 +734,8 @@
       const date = new Date(lastSeen);
       const now = new Date();
       const diff = Math.floor((now - date) / 1000);
-      if (diff < 60) return 'Online just now';
-      if (diff < 3600) return `Last seen ${Math.floor(diff / 60)} minutes ago`;
+      if (diff < 60) return 'Online';
+      if (diff < 3600) return `Last seen ${Math.floor(diff / 60)} min ago`;
       if (diff < 86400) return `Last seen ${Math.floor(diff / 3600)} hours ago`;
       return `Last seen ${Math.floor(diff / 86400)} days ago`;
     }
@@ -853,7 +882,6 @@
       subscribeMessages();
       await markSeen();
       
-      // Scroll to bottom
       const area = document.getElementById('messagesArea');
       area.scrollTop = area.scrollHeight;
     }
@@ -885,7 +913,7 @@
         .order('created_at', { ascending:true });
 
       if (!msgs || msgs.length === 0) {
-        area.innerHTML = `<div style="text-align:center;padding:40px 20px"><div style="font-size:2.5rem;margin-bottom:10px">👋</div><p style="color:rgba(255,255,255,0.4)">Say hello to ${currentChatName}!</p></div>`;
+        area.innerHTML = `<div style="text-align:center;padding:50px 20px"><div style="font-size:3rem;margin-bottom:15px">💬</div><p style="color:rgba(255,255,255,0.4)">Say hello to ${currentChatName}!</p></div>`;
         return;
       }
 
@@ -896,20 +924,23 @@
         
         let messageContent = '';
         if (m.is_voice && m.voice_url) {
-          messageContent = `<div class="msg voice" onclick="playVoiceMessage('${m.voice_url}')">
-            <i class="fas fa-play"></i>
-            <div class="voice-wave">
-              <span></span><span></span><span></span><span></span><span></span>
+          const isOwnMessage = m.from_user === currentUserId;
+          messageContent = `
+            <div class="msg voice" onclick="playVoiceMessage('${m.voice_url}')">
+              <i class="fas fa-play-circle"></i>
+              <div class="voice-wave">
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <span>${isOwnMessage ? 'Your voice message' : 'Voice message'}</span>
             </div>
-            <span>Voice message</span>
-          </div>`;
+          `;
         } else {
           messageContent = escapeHtml(m.text);
         }
         
         return `
           <div class="msg-wrap ${sent ? 'sent' : 'received'}">
-            <div class="msg ${sent ? 'sent' : 'received'}">${messageContent}</div>
+            <div class="msg ${sent ? 'sent' : 'received'} ${m.is_voice ? 'voice' : ''}">${messageContent}</div>
             <div class="msg-footer"><span class="msg-time">${time}</span>${tickHTML}</div>
           </div>
         `;
@@ -918,7 +949,7 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    // FIXED REAL-TIME SUBSCRIPTION
+    // Real-time subscription
     function subscribeMessages() {
       if (msgSubscription) supabaseClient.removeChannel(msgSubscription);
       
@@ -938,8 +969,7 @@
               await loadMessages();
               await markSeen();
               renderChatList();
-            } else if (payload.new.from_user !== currentUserId) {
-              // Update chat list for unread indicator
+            } else {
               renderChatList();
             }
           }
@@ -992,7 +1022,7 @@
       area.scrollTop = area.scrollHeight;
     }
 
-    // FIXED VOICE RECORDING
+    // Voice Recording Functions
     async function toggleVoiceRecording() {
       if (!isRecording) {
         try {
@@ -1018,7 +1048,7 @@
           showToast('🎤 Recording... Click again to stop');
         } catch(err) {
           console.error('Microphone error:', err);
-          showToast('❌ Microphone access denied. Please allow microphone permission.');
+          showToast('❌ Microphone access denied');
         }
       } else {
         if (mediaRecorder && mediaRecorder.state === 'recording') {
@@ -1045,7 +1075,7 @@
       try {
         const { error: uploadError } = await supabaseClient.storage
           .from('chat_voice')
-          .upload(filePath, audioBlob);
+          .upload(filePath, audioBlob, { contentType: 'audio/webm' });
         
         if (uploadError) {
           console.error('Upload error:', uploadError);
@@ -1058,7 +1088,7 @@
         const { error } = await supabaseClient.from('messages').insert({
           from_user: currentUserId,
           to_user: currentChatUserId,
-          text: '🎤 Voice message',
+          text: 'Voice message',
           seen: false,
           is_voice: true,
           voice_url: urlData.publicUrl
@@ -1082,8 +1112,15 @@
 
     function playVoiceMessage(url) {
       const audio = new Audio(url);
-      audio.play();
-      showToast('🎤 Playing voice message');
+      audio.play()
+        .then(() => {
+          showToast('🔊 Playing voice message');
+        })
+        .catch((err) => {
+          console.error('Play error:', err);
+          showToast('❌ Could not play voice message');
+          window.open(url, '_blank');
+        });
     }
 
     function formatTime(isoStr) {
