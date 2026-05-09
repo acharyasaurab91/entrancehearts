@@ -459,6 +459,8 @@
     let currentUserId = null;
     let allProfiles = [];
     let seenIds = JSON.parse(localStorage.getItem('ehSeen') || '[]');
+    let passedIds = JSON.parse(localStorage.getItem('ehPassed') || '[]');
+    let matchedIds = [];
     let currentFilter = 'all';
     let currentProfile = null;
 
@@ -469,7 +471,34 @@
         return; 
       }
       currentUserId = data.session.user.id;
+      
+      // Load matched users (mutual likes)
+      await loadMatchedUsers();
       await loadProfiles();
+    }
+
+    async function loadMatchedUsers() {
+      const { data: myLikes } = await supabaseClient
+        .from('likes')
+        .select('to_user')
+        .eq('from_user', currentUserId);
+      
+      if (!myLikes || myLikes.length === 0) {
+        matchedIds = [];
+        return;
+      }
+      
+      const likedIds = myLikes.map(l => l.to_user);
+      const { data: mutual } = await supabaseClient
+        .from('likes')
+        .select('from_user')
+        .eq('to_user', currentUserId)
+        .in('from_user', likedIds);
+      
+      matchedIds = mutual ? mutual.map(m => m.from_user) : [];
+      
+      // Save matched IDs to localStorage for persistence
+      localStorage.setItem('ehMatched', JSON.stringify(matchedIds));
     }
 
     async function loadProfiles() {
@@ -478,16 +507,40 @@
         .select('*')
         .neq('id', currentUserId);
       
-      console.log('Loaded profiles:', data);
       allProfiles = data || [];
       renderNextCard();
     }
 
+    // Clean up old passed entries (older than 7 days)
+    function cleanupOldPassed() {
+      const now = Date.now();
+      const sevenDays = 7 * 24 * 60 * 60 * 1000;
+      const filtered = passedIds.filter(entry => (now - entry.timestamp) < sevenDays);
+      if (filtered.length !== passedIds.length) {
+        passedIds = filtered;
+        localStorage.setItem('ehPassed', JSON.stringify(passedIds));
+      }
+    }
+
     function getFiltered() {
+      cleanupOldPassed();
+      
       return allProfiles.filter(p => {
-        const notSeen = !seenIds.includes(p.id);
+        // Don't show already matched users
+        if (matchedIds.includes(p.id)) return false;
+        
+        // Don't show passed users (within 7 days)
+        const isPassed = passedIds.some(entry => entry.id === p.id);
+        if (isPassed) return false;
+        
+        // Don't show already seen/liked users (from old system - for backward compatibility)
+        const isSeen = seenIds.includes(p.id);
+        if (isSeen) return false;
+        
+        // Apply category filter
         const matchFilter = currentFilter === 'all' || p.category === currentFilter;
-        return notSeen && matchFilter;
+        
+        return matchFilter;
       });
     }
 
@@ -541,44 +594,60 @@
     }
 
     async function likeProfile() {
-  if (!currentProfile) return;
-  const card = document.getElementById('currentCard');
-  card.classList.add('hide-right');
-  
-  // Insert like
-  await supabaseClient.from('likes').insert({
-    from_user: currentUserId, 
-    to_user: currentProfile.id
-  });
-  
-  // Check for mutual like (REAL-TIME)
-  const { data: mutual } = await supabaseClient
-    .from('likes')
-    .select('*')
-    .eq('from_user', currentProfile.id)
-    .eq('to_user', currentUserId);
-  
-  seenIds.push(currentProfile.id);
-  localStorage.setItem('ehSeen', JSON.stringify(seenIds));
-  
-  setTimeout(() => {
-    if (mutual && mutual.length > 0) {
-      showMatch(currentProfile.name);
-      // Also trigger a notification for chat refresh
-      localStorage.setItem('ehNewMatch', currentProfile.id);
-    } else {
-      renderNextCard();
-    }
-  }, 400);
+      if (!currentProfile) return;
+      const card = document.getElementById('currentCard');
+      card.classList.add('hide-right');
+      
+      // Insert like
+      await supabaseClient.from('likes').insert({
+        from_user: currentUserId, 
+        to_user: currentProfile.id
+      });
+      
+      // Check for mutual like
+      const { data: mutual } = await supabaseClient
+        .from('likes')
+        .select('*')
+        .eq('from_user', currentProfile.id)
+        .eq('to_user', currentUserId);
+      
+      // Add to seen (so it doesn't reappear)
+      seenIds.push(currentProfile.id);
+      localStorage.setItem('ehSeen', JSON.stringify(seenIds));
+      
+      // If mutual, add to matched list
+      if (mutual && mutual.length > 0) {
+        matchedIds.push(currentProfile.id);
+        localStorage.setItem('ehMatched', JSON.stringify(matchedIds));
+        setTimeout(() => {
+          showMatch(currentProfile.name);
+        }, 400);
+      } else {
+        setTimeout(() => {
+          renderNextCard();
+        }, 400);
+      }
     }
 
     function passProfile() {
       if (!currentProfile) return;
       const card = document.getElementById('currentCard');
       card.classList.add('hide-left');
+      
+      // Add to passed list with timestamp
+      passedIds.push({
+        id: currentProfile.id,
+        timestamp: Date.now()
+      });
+      localStorage.setItem('ehPassed', JSON.stringify(passedIds));
+      
+      // Also add to seen for backward compatibility
       seenIds.push(currentProfile.id);
       localStorage.setItem('ehSeen', JSON.stringify(seenIds));
-      setTimeout(() => renderNextCard(), 400);
+      
+      setTimeout(() => {
+        renderNextCard();
+      }, 400);
     }
 
     function showMatch(name) {
@@ -595,8 +664,6 @@
       currentFilter = filter;
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      seenIds = [];
-      localStorage.setItem('ehSeen', JSON.stringify(seenIds));
       renderNextCard();
     }
 
@@ -606,7 +673,7 @@
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
-        return m;
+              return m;
       });
     }
 
