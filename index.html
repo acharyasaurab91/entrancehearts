@@ -29,10 +29,69 @@
   <meta name="apple-mobile-web-app-title" content="EntranceHearts"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
 
-  <!-- Fonts & CSS -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
   <link rel="stylesheet" href="style.css"/>
+  
+  <style>
+    /* Additional premium styles specific to index */
+    .navbar-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    
+    .nav-links a, .nav-links button {
+      font-weight: 500;
+      letter-spacing: -0.2px;
+    }
+    
+    .btn-primary-nav {
+      background: var(--gradient-primary);
+      color: white;
+      padding: 10px 24px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    
+    .btn-primary-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(230, 57, 70, 0.3);
+    }
+    
+    .btn-ghost-nav {
+      color: var(--text-secondary);
+      padding: 10px 20px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    
+    .btn-ghost-nav:hover {
+      color: var(--primary);
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
 
@@ -47,18 +106,20 @@
     <button class="install-close" id="closeInstallBtn">✕</button>
   </div>
 
-  <!-- Navbar -->
+  <!-- Premium Navbar -->
   <nav class="navbar">
-    <div class="logo">💕 EntranceHearts</div>
-    <div class="nav-links">
-      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-      <a href="login.html" class="btn-ghost">Login</a>
-      <a href="signup.html" class="btn-primary">Join Free</a>
-      <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
-      <a href="study.html" class="btn-ghost">📚 Study</a>
-      <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
+    <div class="navbar-container">
+      <div class="logo">💕 EntranceHearts</div>
+      <div class="nav-links">
+        <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
+        <a href="confessions.html" class="btn-ghost-nav">💌 Confessions</a>
+        <a href="study.html" class="btn-ghost-nav">📚 Study</a>
+        <a href="timer.html" class="btn-ghost-nav">⏱️ Timer</a>
+        <a href="login.html" class="btn-ghost-nav">Login</a>
+        <a href="signup.html" class="btn-primary-nav">✨ Join Free</a>
+      </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
-    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
   </nav>
 
   <!-- Mobile Menu -->
@@ -70,6 +131,8 @@
     <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
     <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
     <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
+    <a href="profile.html" class="mobile-menu-item">👤 Profile</a>
   </div>
 
   <!-- Hero Section -->
@@ -85,6 +148,7 @@
     <h1 class="hero-title">Find Your <span class="gradient-text">Perfect Match</span><br/>Among Aspirants</h1>
     <p class="hero-subtitle">Nepal's first dating & friendship app built exclusively for entrance exam students. Connect with someone who truly understands your journey.</p>
 
+    <!-- Floating Cards -->
     <div class="floating-cards">
       <div class="float-card">
         <div class="float-avatar">👩</div>
@@ -131,10 +195,26 @@
       <p class="section-sub">Get started in minutes and find your perfect match</p>
     </div>
     <div class="steps-grid">
-      <div class="step-card"><div class="step-number">1</div><h3>Create Profile</h3><p>Sign up and tell us your exam and interests.</p></div>
-      <div class="step-card"><div class="step-number">2</div><h3>AI Matches You</h3><p>Smart matching based on your goals and vibe.</p></div>
-      <div class="step-card"><div class="step-number">3</div><h3>Like & Match</h3><p>Browse profiles and find your perfect match.</p></div>
-      <div class="step-card"><div class="step-number">4</div><h3>Chat & Connect</h3><p>Message your matches and build connections.</p></div>
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <h3>Create Profile</h3>
+        <p>Sign up and tell us your exam, subjects and personality.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <h3>AI Matches You</h3>
+        <p>Our AI finds people who share your goals and vibe.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <h3>Like & Match</h3>
+        <p>Browse profiles and match with people you like.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">04</div>
+        <h3>Chat & Connect</h3>
+        <p>Message your matches and build real connections.</p>
+      </div>
     </div>
   </section>
 
@@ -143,14 +223,47 @@
     <div class="section-header">
       <span class="section-tag">Premium Features</span>
       <h2>Everything You<br/><span class="gradient-text">Need to Connect</span></h2>
+      <p class="section-sub">Built specifically for Nepal's entrance exam community</p>
     </div>
     <div class="features-grid">
-      <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Matchmaking</h3><p>Smart matching based on your personality.</p></div>
-      <div class="feature-card"><div class="feature-icon">🔒</div><h3>Verified Profiles</h3><p>Email verified accounts. Safe community.</p></div>
-      <div class="feature-card"><div class="feature-icon">💬</div><h3>Real-time Chat</h3><p>Chat instantly. Share notes and motivation.</p></div>
-      <div class="feature-card"><div class="feature-icon">🎯</div><h3>Niche Community</h3><p>Only CEE, IOE, +2 and Management students.</p></div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3>AI Matchmaking</h3>
+        <p>Smart matching based on your exam, goals and personality.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Verified Profiles</h3>
+        <p>Email verified accounts only. Safe and trusted community.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Real-time Chat</h3>
+        <p>Chat instantly with your matches. Share notes and motivation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <h3>Niche Community</h3>
+        <p>Only CEE, IOE, +2 and Management students. No random people.</p>
+      </div>
     </div>
   </section>
+
+  <!-- Study & Confession Preview -->
+  <div class="premium-grid">
+    <div class="premium-card">
+      <div class="premium-card-icon">💌</div>
+      <h3>Anonymous Confessions</h3>
+      <p>Share your feelings without revealing your identity. Connect with aspirants who feel the same.</p>
+      <a href="confessions.html" class="btn-ghost" style="margin-top: 16px;">View Confessions →</a>
+    </div>
+    <div class="premium-card">
+      <div class="premium-card-icon">📚</div>
+      <h3>Study Materials</h3>
+      <p>Share and download notes, past questions, and study resources for CEE, IOE, +2 & Management.</p>
+      <a href="study.html" class="btn-ghost" style="margin-top: 16px;">Browse Library →</a>
+    </div>
+  </div>
 
   <!-- Share Section -->
   <div class="share-section">
@@ -178,9 +291,9 @@
     <div class="footer-content">
       <span class="logo">💕 EntranceHearts</span>
       <div class="footer-links">
-        <a href="#">Privacy</a>
-        <a href="#">Terms</a>
-        <a href="#">Contact</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact Us</a>
       </div>
       <p>Made with ❤️ for Nepal's entrance exam aspirants</p>
       <p>© 2026 EntranceHearts. All rights reserved.</p>
