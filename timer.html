@@ -26,6 +26,12 @@
       align-items: center;
       z-index: 100;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .navbar.scrolled {
+      padding: 10px 20px;
+      background: rgba(10, 10, 15, 0.98);
     }
 
     .logo {
@@ -47,9 +53,14 @@
       max-width: 500px;
       margin: 0 auto;
       padding: 80px 20px 100px;
+      animation: fadeIn 0.5s ease;
     }
 
-    /* Timer Main Card */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .timer-card {
       background: linear-gradient(135deg, rgba(230, 57, 70, 0.1), rgba(255, 107, 157, 0.05));
       border: 1px solid rgba(255, 107, 157, 0.2);
@@ -95,11 +106,6 @@
       transform: scale(1.02);
     }
 
-    .timer-btn.active {
-      background: linear-gradient(135deg, #e63946, #ff6b9d);
-    }
-
-    /* Goal Section */
     .goal-section {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -153,7 +159,6 @@
       cursor: pointer;
     }
 
-    /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -167,6 +172,11 @@
       border-radius: 16px;
       padding: 16px;
       text-align: center;
+      transition: all 0.2s;
+    }
+
+    .stat-card:hover {
+      border-color: rgba(255, 107, 157, 0.3);
     }
 
     .stat-value {
@@ -180,7 +190,11 @@
       color: rgba(255, 255, 255, 0.5);
     }
 
-    /* Leaderboard */
+    .pomodoro-card {
+      cursor: pointer;
+      margin-bottom: 24px;
+    }
+
     .leaderboard-card {
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -251,6 +265,34 @@
         transform: translateX(-50%) translateY(0);
       }
     }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+      border: 1px solid rgba(255, 107, 157, 0.3);
+      border-radius: 32px;
+      padding: 32px;
+      text-align: center;
+      max-width: 350px;
+      width: 90%;
+    }
   </style>
 </head>
 <body>
@@ -262,7 +304,6 @@
   </nav>
 
   <div class="container">
-    <!-- Timer Card -->
     <div class="timer-card">
       <div style="font-size: 2rem;">📚</div>
       <div class="timer-display" id="timerDisplay">00:00:00</div>
@@ -276,7 +317,6 @@
       </div>
     </div>
 
-    <!-- Goal Section -->
     <div class="goal-section">
       <div class="goal-header">
         <span>🎯 Daily Goal</span>
@@ -291,7 +331,6 @@
       </div>
     </div>
 
-    <!-- Stats Grid -->
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-value" id="todayHours">0</div>
@@ -310,14 +349,12 @@
         <div class="stat-label">🔥 Day Streak</div>
       </div>
     </div>
-    
-<div class="stat-card" onclick="togglePomodoro()" style="cursor: pointer;">
-  <div class="stat-value" id="pomodoroCount">0</div>
-  <div class="stat-label">🍅 Pomodoros (Click)</div>
-</div>
 
-    
-    <!-- Leaderboard -->
+    <div class="stat-card pomodoro-card" onclick="openPomodoroModal()">
+      <div class="stat-value" id="pomodoroCount">0</div>
+      <div class="stat-label">🍅 Pomodoros Completed</div>
+    </div>
+
     <div class="leaderboard-card">
       <div class="leaderboard-title">
         <span>🏆 Weekly Leaderboard</span>
@@ -330,28 +367,41 @@
     </div>
   </div>
 
+  <!-- Pomodoro Modal -->
+  <div id="pomodoroModal" class="modal-overlay">
+    <div class="modal-content">
+      <div style="font-size: 4rem; margin-bottom: 16px;">🍅</div>
+      <h3 style="margin-bottom: 8px;">Pomodoro Timer</h3>
+      <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-bottom: 20px;">25 min focus • 5 min break</p>
+      <div id="pomodoroDisplay" style="font-size: 3rem; font-weight: 800; font-family: monospace; margin-bottom: 20px; background: linear-gradient(135deg, #ff6b9d, #e63946); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">25:00</div>
+      <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
+        <button class="timer-btn" id="pomodoroStartBtn">▶ Start</button>
+        <button class="timer-btn" id="pomodoroPauseBtn">⏸ Pause</button>
+        <button class="timer-btn" id="pomodoroResetBtn">🔄 Reset</button>
+      </div>
+      <button id="closePomodoroBtn" style="width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; cursor: pointer;">Close</button>
+    </div>
+  </div>
+
   <div id="toast" class="toast"></div>
 
   <script>
-    // Timer variables
+    // ========== STUDY TIMER ==========
     let timerInterval = null;
     let seconds = 0;
     let isRunning = false;
 
-    // Study data
     let studyData = {
-      dailyGoal: 4, // hours per day
+      dailyGoal: 4,
       todaySeconds: 0,
-      history: {} // format: "2024-01-01": seconds
+      history: {}
     };
 
-    // Load data
     function loadData() {
       const saved = localStorage.getItem('entrancehearts_study_data');
       if (saved) {
         studyData = JSON.parse(saved);
       } else {
-        // Sample leaderboard data
         studyData.history = {};
         saveData();
       }
@@ -362,27 +412,21 @@
       localStorage.setItem('entrancehearts_study_data', JSON.stringify(studyData));
     }
 
-    // Get today's date string
     function getTodayString() {
       return new Date().toISOString().split('T')[0];
     }
 
-    // Add seconds to today's total
     function addTodaySeconds(addedSeconds) {
       const today = getTodayString();
       if (!studyData.history[today]) {
         studyData.history[today] = 0;
       }
       studyData.history[today] += addedSeconds;
-      
-      // Update todaySeconds
       studyData.todaySeconds = studyData.history[today];
-      
       saveData();
       updateDisplay();
     }
 
-    // Timer functions
     function startTimer() {
       if (isRunning) return;
       isRunning = true;
@@ -397,21 +441,23 @@
       isRunning = false;
       clearInterval(timerInterval);
       
-      // Save the study time
       if (seconds > 0) {
+        const minutesAdded = Math.floor(seconds / 60);
         addTodaySeconds(seconds);
+        showToast(`📚 +${minutesAdded} minute${minutesAdded !== 1 ? 's' : ''} added to your study time!`);
         seconds = 0;
         updateTimerDisplay();
-        showToast(`📚 +${Math.floor(seconds/60)} minutes added!`);
       }
     }
 
     function resetTimer() {
       if (isRunning) {
         pauseTimer();
+      } else {
+        seconds = 0;
+        updateTimerDisplay();
+        showToast('Timer reset');
       }
-      seconds = 0;
-      updateTimerDisplay();
     }
 
     function updateTimerDisplay() {
@@ -423,13 +469,11 @@
       document.getElementById('currentSession').innerText = Math.floor(seconds / 60);
     }
 
-    // Update all stats
     function updateDisplay() {
       const today = getTodayString();
       const todaySecs = studyData.history[today] || 0;
       const todayHours = (todaySecs / 3600).toFixed(1);
       
-      // Calculate week hours (last 7 days)
       let weekSecs = 0;
       let totalSecs = 0;
       let streak = 0;
@@ -443,7 +487,6 @@
         
         if (i < 7) weekSecs += secs;
         
-        // Calculate streak
         if (i === 0 && secs > 0) streak = 1;
         else if (i > 0 && secs > 0 && streak === i) streak++;
         else if (secs === 0 && i > 0) break;
@@ -454,13 +497,11 @@
       document.getElementById('totalHours').innerText = (totalSecs / 3600).toFixed(1);
       document.getElementById('streakDays').innerText = streak;
       
-      // Update goal
       const goalHours = studyData.dailyGoal;
       const goalProgress = Math.min(100, (todaySecs / (goalHours * 3600)) * 100);
       document.getElementById('goalProgress').style.width = `${goalProgress}%`;
       document.getElementById('goalStatus').innerText = `${todayHours} / ${goalHours} hours`;
       
-      // Update leaderboard
       updateLeaderboard();
     }
     
@@ -479,14 +520,10 @@
     }
     
     function updateLeaderboard() {
-      // Get all users from localStorage (simulate multiple users)
       let allUsers = [];
-      
-      // Add current user
       const currentUserHours = getWeekHours();
       allUsers.push({ name: "You", hours: currentUserHours, isCurrent: true });
       
-      // Add some sample users (these would be real users in production)
       const sampleUsers = [
         { name: "📚 Ram (CEE)", hours: 28 },
         { name: "⚙️ Shreya (IOE)", hours: 24 },
@@ -495,7 +532,6 @@
         { name: "🏥 Sita (CEE)", hours: 12 }
       ];
       
-      // Merge and sort
       allUsers = [...allUsers, ...sampleUsers];
       allUsers.sort((a, b) => b.hours - a.hours);
       
@@ -529,160 +565,134 @@
       toast.classList.add('show');
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
-    
+
+    // ========== POMODORO TIMER ==========
+    let pomodoroInterval = null;
+    let pomodoroSeconds = 25 * 60;
+    let isPomodoroRunning = false;
+    let pomodoroCount = parseInt(localStorage.getItem('ehPomodoroCount') || '0');
+
+    document.getElementById('pomodoroCount').innerText = pomodoroCount;
+
+    function openPomodoroModal() {
+      document.getElementById('pomodoroModal').classList.add('active');
+      updatePomodoroDisplay();
+    }
+
+    function closePomodoroModal() {
+      document.getElementById('pomodoroModal').classList.remove('active');
+      if (pomodoroInterval) {
+        clearInterval(pomodoroInterval);
+        isPomodoroRunning = false;
+      }
+    }
+
+    function updatePomodoroDisplay() {
+      const mins = Math.floor(pomodoroSeconds / 60);
+      const secs = pomodoroSeconds % 60;
+      const display = document.getElementById('pomodoroDisplay');
+      if (display) {
+        display.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+      }
+    }
+
+    function startPomodoro() {
+      if (isPomodoroRunning) return;
+      isPomodoroRunning = true;
+      pomodoroInterval = setInterval(() => {
+        if (pomodoroSeconds <= 0) {
+          pomodoroCount++;
+          localStorage.setItem('ehPomodoroCount', pomodoroCount);
+          document.getElementById('pomodoroCount').innerText = pomodoroCount;
+          
+          // Confetti effect
+          for (let i = 0; i < 30; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.top = '-10px';
+            confetti.style.width = Math.random() * 8 + 4 + 'px';
+            confetti.style.height = Math.random() * 8 + 4 + 'px';
+            confetti.style.background = ['#ff6b9d', '#e63946', '#ff8fb3'][Math.floor(Math.random() * 3)];
+            confetti.style.borderRadius = '2px';
+            confetti.style.zIndex = '9999';
+            confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear forwards`;
+            document.body.appendChild(confetti);
+            setTimeout(() => confetti.remove(), 3000);
+          }
+          
+          showToast('🍅 Pomodoro completed! Time for a 5 min break!');
+          resetPomodoro();
+        } else {
+          pomodoroSeconds--;
+          updatePomodoroDisplay();
+        }
+      }, 1000);
+    }
+
+    function pausePomodoro() {
+      if (!isPomodoroRunning) return;
+      isPomodoroRunning = false;
+      clearInterval(pomodoroInterval);
+    }
+
+    function resetPomodoro() {
+      pausePomodoro();
+      pomodoroSeconds = 25 * 60;
+      updatePomodoroDisplay();
+    }
+
+    // Add confetti animation style
+    if (!document.querySelector('#confetti-style')) {
+      const style = document.createElement('style');
+      style.id = 'confetti-style';
+      style.textContent = `
+        @keyframes confettiFall {
+          0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+          100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
     // Event listeners
     document.getElementById('startBtn').addEventListener('click', startTimer);
     document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
     document.getElementById('resetBtn').addEventListener('click', resetTimer);
     
-    // Save on page unload
+    document.getElementById('pomodoroStartBtn').addEventListener('click', startPomodoro);
+    document.getElementById('pomodoroPauseBtn').addEventListener('click', pausePomodoro);
+    document.getElementById('pomodoroResetBtn').addEventListener('click', resetPomodoro);
+    document.getElementById('closePomodoroBtn').addEventListener('click', closePomodoroModal);
+
     window.addEventListener('beforeunload', () => {
       if (isRunning) {
         pauseTimer();
       }
     });
     
-    // Initialize
     loadData();
     
-    // Update stats every minute
     setInterval(() => {
       if (!isRunning) {
         updateDisplay();
-      }
+           }
     }, 60000);
 
-
-    // Pomodoro Timer Variables
-let pomodoroInterval = null;
-let pomodoroSeconds = 25 * 60;
-let isPomodoroRunning = false;
-let pomodoroCount = parseInt(localStorage.getItem('ehPomodoroCount') || '0');
-
-// Set pomodoro count display
-document.getElementById('pomodoroCount').innerText = pomodoroCount;
-
-function togglePomodoro() {
-  document.getElementById('pomodoroModal').style.display = 'flex';
-  updatePomodoroDisplay();
-}
-
-function closePomodoro() {
-  document.getElementById('pomodoroModal').style.display = 'none';
-  if (pomodoroInterval) {
-    clearInterval(pomodoroInterval);
-    isPomodoroRunning = false;
-  }
-}
-
-function updatePomodoroDisplay() {
-  const mins = Math.floor(pomodoroSeconds / 60);
-  const secs = pomodoroSeconds % 60;
-  const display = document.getElementById('pomodoroDisplay');
-  if (display) {
-    display.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-  }
-}
-
-function startPomodoro() {
-  if (isPomodoroRunning) return;
-  isPomodoroRunning = true;
-  pomodoroInterval = setInterval(() => {
-    if (pomodoroSeconds <= 0) {
-      // Pomodoro complete!
-      pomodoroCount++;
-      localStorage.setItem('ehPomodoroCount', pomodoroCount);
-      document.getElementById('pomodoroCount').innerText = pomodoroCount;
-      
-      // Show confetti effect
-      showConfettiEffect();
-      alert('🍅 Pomodoro completed! Time for a break!');
-      resetPomodoro();
-    } else {
-      pomodoroSeconds--;
-      updatePomodoroDisplay();
-    }
-  }, 1000);
-}
-
-function pausePomodoro() {
-  if (!isPomodoroRunning) return;
-  isPomodoroRunning = false;
-  clearInterval(pomodoroInterval);
-}
-
-function resetPomodoro() {
-  pausePomodoro();
-  pomodoroSeconds = 25 * 60;
-  updatePomodoroDisplay();
-}
-
-function showConfettiEffect() {
-  for (let i = 0; i < 30; i++) {
-    const confetti = document.createElement('div');
-    confetti.style.position = 'fixed';
-    confetti.style.left = Math.random() * 100 + '%';
-    confetti.style.top = '-10px';
-    confetti.style.width = Math.random() * 8 + 4 + 'px';
-    confetti.style.height = Math.random() * 8 + 4 + 'px';
-    confetti.style.background = ['#ff6b9d', '#e63946', '#ff8fb3'][Math.floor(Math.random() * 3)];
-    confetti.style.borderRadius = '2px';
-    confetti.style.zIndex = '9999';
-    confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear forwards`;
-    document.body.appendChild(confetti);
-    setTimeout(() => confetti.remove(), 3000);
-  }
-}
-
-// Add confetti animation style if not exists
-if (!document.querySelector('#confetti-style')) {
-  const style = document.createElement('style');
-  style.id = 'confetti-style';
-  style.textContent = `
-    @keyframes confettiFall {
-      0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-    }
-  `;
-  document.head.appendChild(style);
-}
-  </script>
-
-
-  <!-- Pomodoro Timer Modal -->
-<div id="pomodoroModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 1000; align-items: center; justify-content: center;">
-  <div style="background: linear-gradient(135deg, #1a1a2e, #0f0f1a); border: 1px solid rgba(255,107,157,0.3); border-radius: 32px; padding: 32px; text-align: center; max-width: 350px; width: 90%;">
-    <div style="font-size: 4rem; margin-bottom: 16px;">🍅</div>
-    <h3 style="margin-bottom: 8px;">Pomodoro Timer</h3>
-    <p style="color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-bottom: 20px;">25 min focus • 5 min break</p>
-    <div id="pomodoroDisplay" style="font-size: 3rem; font-weight: 800; font-family: monospace; margin-bottom: 20px; background: linear-gradient(135deg, #ff6b9d, #e63946); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">25:00</div>
-    <div style="display: flex; gap: 12px; justify-content: center; margin-bottom: 20px;">
-      <button class="timer-btn" onclick="startPomodoro()">▶ Start</button>
-      <button class="timer-btn" onclick="pausePomodoro()">⏸ Pause</button>
-      <button class="timer-btn" onclick="resetPomodoro()">🔄 Reset</button>
-    </div>
-    <button onclick="closePomodoro()" style="width: 100%; padding: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; color: white; cursor: pointer;">Close</button>
-  </div>
-</div>
-
-  
-  <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
+    // Page transition effect
+    document.body.classList.add('fade-in');
+    
+    window.addEventListener('scroll', function() {
+      const navbar = document.querySelector('.navbar');
+      if (navbar) {
+        if (window.scrollY > 50) {
+          navbar.classList.add('scrolled');
+        } else {
+          navbar.classList.remove('scrolled');
+        }
       }
-    }
-  });
+    });
   </script>
 
-  
 </body>
 </html>
