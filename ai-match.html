@@ -646,6 +646,26 @@
       picks[group] = btn.textContent.trim();
     }
 
+
+    async function init() {
+  const { data } = await supabaseClient.auth.getSession();
+  if (!data.session) { 
+    window.location.href = 'login.html'; 
+    return; 
+  }
+  currentUserId = data.session.user.id;
+  
+  // ✅ ADD THIS LINE - Fix back button
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) backBtn.href = 'browse.html';
+  
+  const { data: profile } = await supabaseClient
+    .from('profiles').select('*').eq('id', currentUserId).single();
+  // ... rest of code
+    }
+
+
+    
     async function runAI() {
       const desc = document.getElementById('selfDesc').value.trim();
       
