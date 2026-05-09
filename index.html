@@ -2,333 +2,297 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-  <!-- ═══ SEO & PWA ENHANCEMENTS ═══ -->
-  <title>EntranceHearts 💕 — Dating App for Nepal CEE IOE +2 Students</title>
-  <meta name="description" content="Nepal's first dating & friendship app for CEE, IOE, +2 and Management entrance exam students. Find your perfect match among aspirants. Free to join!"/>
-  <meta name="keywords" content="Nepal dating app, CEE aspirants, IOE students, +2 Nepal, entrance exam Nepal, nepali students dating, EntranceHearts"/>
-  <meta name="author" content="EntranceHearts"/>
-  <meta name="robots" content="index, follow"/>
-  <link rel="canonical" href="https://acharyasaurab91.github.io/entrancehearts/"/>
-
-  <!-- ═══ OPEN GRAPH (WhatsApp / Facebook preview) ═══ -->
-  <meta property="og:type" content="website"/>
-  <meta property="og:url" content="https://acharyasaurab91.github.io/entrancehearts/"/>
-  <meta property="og:title" content="EntranceHearts 💕 — Find Your Match Among Nepal Aspirants"/>
-  <meta property="og:description" content="Nepal's first dating app for CEE, IOE, +2 and Management students. Free to join. Real verified profiles only."/>
-  <meta property="og:image" content="https://acharyasaurab91.github.io/entrancehearts/icon-512.png"/>
-  <meta property="og:locale" content="ne_NP"/>
-  <meta property="og:site_name" content="EntranceHearts"/>
-
-  <!-- ═══ TWITTER CARD ═══ -->
-  <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="EntranceHearts 💕 — Nepal's Aspirant Dating App"/>
-  <meta name="twitter:description" content="Find your match among Nepal's CEE, IOE, +2 and Management students."/>
-  <meta name="twitter:image" content="https://acharyasaurab91.github.io/entrancehearts/icon-512.png"/>
-
-  <!-- ═══ PWA / INSTALL ═══ -->
-  <link rel="manifest" href="manifest.json"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <meta name="theme-color" content="#e63946"/>
-  <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-  <meta name="apple-mobile-web-app-title" content="EntranceHearts"/>
+
+  <!-- SEO -->
+  <title>EntranceHearts 💕 — Nepal's #1 Dating App for CEE, IOE & +2 Students</title>
+  <meta name="description" content="Nepal's first dating & friendship app for CEE, IOE, +2 and Management entrance exam students. Find your perfect match among aspirants. Free to join!"/>
+  <meta name="keywords" content="Nepal dating app, CEE aspirants, IOE students, +2 Nepal, entrance exam Nepal"/>
+  <meta name="author" content="EntranceHearts"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://entrancehearts.netlify.app/"/>
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:url" content="https://entrancehearts.netlify.app/"/>
+  <meta property="og:title" content="EntranceHearts 💕 — Find Your Match Among Nepal Aspirants"/>
+  <meta property="og:description" content="Nepal's first dating app for CEE, IOE, +2 and Management students. Free to join!"/>
+  <meta property="og:image" content="/icon-512.png"/>
+  <meta property="og:locale" content="ne_NP"/>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json"/>
   <link rel="apple-touch-icon" href="icon-192.png"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
 
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <!-- Fonts & CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  
-
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-  <!-- PWA INSTALL BANNER -->
+  <!-- PWA Install Banner -->
   <div class="install-banner" id="installBanner">
-    <div style="font-size: 1.8rem; flex-shrink: 0;">💕</div>
+    <div class="install-banner-icon">💕</div>
     <div class="install-banner-text">
       <strong>Add to Home Screen</strong>
       <span>Use like a real app — no App Store needed!</span>
     </div>
     <button class="install-btn" id="installBtn">Install</button>
-    <span class="install-close" id="closeInstallBtn">✕</span>
+    <button class="install-close" id="closeInstallBtn">✕</button>
   </div>
 
-  <!-- NAVBAR -->
+  <!-- Navigation -->
   <nav class="navbar">
-  <div class="logo">💕 EntranceHearts</div>
-  <div style="display: flex; gap: 10px; align-items: center;">
-    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()">🌙</button>
-    <a href="login.html" class="btn-ghost">Login</a>
-    <a href="signup.html" class="btn-primary">Join Free</a>
-      <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
-      <a href="study.html" class="btn-ghost">📚 Study</a>
-      <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
+    <div class="logo">💕 EntranceHearts</div>
+    <div class="nav-links">
+      <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle theme">🌙</button>
+      <a href="login.html" class="btn-ghost">Login</a>
+      <a href="signup.html" class="btn-primary">Join Free</a>
     </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">☰</button>
   </nav>
 
-  <!-- HERO SECTION with animated floating cards -->
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
+    <a href="study.html" class="mobile-menu-item">📚 Study</a>
+    <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
+    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
+    <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
+    <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+  </div>
+
+  <!-- Hero Section -->
   <section class="hero">
     <div class="hero-glow"></div>
     <div class="hero-badges">
-      <span class="hero-badge">CEE</span>
-      <span class="hero-badge">IOE</span>
-      <span class="hero-badge">+2</span>
-      <span class="hero-badge">Management</span>
+      <span class="hero-badge">🎓 CEE</span>
+      <span class="hero-badge">⚙️ IOE</span>
+      <span class="hero-badge">📚 +2</span>
+      <span class="hero-badge">💼 Management</span>
       <span class="hero-badge">🇳🇵 Nepal</span>
     </div>
-    <h1>Find Your<br/><span>Perfect Match</span><br/>Among Aspirants</h1>
-    <p>Nepal's first dating & friendship app built exclusively for entrance exam students. Connect with someone who truly understands your journey.</p>
+    <h1 class="hero-title">Find Your <span class="gradient-text">Perfect Match</span> <br/>Among Aspirants</h1>
+    <p class="hero-subtitle">Nepal's first dating & friendship app built exclusively for entrance exam students. Connect with someone who truly understands your journey.</p>
 
+    <!-- Floating Cards -->
     <div class="floating-cards">
       <div class="float-card">
         <div class="float-avatar">👩</div>
         <div>
           <div class="float-name">Priya S.</div>
-          <div class="float-meta">CEE Aspirant • Kathmandu</div>
+          <div class="float-meta">CEE Aspirant • KTM</div>
         </div>
       </div>
       <div class="float-card">
         <div class="float-avatar">👨</div>
         <div>
           <div class="float-name">Rohan K.</div>
-          <div class="float-meta">IOE Aspirant • Pokhara</div>
+          <div class="float-meta">IOE Aspirant • PKR</div>
         </div>
       </div>
       <div class="float-card">
         <div class="float-avatar">👩</div>
         <div>
           <div class="float-name">Sita G.</div>
-          <div class="float-meta">+2 Student • Butwal</div>
+          <div class="float-meta">+2 Student • BTL</div>
         </div>
       </div>
       <div class="match-pill">💕 It's a Match!</div>
     </div>
 
     <div class="hero-cta">
-      <a href="signup.html" class="btn-primary btn-large">Find My Match 💕</a>
-      <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
-      <a href="#how" class="btn-ghost btn-large">How it Works</a>
+      <a href="signup.html" class="btn-primary btn-large">✨ Find My Match</a>
+      <a href="confessions.html" class="btn-ghost btn-large">💌 Confessions</a>
     </div>
+
     <div class="hero-stats">
-      <div class="hero-stat"><strong>CEE</strong><span>Aspirants</span></div>
-      <div class="hero-stat"><strong>IOE</strong><span>Students</span></div>
-      <div class="hero-stat"><strong>AI</strong><span>Matching</span></div>
+      <div class="hero-stat"><strong>10K+</strong><span>Active Users</span></div>
+      <div class="hero-stat"><strong>500+</strong><span>Matches</span></div>
+      <div class="hero-stat"><strong>98%</strong><span>AI Accuracy</span></div>
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
+  <!-- How It Works -->
   <section class="section" id="how">
-    <div style="text-align:center">
-      <div class="section-tag">How it works</div>
-      <h2>Simple. Smart.<br/><span>Made for Aspirants</span></h2>
+    <div class="section-header">
+      <span class="section-tag">How it works</span>
+      <h2>Simple. Smart.<br/><span class="gradient-text">Made for Aspirants</span></h2>
       <p class="section-sub">Get started in minutes and find your perfect match</p>
     </div>
     <div class="steps-grid">
-      <div class="step-card">
-        <div class="step-number">1</div>
-        <h3>Create Profile</h3>
-        <p>Sign up and tell us your exam, subjects and personality.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">2</div>
-        <h3>AI Matches You</h3>
-        <p>Our AI finds people who share your goals and vibe.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">3</div>
-        <h3>Like & Match</h3>
-        <p>Browse profiles and match with people you like.</p>
-      </div>
-      <div class="step-card">
-        <div class="step-number">4</div>
-        <h3>Chat & Connect</h3>
-        <p>Message your matches and build real connections.</p>
-      </div>
+      <div class="step-card"><div class="step-number">1</div><h3>Create Profile</h3><p>Sign up and tell us your exam and interests.</p></div>
+      <div class="step-card"><div class="step-number">2</div><h3>AI Matches You</h3><p>Smart matching based on your goals and vibe.</p></div>
+      <div class="step-card"><div class="step-number">3</div><h3>Like & Match</h3><p>Browse profiles and find your perfect match.</p></div>
+      <div class="step-card"><div class="step-number">4</div><h3>Chat & Connect</h3><p>Message your matches and build connections.</p></div>
     </div>
   </section>
 
-  <!-- FEATURES -->
+  <!-- Features -->
   <section class="section">
-    <div style="text-align:center">
-      <div class="section-tag">Features</div>
-      <h2>Everything You<br/><span>Need to Connect</span></h2>
-      <p class="section-sub">Built specifically for Nepal's entrance exam community</p>
+    <div class="section-header">
+      <span class="section-tag">Premium Features</span>
+      <h2>Everything You<br/><span class="gradient-text">Need to Connect</span></h2>
     </div>
     <div class="features-grid">
-      <div class="feature-card">
-        <div class="feature-icon">🤖</div>
-        <h3>AI Matchmaking</h3>
-        <p>Smart matching based on your exam, goals and personality.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🔒</div>
-        <h3>Verified Profiles</h3>
-        <p>Email verified accounts only. Safe and trusted community.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">💬</div>
-        <h3>Real-time Chat</h3>
-        <p>Chat instantly with your matches. Share notes and motivation.</p>
-      </div>
-      <div class="feature-card">
-        <div class="feature-icon">🎯</div>
-        <h3>Niche Community</h3>
-        <p>Only CEE, IOE, +2 and Management students. No random people.</p>
-      </div>
+      <div class="feature-card"><div class="feature-icon">🤖</div><h3>AI Matchmaking</h3><p>Smart matching based on your personality.</p></div>
+      <div class="feature-card"><div class="feature-icon">🔒</div><h3>Verified Profiles</h3><p>Email verified accounts. Safe community.</p></div>
+      <div class="feature-card"><div class="feature-icon">💬</div><h3>Real-time Chat</h3><p>Chat instantly. Share notes and motivation.</p></div>
+      <div class="feature-card"><div class="feature-icon">🎯</div><h3>Niche Community</h3><p>Only CEE, IOE, +2 and Management students.</p></div>
     </div>
   </section>
 
-   <!-- SOCIAL SHARE SECTION -->
-  <div class="share-section">
-    <div class="share-card">
-      <h3>💌 Know an aspirant? Share EntranceHearts!</h3>
-      <p>Help your friends find their match too 🇳🇵</p>
-      <div class="share-btns">
-        <button class="share-btn share-wa" id="shareWaBtn">💬 WhatsApp</button>
-        <button class="share-btn share-fb" id="shareFbBtn">📘 Facebook</button>
-        <button class="share-btn share-copy" id="copyLinkBtn">🔗 Copy Link</button>
-      </div>
-      <div class="copy-toast" id="copyToast">✅ Link copied!</div>
+  <!-- Confession Wall Preview -->
+  <section class="section confession-preview">
+    <div class="section-header">
+      <span class="section-tag">Anonymous</span>
+      <h2>Share Your <span class="gradient-text">Feelings</span> Freely</h2>
+      <p class="section-sub">No judgment. Just real emotions from aspirants like you.</p>
     </div>
-  </div>
+    <div class="preview-card">
+      <div class="preview-quote">"I have a crush on someone in my CEE class but too shy to say it..."</div>
+      <div class="preview-reactions">❤️ 24 💬 12</div>
+      <a href="confessions.html" class="btn-ghost">View Confessions →</a>
+    </div>
+  </section>
 
-  <!-- FINAL CTA -->
+  <!-- Study Materials Preview -->
+  <section class="section study-preview">
+    <div class="section-header">
+      <span class="section-tag">Study Resources</span>
+      <h2>Share & Download <span class="gradient-text">Notes</span></h2>
+      <p class="section-sub">CEE, IOE, +2, Management - All resources in one place.</p>
+    </div>
+    <div class="preview-card">
+      <div class="preview-stats">📚 45+ Notes • ⬇️ 1.2K Downloads</div>
+      <a href="study.html" class="btn-ghost">Browse Library →</a>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
   <section class="cta-section">
     <h2>Ready to Find<br/>Your Match? 💕</h2>
     <p>Join thousands of Nepal's entrance exam aspirants already on EntranceHearts</p>
     <a href="signup.html" class="btn-primary btn-large">Get Started Free →</a>
   </section>
 
-  <!-- FOOTER -->
+  <!-- Footer -->
   <footer class="footer">
-    <span class="logo">💕 EntranceHearts</span>
-    <p>Made with ❤️ for Nepal's entrance exam aspirants</p>
-    <p style="margin-top: 4px;">© 2026 EntranceHearts. All rights reserved.</p>
+    <div class="footer-content">
+      <span class="logo">💕 EntranceHearts</span>
+      <div class="footer-links">
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </div>
+      <p>Made with ❤️ for Nepal's entrance exam aspirants</p>
+      <p>© 2026 EntranceHearts. All rights reserved.</p>
+    </div>
   </footer>
 
   <script>
-    // App constants & PWA logic
-    const APP_URL = 'https://acharyasaurab91.github.io/entrancehearts/';
-    const SHARE_MSG = '💕 Nepal ko CEE/IOE/+2 students ko lagi dating app — EntranceHearts! Find your match among aspirants 🇳🇵\n';
-
-    // PWA Service Worker registration
+    // PWA & Theme Logic
+    const APP_URL = 'https://entrancehearts.netlify.app/';
+    
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/entrancehearts/sw.js').catch(() => {});
+        navigator.serviceWorker.register('/sw.js').catch(() => console.log('SW failed'));
       });
     }
 
-    // PWA Install prompt handling
+    // PWA Install
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       setTimeout(() => {
         if (!localStorage.getItem('ehInstallDismissed')) {
-          document.getElementById('installBanner').classList.add('show');
+          document.getElementById('installBanner')?.classList.add('show');
         }
       }, 3000);
     });
 
-    const installBtn = document.getElementById('installBtn');
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
+    document.getElementById('installBtn')?.addEventListener('click', async () => {
+      if (deferredPrompt) {
         deferredPrompt.prompt();
         await deferredPrompt.userChoice;
         deferredPrompt = null;
-        document.getElementById('installBanner').classList.remove('show');
-      });
-    }
+        document.getElementById('installBanner')?.classList.remove('show');
+      }
+    });
 
-    window.dismissInstall = function() {
-      document.getElementById('installBanner').classList.remove('show');
-      localStorage.setItem('ehInstallDismissed', 'true');
-    };
-    
-    const closeInstall = document.getElementById('closeInstallBtn');
-    if (closeInstall) closeInstall.addEventListener('click', () => {
-      document.getElementById('installBanner').classList.remove('show');
+    document.getElementById('closeInstallBtn')?.addEventListener('click', () => {
+      document.getElementById('installBanner')?.classList.remove('show');
       localStorage.setItem('ehInstallDismissed', 'true');
     });
 
-    // Share functions
-    window.shareWhatsApp = function() {
-      window.open('https://wa.me/?text=' + encodeURIComponent(SHARE_MSG + APP_URL), '_blank');
-    };
-    window.shareFacebook = function() {
-      window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(APP_URL), '_blank');
-    };
-    window.copyLink = async function() {
-      try {
-        await navigator.clipboard.writeText(APP_URL);
-      } catch {
-        const el = document.createElement('textarea');
-        el.value = APP_URL;
-        document.body.appendChild(el);
-        el.select();
-        document.execCommand('copy');
-        document.body.removeChild(el);
-      }
-      const toast = document.getElementById('copyToast');
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    };
-
-    // Bind share buttons
-    document.getElementById('shareWaBtn')?.addEventListener('click', shareWhatsApp);
-    document.getElementById('shareFbBtn')?.addEventListener('click', shareFacebook);
-    document.getElementById('copyLinkBtn')?.addEventListener('click', copyLink);
-  </script>
-
-<script>
-  // Dark/Light Mode Toggle
-  function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const themeToggle = document.getElementById('themeToggle');
-    
-    if (currentTheme === 'dark') {
-      html.removeAttribute('data-theme');
-      localStorage.setItem('theme', 'light');
-      themeToggle.textContent = '🌙';
-    } else {
-      html.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      themeToggle.textContent = '☀️';
-    }
-  }
-  
-  // Load saved theme
-  const savedTheme = localStorage.getItem('theme');
-  const themeToggle = document.getElementById('themeToggle');
-  if (savedTheme === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
-    if (themeToggle) themeToggle.textContent = '☀️';
-  } else {
-    document.documentElement.removeAttribute('data-theme');
-    if (themeToggle) themeToggle.textContent = '🌙';
-  }
-</script>
-        
-  <script>
-  // Page transition effect
-  document.body.classList.add('fade-in');
-  
-  // Add scroll effect to navbar
-  window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (navbar) {
-      if (window.scrollY > 50) {
-        navbar.classList.add('scrolled');
+    // Dark/Light Mode Toggle
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      const themeToggle = document.getElementById('themeToggle');
+      
+      if (isDark) {
+        html.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'light');
+        if (themeToggle) themeToggle.textContent = '🌙';
       } else {
+        html.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+        if (themeToggle) themeToggle.textContent = '☀️';
+      }
+    }
+    
+    const savedTheme = localStorage.getItem('theme');
+    const themeToggle = document.getElementById('themeToggle');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      if (themeToggle) themeToggle.textContent = '☀️';
+    }
+
+    // Mobile Menu Toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenuBtn && mobileMenu) {
+      mobileMenuBtn.addEventListener('click', () => {
+        mobileMenu.classList.toggle('open');
+        mobileMenuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+      });
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          mobileMenuBtn.textContent = '☰';
+        }
+      });
+    }
+
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+      const navbar = document.querySelector('.navbar');
+      if (navbar && window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+      } else if (navbar) {
         navbar.classList.remove('scrolled');
       }
-    }
-  });
-  </script>
+    });
 
-  
+    // Share functions
+    window.shareWhatsApp = () => window.open(`https://wa.me/?text=${encodeURIComponent('💕 Join EntranceHearts - Nepal\'s dating app for aspirants! ' + APP_URL)}`, '_blank');
+    window.shareFacebook = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(APP_URL)}`, '_blank');
+    window.copyLink = async () => {
+      try {
+        await navigator.clipboard.writeText(APP_URL);
+        const toast = document.getElementById('copyToast');
+        if (toast) toast.classList.add('show');
+        setTimeout(() => toast?.classList.remove('show'), 2000);
+      } catch(e) { alert('Press Ctrl+C to copy'); }
+    };
+  </script>
 </body>
 </html>
