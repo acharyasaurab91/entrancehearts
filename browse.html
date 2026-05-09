@@ -541,31 +541,35 @@
     }
 
     async function likeProfile() {
-      if (!currentProfile) return;
-      const card = document.getElementById('currentCard');
-      card.classList.add('hide-right');
-      
-      await supabaseClient.from('likes').insert({
-        from_user: currentUserId, 
-        to_user: currentProfile.id
-      });
-      
-      const { data: mutual } = await supabaseClient
-        .from('likes')
-        .select('*')
-        .eq('from_user', currentProfile.id)
-        .eq('to_user', currentUserId);
-      
-      seenIds.push(currentProfile.id);
-      localStorage.setItem('ehSeen', JSON.stringify(seenIds));
-      
-      setTimeout(() => {
-        if (mutual && mutual.length > 0) {
-          showMatch(currentProfile.name);
-        } else {
-          renderNextCard();
-        }
-      }, 400);
+  if (!currentProfile) return;
+  const card = document.getElementById('currentCard');
+  card.classList.add('hide-right');
+  
+  // Insert like
+  await supabaseClient.from('likes').insert({
+    from_user: currentUserId, 
+    to_user: currentProfile.id
+  });
+  
+  // Check for mutual like (REAL-TIME)
+  const { data: mutual } = await supabaseClient
+    .from('likes')
+    .select('*')
+    .eq('from_user', currentProfile.id)
+    .eq('to_user', currentUserId);
+  
+  seenIds.push(currentProfile.id);
+  localStorage.setItem('ehSeen', JSON.stringify(seenIds));
+  
+  setTimeout(() => {
+    if (mutual && mutual.length > 0) {
+      showMatch(currentProfile.name);
+      // Also trigger a notification for chat refresh
+      localStorage.setItem('ehNewMatch', currentProfile.id);
+    } else {
+      renderNextCard();
+    }
+  }, 400);
     }
 
     function passProfile() {
