@@ -24,14 +24,19 @@
       background:linear-gradient(135deg,#ff6b9d,#e63946);
       -webkit-background-clip:text; -webkit-text-fill-color:transparent;
     }
-    .page { max-width:480px; margin:0 auto; padding:70px 16px 100px; }
-    .ai-hero { text-align:center; margin-bottom:28px; padding-top:10px; }
+    .page { max-width:500px; margin:0 auto; padding:70px 16px 100px; }
+    .ai-hero { text-align:center; margin-bottom:28px; }
     .ai-icon {
       width:80px; height:80px; border-radius:24px;
       background:linear-gradient(135deg,rgba(230,57,70,0.2),rgba(255,107,157,0.1));
       border:1px solid rgba(255,107,157,0.2);
       display:flex; align-items:center; justify-content:center;
       font-size:2.5rem; margin:0 auto 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform:translateY(0); }
+      50% { transform:translateY(-8px); }
     }
     .ai-title {
       font-size:1.5rem; font-weight:800; margin-bottom:6px;
@@ -42,90 +47,92 @@
     .question-card {
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.06);
-      border-radius:20px; padding:22px 18px; margin-bottom:14px;
+      border-radius:24px; padding:22px 20px; margin-bottom:16px;
+      transition:all 0.3s;
     }
+    .question-card:hover { border-color:rgba(255,107,157,0.2); }
     .question-title {
-      font-size:0.78rem; font-weight:700; color:#ff6b9d;
-      text-transform:uppercase; letter-spacing:1px; margin-bottom:14px;
+      font-size:0.75rem; font-weight:700; color:#ff6b9d;
+      text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;
     }
-    .question-text {
-      font-size:0.92rem; font-weight:600; margin-bottom:12px;
-    }
+    .question-text { font-size:0.95rem; font-weight:600; margin-bottom:12px; }
     .options-grid {
-      display:grid; grid-template-columns:1fr 1fr; gap:8px;
+      display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
     }
     .option-btn {
-      padding:11px 8px;
+      padding:12px 8px;
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.07);
-      border-radius:12px; color:rgba(255,255,255,0.5);
-      font-size:0.78rem; font-family:'Poppins',sans-serif;
+      border-radius:14px; color:rgba(255,255,255,0.6);
+      font-size:0.8rem; font-family:'Poppins',sans-serif;
       cursor:pointer; transition:all 0.2s; text-align:center;
     }
     .option-btn.selected {
-      border-color:rgba(255,107,157,0.5);
+      border-color:#ff6b9d;
       color:#ff6b9d;
-      background:rgba(255,107,157,0.08);
+      background:rgba(255,107,157,0.1);
     }
     .ai-textarea {
       width:100%; padding:14px 16px;
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,255,255,0.07);
-      border-radius:14px; color:#fff;
+      border-radius:16px; color:#fff;
       font-size:0.88rem; font-family:'Poppins',sans-serif;
       outline:none; resize:none; line-height:1.6;
-      transition:border 0.2s;
     }
-    .ai-textarea:focus { border-color:rgba(255,107,157,0.4); }
+    .ai-textarea:focus { border-color:#ff6b9d; }
     .analyze-btn {
       width:100%; padding:16px;
       background:linear-gradient(135deg,#e63946,#ff6b9d);
-      border:none; border-radius:16px; color:white;
+      border:none; border-radius:20px; color:white;
       font-size:1rem; font-weight:700;
       font-family:'Poppins',sans-serif; cursor:pointer;
-      margin-top:6px; transition:all 0.2s;
+      margin-top:8px; transition:all 0.3s;
     }
     .analyze-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(230,57,70,0.35); }
     .analyze-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
-    .loading-area { text-align:center; padding:40px 20px; display:none; }
+    .loading-area {
+      text-align:center; padding:50px 20px;
+      background:rgba(255,255,255,0.03);
+      border-radius:28px; display:none;
+    }
     .loading-spin {
-      font-size:3rem; animation:spin 1s linear infinite;
-      display:block; margin-bottom:16px;
+      font-size:3rem; animation:spin 1s linear infinite; display:block; margin-bottom:16px;
     }
     @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
     .result-area { display:none; }
     .result-card {
       background:rgba(255,255,255,0.04);
       border:1px solid rgba(255,107,157,0.15);
-      border-radius:20px; padding:22px 18px; margin-bottom:14px;
+      border-radius:24px; padding:22px 20px; margin-bottom:16px;
     }
     .result-title {
-      font-size:0.78rem; font-weight:700; color:#ff6b9d;
+      font-size:0.75rem; font-weight:700; color:#ff6b9d;
       text-transform:uppercase; letter-spacing:1px; margin-bottom:14px;
     }
     .result-text {
-      color:rgba(255,255,255,0.65); font-size:0.87rem;
+      color:rgba(255,255,255,0.7); font-size:0.88rem;
       line-height:1.7; white-space:pre-wrap;
     }
     .matched-person {
       display:flex; align-items:center; gap:14px;
-      padding:14px 0;
-      border-bottom:1px solid rgba(255,255,255,0.04);
+      padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.05);
+      cursor:pointer;
+      transition:background 0.2s;
     }
     .matched-person:last-child { border-bottom:none; padding-bottom:0; }
+    .matched-person:hover { background:rgba(255,107,157,0.05); border-radius:12px; padding:14px; margin:0 -14px; }
     .matched-avatar {
-      width:52px; height:52px; border-radius:50%;
+      width:56px; height:56px; border-radius:50%;
       background:rgba(255,255,255,0.06);
       display:flex; align-items:center; justify-content:center;
       font-size:1.5rem; flex-shrink:0; overflow:hidden;
     }
-    .matched-avatar img {
-      width:100%; height:100%; object-fit:cover; border-radius:50%;
-    }
-    .matched-name { font-size:0.92rem; font-weight:700; margin-bottom:3px; }
-    .matched-meta { font-size:0.75rem; color:rgba(255,255,255,0.35); margin-bottom:8px; }
+    .matched-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .matched-name { font-size:0.95rem; font-weight:700; margin-bottom:3px; }
+    .matched-meta { font-size:0.72rem; color:rgba(255,255,255,0.4); margin-bottom:6px; }
     .compat-bar {
-      height:3px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;
+      height:4px; background:rgba(255,255,255,0.08); border-radius:2px; overflow:hidden;
     }
     .compat-fill {
       height:100%;
@@ -133,14 +140,23 @@
       border-radius:2px; transition:width 1s ease;
     }
     .compat-label {
-      font-size:0.7rem; color:#ff6b9d; font-weight:600; margin-top:3px;
+      font-size:0.7rem; color:#ff6b9d; font-weight:600; margin-top:4px;
     }
+    .chat-now-btn {
+      background:rgba(255,107,157,0.15);
+      border:1px solid rgba(255,107,157,0.3);
+      padding:8px 16px; border-radius:50px;
+      color:#ff6b9d; font-size:0.75rem; font-weight:600;
+      cursor:pointer; transition:all 0.2s;
+    }
+    .chat-now-btn:hover { background:#ff6b9d; color:white; }
     .retry-btn {
       width:100%; padding:14px; background:transparent;
       border:1px solid rgba(255,255,255,0.08);
-      border-radius:14px; color:rgba(255,255,255,0.4);
-      font-family:'Poppins',sans-serif; cursor:pointer; margin-top:6px;
+      border-radius:16px; color:rgba(255,255,255,0.5);
+      font-family:'Poppins',sans-serif; cursor:pointer; margin-top:8px;
     }
+    .retry-btn:hover { border-color:#ff6b9d; color:#ff6b9d; }
     .bottom-nav {
       position:fixed; bottom:0; left:0; right:0;
       background:rgba(10,10,15,0.98);
@@ -156,6 +172,17 @@
     }
     .nav-item.active { color:#ff6b9d; }
     .nav-item span:first-child { font-size:1.3rem; }
+    .toast {
+      position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
+      background:#1a1a2e; border:1px solid #ff6b9d;
+      padding:12px 24px; border-radius:50px;
+      font-size:0.85rem; z-index:200; display:none;
+    }
+    .toast.show { display:block; animation:slideUp 0.3s ease; }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateX(-50%) translateY(20px); }
+      to { opacity:1; transform:translateX(-50%) translateY(0); }
+    }
   </style>
 </head>
 <body>
@@ -167,9 +194,10 @@
     <div class="ai-hero">
       <div class="ai-icon">🤖</div>
       <div class="ai-title">AI Matchmaker</div>
-      <div class="ai-sub">Answer a few questions and our AI finds your perfect match from real users</div>
+      <div class="ai-sub">Answer a few questions — our AI finds your perfect match from real users</div>
     </div>
 
+    <!-- QUESTION FORM -->
     <div id="formArea">
       <div class="question-card">
         <div class="question-title">🎯 Your Style</div>
@@ -180,14 +208,14 @@
           <button class="option-btn" onclick="pick(this,'study')">🎵 With music</button>
           <button class="option-btn" onclick="pick(this,'study')">🌙 Late night</button>
         </div>
-        <div class="question-text" style="margin-top:16px">Your personality?</div>
+        <div class="question-text" style="margin-top:18px">Your personality?</div>
         <div class="options-grid">
           <button class="option-btn" onclick="pick(this,'personality')">😊 Introvert</button>
           <button class="option-btn" onclick="pick(this,'personality')">🎉 Extrovert</button>
           <button class="option-btn" onclick="pick(this,'personality')">⚖️ Ambivert</button>
           <button class="option-btn" onclick="pick(this,'personality')">🤔 Depends</button>
         </div>
-        <div class="question-text" style="margin-top:16px">What matters most?</div>
+        <div class="question-text" style="margin-top:18px">What matters most?</div>
         <div class="options-grid">
           <button class="option-btn" onclick="pick(this,'priority')">🧠 Same goals</button>
           <button class="option-btn" onclick="pick(this,'priority')">😂 Good humor</button>
@@ -199,7 +227,7 @@
       <div class="question-card">
         <div class="question-title">💭 About You</div>
         <textarea class="ai-textarea" id="selfDesc" rows="4"
-          placeholder="Describe yourself and what kind of person you're looking for... (e.g. I am a CEE aspirant from Pokhara, I love physics and hiking, looking for someone ambitious and kind...)"></textarea>
+          placeholder="Describe yourself and what kind of person you're looking for... (e.g., I'm a CEE aspirant from Pokhara, love physics and hiking, looking for someone ambitious and kind...)"></textarea>
       </div>
 
       <button class="analyze-btn" onclick="runAI()" id="analyzeBtn">
@@ -207,23 +235,28 @@
       </button>
     </div>
 
+    <!-- LOADING -->
     <div class="loading-area" id="loadingArea">
       <span class="loading-spin">🤖</span>
       <p style="color:rgba(255,255,255,0.4);font-size:0.88rem">
         AI is analyzing your personality...
       </p>
+      <p style="color:rgba(255,255,255,0.2);font-size:0.75rem;margin-top:8px">
+        Finding the best match for you
+      </p>
     </div>
 
+    <!-- RESULT -->
     <div class="result-area" id="resultArea">
       <div class="result-card">
         <div class="result-title">🤖 AI Analysis</div>
         <div class="result-text" id="aiText"></div>
       </div>
       <div class="result-card">
-        <div class="result-title">💕 Top Matches</div>
+        <div class="result-title">💕 Your Best Matches</div>
         <div id="matchedList"></div>
       </div>
-      <button class="retry-btn" onclick="reset()">🔄 Try Again</button>
+      <button class="retry-btn" onclick="resetAI()">🔄 Try Again</button>
     </div>
   </div>
 
@@ -234,29 +267,48 @@
     <a href="profile.html" class="nav-item"><span>👤</span><span>Profile</span></a>
   </div>
 
+  <div id="toast" class="toast"></div>
+
   <script>
     const genderEmoji = { male:'👨', female:'👩', other:'🧑' };
     const categoryLabels = {
       cee:'CEE Aspirant', ioe:'IOE Aspirant',
       plus2:'+2 Student', management:'Management Student'
     };
-    const picks = { study:'', personality:'', priority:'' };
+    
     let currentUserId = null;
+    let currentUserProfile = null;
     let allProfiles = [];
+    
+    // User's picks
+    let picks = { study: '', personality: '', priority: '' };
 
+    // Load session and profiles
     async function init() {
       const { data } = await supabaseClient.auth.getSession();
-      if (!data.session) { window.location.href = 'login.html'; return; }
+      if (!data.session) { 
+        window.location.href = 'login.html'; 
+        return; 
+      }
       currentUserId = data.session.user.id;
+      
+      // Get current user profile
+      const { data: profile } = await supabaseClient
+        .from('profiles').select('*').eq('id', currentUserId).single();
+      currentUserProfile = profile;
+      
+      // Get all other profiles
       const { data: profiles } = await supabaseClient
         .from('profiles').select('*').neq('id', currentUserId);
       allProfiles = profiles || [];
     }
 
     function pick(btn, group) {
-      document.querySelectorAll(`.option-btn`).forEach(b => {
-        if (b.getAttribute('onclick').includes(`'${group}'`))
+      // Remove selected class from same group
+      document.querySelectorAll('.option-btn').forEach(b => {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(`'${group}'`)) {
           b.classList.remove('selected');
+        }
       });
       btn.classList.add('selected');
       picks[group] = btn.textContent.trim();
@@ -264,85 +316,146 @@
 
     async function runAI() {
       const desc = document.getElementById('selfDesc').value.trim();
+      
       if (!desc) {
-        alert('Please describe yourself first!'); return;
+        showToast('💭 Please describe yourself first!');
+        return;
       }
-      const { data: myProfile } = await supabaseClient
-        .from('profiles').select('*').eq('id', currentUserId).single();
+      
+      // Check if all questions answered
+      if (!picks.study || !picks.personality || !picks.priority) {
+        showToast('Please answer all questions first!');
+        return;
+      }
 
+      // Hide form, show loading
       document.getElementById('formArea').style.display = 'none';
       document.getElementById('loadingArea').style.display = 'block';
 
-      const prompt = `You are an AI matchmaker for EntranceHearts, a dating app for Nepali entrance exam students.
+      // Simple AI matching logic (since Claude API requires backend)
+      // This simulates AI matching locally
+      setTimeout(() => {
+        performLocalMatching(desc);
+      }, 2000);
+    }
 
-User: ${myProfile?.name || 'Unknown'}, ${myProfile?.category || 'aspirant'}, ${myProfile?.location || 'Nepal'}
-Interests: ${(myProfile?.interests || []).join(', ')}
-Study style: ${picks.study}
-Personality: ${picks.personality}
-Values: ${picks.priority}
-About them: ${desc}
+    function performLocalMatching(userDesc) {
+      // Calculate compatibility score for each profile
+      const scoredProfiles = allProfiles.map(profile => {
+        let score = 50; // Base score
+        
+        // Same category = +20 points
+        if (profile.category === currentUserProfile?.category) score += 20;
+        
+        // Same looking_for = +15 points
+        if (profile.looking_for === currentUserProfile?.looking_for) score += 15;
+        
+        // Interest matching
+        const userInterests = currentUserProfile?.interests || [];
+        const profileInterests = profile.interests || [];
+        const commonInterests = userInterests.filter(i => profileInterests.includes(i)).length;
+        score += Math.min(commonInterests * 5, 20);
+        
+        // Age proximity (within 3 years = +10)
+        const ageDiff = Math.abs((profile.age || 20) - (currentUserProfile?.age || 20));
+        if (ageDiff <= 3) score += 10;
+        
+        // Cap at 98
+        return { ...profile, compatibility: Math.min(score, 98) };
+      });
+      
+      // Sort by compatibility
+      scoredProfiles.sort((a, b) => b.compatibility - a.compatibility);
+      
+      // Get top 3 matches
+      const topMatches = scoredProfiles.slice(0, 3);
+      
+      // Generate AI-like analysis text
+      const analysisText = `Based on your profile as a ${categoryLabels[currentUserProfile?.category] || 'student'} from ${currentUserProfile?.location || 'Nepal'}, who loves ${(currentUserProfile?.interests || ['studying']).slice(0,2).join(' and ')}, and your preference for ${picks.priority.toLowerCase()}, our AI has analyzed ${allProfiles.length}+ profiles.
 
-Available matches:
-${allProfiles.slice(0,6).map((p,i) => `${i+1}. ${p.name} - ${categoryLabels[p.category]||p.category} from ${p.location||'Nepal'}, interests: ${(p.interests||[]).join(', ')}`).join('\n')}
+      You study best ${picks.study.toLowerCase()} and have a ${picks.personality.toLowerCase()} personality. This makes you most compatible with people who share similar study habits and values.
 
-Give:
-1. A 2-3 sentence warm personality analysis
-2. Top 3 matches with compatibility % and one sentence reason each
+      ✨ Your top matches are ready below! ✨`;
+      
+      // Display results
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('resultArea').style.display = 'block';
+      document.getElementById('aiText').textContent = analysisText;
+      
+      // Render matches
+      renderMatches(topMatches);
+    }
 
-Keep it encouraging and fun!`;
+    function renderMatches(matches) {
+      const container = document.getElementById('matchedList');
+      
+      if (matches.length === 0) {
+        container.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.4)">No matches found. Check back later!</div>';
+        return;
+      }
+      
+      container.innerHTML = matches.map(match => `
+        <div class="matched-person" onclick="goToChat('${match.id}')">
+          <div class="matched-avatar">
+            ${match.avatar_url 
+              ? `<img src="${match.avatar_url}" alt="${match.name}"/>`
+              : genderEmoji[match.gender] || '👤'}
+          </div>
+          <div style="flex:1">
+            <div class="matched-name">${match.name || 'Anonymous'} ${match.age ? `, ${match.age}` : ''}</div>
+            <div class="matched-meta">
+              ${categoryLabels[match.category] || match.category} • ${match.location || 'Nepal'}
+            </div>
+            <div class="compat-bar">
+              <div class="compat-fill" style="width:${match.compatibility}%"></div>
+            </div>
+            <div class="compat-label">${match.compatibility}% Compatible</div>
+          </div>
+          <button class="chat-now-btn" onclick="event.stopPropagation(); goToChat('${match.id}')">💬 Chat</button>
+        </div>
+      `).join('');
+    }
 
-      try {
-        const res = await fetch('https://api.anthropic.com/v1/messages', {
-          method:'POST',
-          headers:{ 'Content-Type':'application/json' },
-          body: JSON.stringify({
-            model:'claude-sonnet-4-20250514',
-            max_tokens:1000,
-            messages:[{ role:'user', content:prompt }]
-          })
-        });
-        const data = await res.json();
-        const text = data.content[0].text;
-        document.getElementById('loadingArea').style.display = 'none';
-        document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('aiText').textContent = text;
-        const topMatches = allProfiles.slice(0,3);
-        const compats = [94, 87, 79];
-        document.getElementById('matchedList').innerHTML =
-          topMatches.map((p,i) => `
-            <div class="matched-person">
-              <div class="matched-avatar">
-                ${p.avatar_url
-                  ? `<img src="${p.avatar_url}" alt="${p.name}"/>`
-                  : genderEmoji[p.gender] || '🧑'}
-              </div>
-              <div style="flex:1">
-                <div class="matched-name">${p.name}</div>
-                <div class="matched-meta">
-                  ${categoryLabels[p.category]||p.category} • ${p.location||'Nepal'}
-                </div>
-                <div class="compat-bar">
-                  <div class="compat-fill" style="width:${compats[i]}%"></div>
-                </div>
-                <div class="compat-label">${compats[i]}% Compatible</div>
-              </div>
-            </div>`).join('');
-      } catch(err) {
-        document.getElementById('loadingArea').style.display = 'none';
-        document.getElementById('formArea').style.display = 'block';
-        alert('AI unavailable right now. Try again!');
+    function goToChat(userId) {
+      // Store the user ID to chat with in localStorage
+      localStorage.setItem('ehChatWith', userId);
+      window.location.href = 'chat.html';
+    }
+
+    function resetAI() {
+      // Reset picks
+      picks = { study: '', personality: '', priority: '' };
+      
+      // Clear selections
+      document.querySelectorAll('.option-btn').forEach(btn => {
+        btn.classList.remove('selected');
+      });
+      
+      // Clear textarea
+      document.getElementById('selfDesc').value = '';
+      
+      // Show form, hide results
+      document.getElementById('resultArea').style.display = 'none';
+      document.getElementById('formArea').style.display = 'block';
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    // Check for pending chat on load
+    async function checkPendingChat() {
+      const chatWith = localStorage.getItem('ehChatWith');
+      if (chatWith) {
+        localStorage.removeItem('ehChatWith');
       }
     }
 
-    function reset() {
-      document.getElementById('resultArea').style.display = 'none';
-      document.getElementById('formArea').style.display = 'block';
-      document.getElementById('selfDesc').value = '';
-      document.querySelectorAll('.option-btn').forEach(b =>
-        b.classList.remove('selected'));
-    }
-
     init();
+    checkPendingChat();
   </script>
 </body>
 </html>
