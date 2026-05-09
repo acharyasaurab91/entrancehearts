@@ -11,31 +11,21 @@
   <script src="supabase.js"></script>
   
   <style>
-    /* ========================================
-       PROFILE - PREMIUM DARK THEME
-       Pink Gradient | User Profile Management
-       ======================================== */
-    
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
       background: #0a0a0f;
       color: #ffffff;
     }
 
-    /* Navbar */
+    /* Premium Navbar */
     .navbar {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 1000;
-      padding: 16px 32px;
+      padding: 18px 32px;
       background: rgba(10, 10, 15, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid rgba(255, 20, 147, 0.2);
@@ -57,11 +47,109 @@
       -webkit-text-fill-color: transparent;
       text-decoration: none;
     }
+    .btn-ghost {
+      color: rgba(255, 255, 255, 0.7);
+      padding: 8px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-ghost:hover {
+      color: #FF6B9D;
+      background: rgba(255, 20, 147, 0.1);
+    }
+    .btn-primary-nav {
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      color: white;
+      padding: 8px 24px;
+      border-radius: 100px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.3s;
+    }
+    .btn-primary-nav:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+    }
+    .mobile-menu-btn {
+      display: none;
+      background: rgba(255,20,147,0.15);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 12px;
+      padding: 10px 14px;
+      color: #FF6B9D;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .nav-links { display: none; }
+    }
+    .mobile-menu {
+      position: fixed;
+      top: 70px;
+      right: -100%;
+      width: 280px;
+      background: #141423;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,20,147,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      z-index: 999;
+      transition: right 0.3s;
+    }
+    .mobile-menu.open { right: 16px; }
+    .mobile-menu-item {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .mobile-menu-item:hover {
+      background: rgba(255,20,147,0.15);
+      color: #FF6B9D;
+    }
 
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(255, 20, 147, 0.15), rgba(255, 107, 157, 0.05));
+      border-bottom: 1px solid rgba(255, 20, 147, 0.15);
+      padding: 100px 24px 50px;
+      text-align: center;
+    }
+    .hero-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .hero-banner h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FF1493, #FF6B9D);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    .hero-banner p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+    }
+
+    /* Main Container */
     .page {
-      max-width: 480px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 90px 16px 100px;
+      padding: 40px 16px 100px;
     }
     
     .profile-hero {
@@ -69,12 +157,16 @@
       margin-bottom: 28px;
     }
     .profile-avatar-wrap {
-      width: 110px;
-      height: 110px;
+      width: 120px;
+      height: 120px;
       border-radius: 50%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
-      padding: 3px;
-      margin: 0 auto 16px;
+      padding: 4px;
+      margin: 0 auto 20px;
+      transition: all 0.3s;
+    }
+    .profile-avatar-wrap:hover {
+      transform: scale(1.02);
     }
     .profile-avatar-inner {
       width: 100%;
@@ -97,19 +189,19 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .profile-name {
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 800;
     }
     .badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 4px 12px;
+      gap: 6px;
+      padding: 5px 14px;
       border-radius: 100px;
       font-size: 0.7rem;
       font-weight: 600;
@@ -124,57 +216,57 @@
       background: rgba(255, 20, 147, 0.12);
       border: 1px solid rgba(255, 20, 147, 0.25);
       color: #FF6B9D;
-      padding: 4px 16px;
+      padding: 6px 18px;
       border-radius: 100px;
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .profile-location {
-      color: rgba(255, 255, 255, 0.4);
-      font-size: 0.82rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
     }
     .progress-bar {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 2px;
-      margin-top: 14px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      margin-top: 18px;
       overflow: hidden;
     }
     .progress-fill {
       height: 100%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
-      border-radius: 2px;
-      transition: width 1s ease;
+      border-radius: 3px;
+      transition: width 0.5s ease;
     }
     .progress-text {
       font-size: 0.7rem;
-      color: rgba(255, 255, 255, 0.3);
+      color: rgba(255, 255, 255, 0.35);
       text-align: right;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     
     .stats-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
     }
     .stat-box {
       background: #141423;
       border: 1px solid rgba(255,20,147,0.15);
       border-radius: 20px;
-      padding: 16px 10px;
+      padding: 18px 12px;
       text-align: center;
-      transition: all 0.2s;
+      transition: all 0.3s;
     }
     .stat-box:hover {
       border-color: rgba(255,20,147,0.4);
-      transform: translateY(-2px);
+      transform: translateY(-3px);
     }
     .stat-box strong {
       display: block;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: 800;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       -webkit-background-clip: text;
@@ -182,69 +274,82 @@
       -webkit-text-fill-color: transparent;
     }
     .stat-box span {
-      font-size: 0.68rem;
-      color: rgba(255, 255, 255, 0.3);
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.4);
     }
     
     .info-card {
       background: #141423;
       border: 1px solid rgba(255,20,147,0.15);
       border-radius: 24px;
-      padding: 20px;
-      margin-bottom: 12px;
+      padding: 22px;
+      margin-bottom: 16px;
+      transition: all 0.3s;
+    }
+    .info-card:hover {
+      border-color: rgba(255,20,147,0.3);
     }
     .info-card-title {
       font-size: 0.75rem;
       font-weight: 700;
       color: #FF6B9D;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      margin-bottom: 14px;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     .info-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255,20,147,0.1);
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,20,147,0.08);
     }
     .info-row:last-child {
       border-bottom: none;
       padding-bottom: 0;
     }
     .info-label {
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.55);
     }
     .info-val {
-      font-size: 0.82rem;
+      font-size: 0.85rem;
       font-weight: 600;
       text-align: right;
       max-width: 60%;
+      color: rgba(255, 255, 255, 0.9);
     }
     .tags-wrap {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
     .tag {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255,20,147,0.2);
       color: rgba(255, 255, 255, 0.7);
-      padding: 5px 14px;
+      padding: 6px 16px;
       border-radius: 100px;
       font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    .tag:hover {
+      border-color: #FF6B9D;
+      color: #FF6B9D;
     }
     
     .action-btns {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 14px;
+      margin-top: 16px;
     }
     .edit-btn {
       width: 100%;
-      padding: 14px;
+      padding: 15px;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       border: none;
       border-radius: 100px;
@@ -253,10 +358,14 @@
       font-weight: 700;
       cursor: pointer;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .edit-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
     }
     .logout-btn {
       width: 100%;
@@ -267,6 +376,10 @@
       color: rgba(255, 255, 255, 0.7);
       cursor: pointer;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .logout-btn:hover {
       border-color: #FF1493;
@@ -278,77 +391,75 @@
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
       z-index: 300;
     }
-    .sheet-overlay.open {
-      display: block;
-    }
+    .sheet-overlay.open { display: block; }
     .edit-sheet {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      max-width: 480px;
+      max-width: 600px;
       margin: 0 auto;
       background: #141423;
-      border-radius: 28px 28px 0 0;
+      border-radius: 32px 32px 0 0;
       border-top: 1px solid rgba(255,20,147,0.3);
       z-index: 400;
       transform: translateY(100%);
-      transition: transform 0.35s ease;
+      transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
       max-height: 90vh;
       overflow-y: auto;
       padding-bottom: 30px;
     }
-    .edit-sheet.open {
-      transform: translateY(0);
-    }
+    .edit-sheet.open { transform: translateY(0); }
     .sheet-handle {
-      width: 40px;
-      height: 4px;
-      border-radius: 2px;
+      width: 50px;
+      height: 5px;
+      border-radius: 3px;
       background: rgba(255, 255, 255, 0.15);
-      margin: 14px auto 0;
+      margin: 16px auto 0;
     }
     .sheet-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px 10px;
+      padding: 16px 24px 12px;
       border-bottom: 1px solid rgba(255,20,147,0.15);
     }
     .sheet-title {
-      font-size: 1.05rem;
+      font-size: 1.1rem;
       font-weight: 700;
     }
     .sheet-close {
-      font-size: 1.4rem;
-      color: rgba(255, 255, 255, 0.4);
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.5);
       cursor: pointer;
       padding: 4px;
+      transition: all 0.2s;
     }
-    .sheet-body {
-      padding: 20px;
-    }
+    .sheet-close:hover { color: #FF6B9D; }
+    .sheet-body { padding: 24px; }
     
     .photo-picker {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
     .photo-preview-wrap {
-      width: 90px;
-      height: 90px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
-      padding: 3px;
-      margin-bottom: 12px;
+      padding: 4px;
+      margin-bottom: 14px;
       cursor: pointer;
       position: relative;
+      transition: all 0.3s;
     }
+    .photo-preview-wrap:hover { transform: scale(1.02); }
     .photo-preview-inner {
       width: 100%;
       height: 100%;
@@ -357,7 +468,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       overflow: hidden;
     }
     .photo-preview-inner img {
@@ -370,23 +481,21 @@
       position: absolute;
       bottom: 2px;
       right: 2px;
-      width: 26px;
-      height: 26px;
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       border: 2px solid #141423;
     }
     .photo-hint {
       font-size: 0.75rem;
       color: rgba(255, 255, 255, 0.4);
     }
-    #photoFileInput {
-      display: none;
-    }
+    #photoFileInput { display: none; }
     .upload-progress {
       font-size: 0.75rem;
       color: #FF6B9D;
@@ -394,68 +503,68 @@
       display: none;
     }
     
-    .field-group {
-      margin-bottom: 18px;
-    }
+    .field-group { margin-bottom: 20px; }
     .field-label {
       font-size: 0.75rem;
       font-weight: 600;
-      color: rgba(255, 255, 255, 0.5);
+      color: rgba(255, 255, 255, 0.55);
       text-transform: uppercase;
-      letter-spacing: 0.8px;
+      letter-spacing: 1px;
       margin-bottom: 8px;
     }
     .field-input {
       width: 100%;
-      padding: 13px 16px;
+      padding: 14px 16px;
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255,20,147,0.2);
       border-radius: 14px;
       color: white;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
       font-family: 'Inter', sans-serif;
       outline: none;
       transition: all 0.2s;
     }
     .field-input:focus {
       border-color: #FF1493;
-      background: rgba(255, 20, 147, 0.05);
+      background: rgba(255, 20, 147, 0.08);
     }
     textarea.field-input {
       resize: none;
-      height: 90px;
+      height: 100px;
       line-height: 1.5;
     }
-    select.field-input {
-      appearance: none;
-      cursor: pointer;
-    }
+    select.field-input { appearance: none; cursor: pointer; }
     
     .interests-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
+      margin-top: 5px;
     }
     .int-tag {
-      padding: 7px 14px;
+      padding: 8px 16px;
       border-radius: 100px;
       border: 1px solid rgba(255,20,147,0.2);
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.78rem;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.8rem;
       cursor: pointer;
       transition: all 0.2s;
       background: rgba(255, 255, 255, 0.03);
     }
+    .int-tag:hover {
+      border-color: #FF6B9D;
+      color: #FF6B9D;
+    }
     .int-tag.selected {
       background: rgba(255, 20, 147, 0.15);
-      border-color: rgba(255, 20, 147, 0.5);
+      border-color: #FF1493;
       color: #FF6B9D;
       font-weight: 600;
     }
     
     .save-btn {
       width: 100%;
-      padding: 15px;
+      padding: 16px;
       background: linear-gradient(135deg, #FF1493, #FF6B9D);
       border: none;
       border-radius: 100px;
@@ -463,16 +572,17 @@
       font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
-      margin-top: 8px;
+      margin-top: 16px;
       transition: all 0.3s;
     }
     .save-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 20, 147, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(255, 20, 147, 0.3);
     }
     .save-btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
     
     .toast {
@@ -481,19 +591,18 @@
       left: 50%;
       transform: translateX(-50%);
       background: #141423;
-      border: 1px solid rgba(255,20,147,0.3);
-      padding: 12px 24px;
+      border: 1px solid rgba(255,20,147,0.4);
+      padding: 14px 28px;
       border-radius: 100px;
       font-size: 0.85rem;
-      font-weight: 600;
+      font-weight: 500;
       z-index: 999;
       opacity: 0;
       transition: opacity 0.3s;
       pointer-events: none;
+      white-space: nowrap;
     }
-    .toast.show {
-      opacity: 1;
-    }
+    .toast.show { opacity: 1; }
     
     .bottom-nav {
       position: fixed;
@@ -505,7 +614,7 @@
       border-top: 1px solid rgba(255,20,147,0.2);
       display: flex;
       justify-content: space-around;
-      padding: 12px 0 20px;
+      padding: 12px 0 22px;
       z-index: 100;
     }
     .nav-item {
@@ -518,42 +627,61 @@
       font-size: 0.65rem;
       font-weight: 600;
       transition: all 0.2s;
-      padding: 6px 12px;
+      padding: 8px 16px;
       border-radius: 40px;
     }
-    .nav-item span:first-child {
-      font-size: 1.3rem;
-    }
-    .nav-item:hover {
-      color: #FF6B9D;
-      background: rgba(255, 20, 147, 0.1);
-    }
-    .nav-item.active {
-      color: #FF6B9D;
-    }
+    .nav-item span:first-child { font-size: 1.3rem; }
+    .nav-item:hover { color: #FF6B9D; background: rgba(255,20,147,0.1); }
+    .nav-item.active { color: #FF6B9D; }
     
     .loading-state {
       text-align: center;
-      padding: 60px 20px;
+      padding: 80px 20px;
     }
   </style>
 </head>
 <body>
 
+  <!-- Premium Navbar -->
   <nav class="navbar" id="navbar">
     <div style="max-width: 1280px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center;">
       <a href="index.html" class="logo">💕 EntranceHearts</a>
-      <div style="display: flex; gap: 12px; align-items: center;">
-        <a href="browse.html" class="btn-ghost" style="color: rgba(255,255,255,0.7); padding: 8px 20px; border-radius: 100px; text-decoration: none;">🔥 Discover</a>
-        <a href="chat.html" class="btn-ghost" style="color: rgba(255,255,255,0.7); padding: 8px 20px; border-radius: 100px; text-decoration: none;">💬 Chats</a>
+      <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <a href="browse.html" class="btn-ghost">🔥 Discover</a>
+        <a href="chat.html" class="btn-ghost">💬 Chats</a>
+        <a href="confessions.html" class="btn-ghost">💌 Confessions</a>
+        <a href="study.html" class="btn-ghost">📚 Study</a>
+        <a href="timer.html" class="btn-ghost">⏱️ Timer</a>
+        <a href="ai-match.html" class="btn-ghost">🤖 AI Match</a>
+        <a href="profile.html" class="btn-primary-nav">👤 Profile</a>
       </div>
+      <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
     </div>
   </nav>
 
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="browse.html" class="mobile-menu-item">🔥 Discover</a>
+    <a href="chat.html" class="mobile-menu-item">💬 Chats</a>
+    <a href="confessions.html" class="mobile-menu-item">💌 Confessions</a>
+    <a href="study.html" class="mobile-menu-item">📚 Study</a>
+    <a href="timer.html" class="mobile-menu-item">⏱️ Timer</a>
+    <a href="ai-match.html" class="mobile-menu-item">🤖 AI Match</a>
+    <a href="profile.html" class="mobile-menu-item">👤 Profile</a>
+    <a href="login.html" class="mobile-menu-item">🚪 Logout</a>
+  </div>
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-icon">👤✨</div>
+    <h1>My Profile</h1>
+    <p>Manage your personal information and preferences</p>
+  </div>
+
   <div class="page" id="profilePage">
     <div class="loading-state">
-      <div style="font-size:3rem; margin-bottom:14px">💕</div>
-      <p style="color: rgba(255,255,255,0.4)">Loading profile...</p>
+      <div style="font-size: 3rem; margin-bottom: 16px;">💕</div>
+      <p style="color: rgba(255,255,255,0.5);">Loading profile...</p>
     </div>
   </div>
 
@@ -562,7 +690,7 @@
   <div class="edit-sheet" id="editSheet">
     <div class="sheet-handle"></div>
     <div class="sheet-header">
-      <div class="sheet-title">✏️ Edit Profile</div>
+      <div class="sheet-title"><i class="fas fa-edit"></i> Edit Profile</div>
       <div class="sheet-close" onclick="closeEdit()">✕</div>
     </div>
     <div class="sheet-body">
@@ -572,57 +700,57 @@
           <div class="photo-preview-inner" id="editPhotoPreview">👤</div>
           <div class="photo-change-badge">📷</div>
         </div>
-        <div class="photo-hint">Tap to change photo</div>
+        <div class="photo-hint">Tap to change profile photo</div>
         <div class="upload-progress" id="uploadProgress">Uploading photo...</div>
         <input type="file" id="photoFileInput" accept="image/*"/>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Name</div>
+        <div class="field-label"><i class="fas fa-user"></i> Name</div>
         <input class="field-input" id="editName" type="text" placeholder="Your full name" maxlength="40"/>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Age</div>
+        <div class="field-label"><i class="fas fa-calendar-alt"></i> Age</div>
         <input class="field-input" id="editAge" type="number" placeholder="Your age" min="14" max="30"/>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Location</div>
+        <div class="field-label"><i class="fas fa-map-marker-alt"></i> Location</div>
         <input class="field-input" id="editLocation" type="text" placeholder="e.g. Kathmandu" maxlength="40"/>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Bio</div>
+        <div class="field-label"><i class="fas fa-align-left"></i> Bio</div>
         <textarea class="field-input" id="editBio" placeholder="Write something about yourself..." maxlength="200"></textarea>
       </div>
 
-      <div class="field-group">
-        <div class="field-label">Exam / Category</div>
+          <div class="field-group">
+        <div class="field-label"><i class="fas fa-graduation-cap"></i> Exam / Category</div>
         <select class="field-input" id="editCategory">
-          <option value="cee">CEE Aspirant</option>
-          <option value="ioe">IOE Aspirant</option>
-          <option value="plus2">+2 Student</option>
-          <option value="management">Management Student</option>
+          <option value="cee">🏥 CEE Aspirant</option>
+          <option value="ioe">⚙️ IOE Aspirant</option>
+          <option value="plus2">📖 +2 Student</option>
+          <option value="management">💼 Management Student</option>
         </select>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Looking For</div>
+        <div class="field-label"><i class="fas fa-heart"></i> Looking For</div>
         <select class="field-input" id="editLookingFor">
-          <option value="friendship">Friendship</option>
-          <option value="relationship">Relationship</option>
-          <option value="studybuddy">Study Buddy</option>
-          <option value="any">Open to Anything</option>
+          <option value="friendship">🤝 Friendship</option>
+          <option value="relationship">💕 Relationship</option>
+          <option value="studybuddy">📚 Study Buddy</option>
+          <option value="any">✨ Open to Anything</option>
         </select>
       </div>
 
       <div class="field-group">
-        <div class="field-label">Interests</div>
+        <div class="field-label"><i class="fas fa-star"></i> Interests</div>
         <div class="interests-grid" id="interestsGrid"></div>
       </div>
 
-      <button class="save-btn" id="saveBtn" onclick="saveProfile()">💾 Save Changes</button>
+      <button class="save-btn" id="saveBtn" onclick="saveProfile()"><i class="fas fa-save"></i> Save Changes</button>
     </div>
   </div>
 
@@ -663,9 +791,7 @@
           const badge = document.getElementById('verifiedBadge');
           if (badge) badge.style.display = 'inline-flex';
         }
-      } catch(e) {
-        console.log('Verification check failed:', e);
-      }
+      } catch(e) { console.log('Verification check failed:', e); }
     }
 
     async function init() {
@@ -709,7 +835,7 @@
         ? `<img src="${p.avatar_url}" alt="${p.name}"/>`
         : genderEmoji[p.gender] || '👤';
       
-           const isVerified = p.is_verified === true;
+      const isVerified = p.is_verified === true;
       const verifiedBadgeHTML = isVerified ? '<span class="badge badge-gold" id="verifiedBadge">⭐ Verified</span>' : '<span id="verifiedBadge" style="display:none;"></span>';
       
       document.getElementById('profilePage').innerHTML = `
@@ -718,13 +844,13 @@
             <div class="profile-avatar-inner">${avatarContent}</div>
           </div>
           <div class="name-badge-container">
-            <div class="profile-name">${p.name || 'Your Name'}</div>
+            <div class="profile-name">${escapeHtml(p.name || 'Your Name')}</div>
             ${verifiedBadgeHTML}
           </div>
           <div class="profile-tag">${categoryLabels[p.category] || 'Aspirant'}</div>
           <div class="profile-location">
-            📍 ${p.location || 'Nepal'}
-            ${p.age ? '• ' + p.age + ' yrs' : ''}
+            <i class="fas fa-map-marker-alt"></i> ${escapeHtml(p.location || 'Nepal')}
+            ${p.age ? ` • ${p.age} yrs` : ''}
           </div>
           <div class="progress-bar">
             <div class="progress-fill" style="width:${completion}%"></div>
@@ -733,40 +859,41 @@
         </div>
 
         <div class="stats-row">
-          <div class="stat-box"><strong>${likes}</strong><span>Likes</span></div>
-          <div class="stat-box"><strong>${matches}</strong><span>Matches</span></div>
-          <div class="stat-box"><strong>${msgs}</strong><span>Messages</span></div>
+          <div class="stat-box"><strong>${likes}</strong><span><i class="fas fa-heart"></i> Likes</span></div>
+          <div class="stat-box"><strong>${matches}</strong><span><i class="fas fa-handshake"></i> Matches</span></div>
+          <div class="stat-box"><strong>${msgs}</strong><span><i class="fas fa-comment"></i> Messages</span></div>
         </div>
 
         <div class="info-card">
-          <div class="info-card-title">👤 Personal Info</div>
-          <div class="info-row"><span class="info-label">Name</span><span class="info-val">${p.name || '—'}</span></div>
+          <div class="info-card-title"><i class="fas fa-user-circle"></i> Personal Info</div>
+          <div class="info-row"><span class="info-label">Name</span><span class="info-val">${escapeHtml(p.name || '—')}</span></div>
           <div class="info-row"><span class="info-label">Age</span><span class="info-val">${p.age || '—'}</span></div>
           <div class="info-row"><span class="info-label">Gender</span><span class="info-val">${p.gender ? p.gender.charAt(0).toUpperCase() + p.gender.slice(1) : '—'}</span></div>
-          <div class="info-row"><span class="info-label">Location</span><span class="info-val">${p.location || '—'}</span></div>
-          ${p.bio ? `<div class="info-row"><span class="info-label">Bio</span><span class="info-val">${p.bio}</span></div>` : ''}
+          <div class="info-row"><span class="info-label">Location</span><span class="info-val">${escapeHtml(p.location || '—')}</span></div>
+          ${p.bio ? `<div class="info-row"><span class="info-label">Bio</span><span class="info-val">${escapeHtml(p.bio)}</span></div>` : ''}
         </div>
 
         <div class="info-card">
-          <div class="info-card-title">🎓 Study Info</div>
+          <div class="info-card-title"><i class="fas fa-graduation-cap"></i> Study Info</div>
           <div class="info-row"><span class="info-label">Category</span><span class="info-val">${categoryLabels[p.category] || '—'}</span></div>
           <div class="info-row"><span class="info-label">Looking For</span><span class="info-val">${p.looking_for ? p.looking_for.charAt(0).toUpperCase() + p.looking_for.slice(1) : '—'}</span></div>
         </div>
 
         <div class="info-card">
-          <div class="info-card-title">❤️ Interests</div>
-          <div class="tags-wrap">${(p.interests || []).map(i => `<span class="tag">${i}</span>`).join('') || '<span style="color:rgba(255,255,255,0.3);font-size:0.82rem">No interests added</span>'}</div>
+          <div class="info-card-title"><i class="fas fa-heart"></i> Interests</div>
+          <div class="tags-wrap">${(p.interests || []).map(i => `<span class="tag">${escapeHtml(i)}</span>`).join('') || '<span style="color:rgba(255,255,255,0.4);font-size:0.85rem;">No interests added yet</span>'}</div>
         </div>
 
         <div class="action-btns">
-          <button class="edit-btn" onclick="openEdit()">✏️ Edit Profile</button>
-          <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+          <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
+          <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>`;
     }
 
     function buildInterestsGrid(selected) {
+      const selectedSet = new Set(selected);
       document.getElementById('interestsGrid').innerHTML = ALL_INTERESTS.map(tag => `
-        <div class="int-tag ${selected.includes(tag) ? 'selected' : ''}" onclick="toggleInterest(this, '${tag}')">${tag}</div>
+        <div class="int-tag ${selectedSet.has(tag) ? 'selected' : ''}" onclick="toggleInterest(this, '${tag}')">${tag}</div>
       `).join('');
     }
 
@@ -856,7 +983,7 @@
       if (error) {
         showToast('❌ Failed to save. Try again.');
         saveBtn.disabled = false;
-        saveBtn.textContent = '💾 Save Changes';
+        saveBtn.textContent = 'Save Changes';
         return;
       }
 
@@ -879,10 +1006,10 @@
 
       render(currentProfile, likes?.length || 0, matchCount, msgs?.length || 0, completion);
       closeEdit();
-      showToast('✅ Profile saved!');
+      showToast('✅ Profile saved successfully!');
 
       saveBtn.disabled = false;
-      saveBtn.textContent = '💾 Save Changes';
+      saveBtn.textContent = 'Save Changes';
     }
 
     function showToast(msg) {
@@ -900,14 +1027,34 @@
       }
     }
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Mobile Menu
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn && mobileMenu) {
+      menuBtn.onclick = () => {
+        mobileMenu.classList.toggle('open');
+        menuBtn.textContent = mobileMenu.classList.contains('open') ? '✕' : '☰';
+      };
+      document.addEventListener('click', (e) => {
+        if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+          mobileMenu.classList.remove('open');
+          menuBtn.textContent = '☰';
+        }
+      });
+    }
+
     // Navbar scroll effect
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
-      if (navbar && window.scrollY > 50) {
-        navbar.classList.add('scrolled');
-      } else if (navbar) {
-        navbar.classList.remove('scrolled');
-      }
+      if (navbar && window.scrollY > 50) navbar.classList.add('scrolled');
+      else if (navbar) navbar.classList.remove('scrolled');
     });
 
     init();
