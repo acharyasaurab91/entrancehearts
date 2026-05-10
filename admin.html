@@ -300,6 +300,7 @@
       <button class="tab-btn active" onclick="showTab('users')"><i class="fas fa-users"></i> Users</button>
       <button class="tab-btn" onclick="showTab('confessions')"><i class="fas fa-comment-dots"></i> Confessions</button>
       <button class="tab-btn" onclick="showTab('materials')"><i class="fas fa-book"></i> Study Materials</button>
+      <button class="tab-btn" onclick="showTab('feedback')"><i class="fas fa-comment-dots"></i> Feedback</button>
       <button class="tab-btn" onclick="showTab('likes')"><i class="fas fa-heart"></i> Likes</button>
     </div>
 
@@ -339,6 +340,35 @@
         </table>
       </div>
     </div>
+
+    <!-- Feedback Tab -->
+<div id="feedbackTab" class="tab-content">
+  <div class="search-box">
+    <select id="feedbackFilter" onchange="loadFeedback()">
+      <option value="all">All Types</option>
+      <option value="general">General</option>
+      <option value="bug">Bug Report</option>
+      <option value="feature">Feature Request</option>
+      <option value="complaint">Complaint</option>
+    </select>
+    <select id="feedbackStatusFilter" onchange="loadFeedback()">
+      <option value="all">All Status</option>
+      <option value="pending">Pending</option>
+      <option value="reviewed">Reviewed</option>
+      <option value="resolved">Resolved</option>
+    </select>
+    <button class="refresh-btn" onclick="loadFeedback()"><i class="fas fa-sync-alt"></i> Refresh</button>
+  </div>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr><th>User</th><th>Type</th><th>Rating</th><th>Message</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+      </thead>
+      <tbody id="feedbackList"><tr><td colspan="7" style="text-align:center">Loading...--<td></tr></tbody>
+    </table>
+  </div>
+</div>
+    
 
     <div id="likesTab" class="tab-content">
       <div class="search-box">
@@ -416,6 +446,72 @@
       renderMaterials();
     }
 
+
+    async function loadFeedback() {
+  let query = supabaseClient.from('feedback').select('*').order('created_at', { ascending: false });
+  
+  const typeFilter = document.getElementById('feedbackFilter')?.value;
+  const statusFilter = document.getElementById('feedbackStatusFilter')?.value;
+  
+  if (typeFilter && typeFilter !== 'all') {
+    query = query.eq('type', typeFilter);
+  }
+  if (statusFilter && statusFilter !== 'all') {
+    query = query.eq('status', statusFilter);
+  }
+  
+  const { data } = await query;
+  const feedback = data || [];
+  
+  if (feedback.length === 0) {
+    document.getElementById('feedbackList').innerHTML = '<tr><td colspan="7" style="text-align:center">No feedback yet</td></tr>';
+    return;
+  }
+  
+  document.getElementById('feedbackList').innerHTML = feedback.map(f => `
+    <tr>
+      <td><strong>${f.user_name || f.user_email}</strong><br><small style="color:#888">${f.user_email}</small></td>
+      <td><span class="badge category">${getFeedbackTypeIcon(f.type)} ${f.type}</span></td>
+      <td>${f.rating ? '⭐'.repeat(f.rating) : '—'}</td>
+      <td style="max-width: 300px;">${escapeHtml(f.message)}</td>
+      <td>${new Date(f.created_at).toLocaleDateString()}</td>
+      <td>
+        <select class="status-select" data-id="${f.id}" onchange="updateFeedbackStatus(${f.id}, this.value)">
+          <option value="pending" ${f.status === 'pending' ? 'selected' : ''}>⏳ Pending</option>
+          <option value="reviewed" ${f.status === 'reviewed' ? 'selected' : ''}>👀 Reviewed</option>
+          <option value="resolved" ${f.status === 'resolved' ? 'selected' : ''}>✅ Resolved</option>
+        </select>
+      </td>
+      <td><button class="delete-btn" onclick="deleteFeedback(${f.id})">Delete</button></td>
+    </tr>
+  `).join('');
+}
+
+function getFeedbackTypeIcon(type) {
+  const icons = {
+    'general': '💬',
+    'bug': '🐛',
+    'feature': '✨',
+    'complaint': '😞'
+  };
+  return icons[type] || '📝';
+}
+
+async function updateFeedbackStatus(id, status) {
+  const { error } = await supabaseClient.from('feedback').update({ status: status }).eq('id', id);
+  if (error) showToast('Failed to update status', 'error');
+  else showToast('Status updated');
+}
+
+async function deleteFeedback(id) {
+  if (confirm('Delete this feedback?')) {
+    const { error } = await supabaseClient.from('feedback').delete().eq('id', id);
+    if (error) showToast('Failed to delete', 'error');
+    else { showToast('Feedback deleted'); loadFeedback(); }
+  }
+}
+
+    
     async function loadLikes() {
       const { data } = await supabaseClient
         .from('likes')
