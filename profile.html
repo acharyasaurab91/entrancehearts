@@ -924,6 +924,9 @@
 
         <div class="action-btns">
           <button class="edit-btn" onclick="openEdit()"><i class="fas fa-edit"></i> Edit Profile</button>
+          <button class="feedback-btn" onclick="openFeedbackModal()">
+  <i class="fas fa-comment-dots"></i> Send Feedback
+</button>
           <button class="delete-account-btn" onclick="deleteMyAccount()"><i class="fas fa-trash-alt"></i> Delete My Account</button>
           <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>`;
@@ -1125,6 +1128,137 @@
       return div.innerHTML;
     }
 
+
+    <!-- Feedback Modal -->
+<div id="feedbackModal" class="modal-overlay">
+  <div class="modal-content" style="max-width: 500px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="font-size: 1.3rem;"><i class="fas fa-comment-dots"></i> Send Feedback</h3>
+      <button onclick="closeFeedbackModal()" style="background: none; border: none; color: rgba(255,255,255,0.5); font-size: 1.5rem; cursor: pointer;">&times;</button>
+    </div>
+    <p style="color: rgba(255,255,255,0.5); margin-bottom: 20px;">Help us improve EntranceHearts! Share your thoughts, report bugs, or suggest features.</p>
+    
+    <div class="form-group">
+      <label>Feedback Type</label>
+      <select id="feedbackType" class="field-input">
+        <option value="general">💬 General Feedback</option>
+        <option value="bug">🐛 Bug Report</option>
+        <option value="feature">✨ Feature Request</option>
+        <option value="complaint">😞 Complaint / Issue</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Rating (Optional)</label>
+      <div style="display: flex; gap: 10px; margin-top: 5px;">
+        <button type="button" class="rating-star" data-rating="1">⭐</button>
+        <button type="button" class="rating-star" data-rating="2">⭐</button>
+        <button type="button" class="rating-star" data-rating="3">⭐</button>
+        <button type="button" class="rating-star" data-rating="4">⭐</button>
+        <button type="button" class="rating-star" data-rating="5">⭐</button>
+      </div>
+      <input type="hidden" id="feedbackRating" value="0">
+    </div>
+    
+    <div class="form-group">
+      <label>Your Message</label>
+      <textarea id="feedbackMessage" class="field-input" rows="5" placeholder="Tell us what you think... (min 10 characters)"></textarea>
+    </div>
+    
+    <div style="display: flex; gap: 12px; margin-top: 10px;">
+      <button onclick="submitFeedback()" class="submit-btn" style="flex: 1;">Send Feedback</button>
+      <button onclick="closeFeedbackModal()" class="back-btn" style="flex: 1;">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+      // Feedback Modal Functions
+function openFeedbackModal() {
+  document.getElementById('feedbackModal').classList.add('active');
+  document.getElementById('feedbackMessage').value = '';
+  document.getElementById('feedbackType').value = 'general';
+  document.getElementById('feedbackRating').value = '0';
+  // Reset star ratings
+  document.querySelectorAll('.rating-star').forEach(star => {
+    star.style.opacity = '0.5';
+  });
+}
+
+function closeFeedbackModal() {
+  document.getElementById('feedbackModal').classList.remove('active');
+}
+
+// Star rating handler
+document.querySelectorAll('.rating-star').forEach(star => {
+  star.addEventListener('click', () => {
+    const rating = parseInt(star.dataset.rating);
+    document.getElementById('feedbackRating').value = rating;
+    document.querySelectorAll('.rating-star').forEach((s, index) => {
+      s.style.opacity = index < rating ? '1' : '0.5';
+    });
+  });
+});
+
+async function submitFeedback() {
+  const type = document.getElementById('feedbackType').value;
+  const rating = parseInt(document.getElementById('feedbackRating').value);
+  const message = document.getElementById('feedbackMessage').value.trim();
+  
+  if (!message) {
+    showToast('Please enter your feedback message');
+    return;
+  }
+  
+  if (message.length < 10) {
+    showToast('Please write at least 10 characters');
+    return;
+  }
+  
+  const btn = event.target;
+  const originalText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  
+  try {
+    const { data: userData } = await supabaseClient.auth.getUser();
+    const user = userData.user;
+    
+    // Get user profile to get name
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('name')
+      .eq('id', user.id)
+      .single();
+    
+    const { error } = await supabaseClient
+      .from('feedback')
+      .insert({
+        user_id: user.id,
+        user_name: profile?.name || 'Anonymous',
+        user_email: user.email,
+        type: type,
+        message: message,
+        rating: rating || null
+      });
+    
+    if (error) throw error;
+    
+    showToast('✅ Thank you for your feedback!');
+    closeFeedbackModal();
+    
+  } catch (err) {
+    console.error('Feedback error:', err);
+    showToast('❌ Failed to send feedback. Please try again.');
+  }
+  
+  btn.disabled = false;
+  btn.textContent = originalText;
+}
+    
+
+
+    
     // Mobile Menu
     const menuBtn = document.getElementById('mobileMenuBtn');
     const mobileMenu = document.getElementById('mobileMenu');
